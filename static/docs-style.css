@@ -1,0 +1,126 @@
+/* docs-style.css */
+
+@import url('style.css');
+
+.docs-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    height: 90vh;
+    background-color: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    margin-top: 80px;
+}
+
+.docs-sidebar {
+    width: 300px;
+    min-width: 250px;
+    padding: 20px;
+    background-color: #fafafa;
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.docs-sidebar h3 {
+    font-size: 1.5rem;
+    margin: 0 0 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.docs-sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 样式现在应用于 .toc-item (div) */
+.toc-item {
+    display: flex;
+    align-items: center;
+    /* padding 由 JS 动态设置 */
+    border-radius: 8px;
+    transition: background-color 0.2s, transform 0.2s;
+    font-weight: 500;
+    cursor: pointer;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 15px;
+}
+
+.toc-item:hover {
+    background-color: #eceff1;
+    transform: translateX(5px);
+}
+
+/* 激活状态也应用在 .toc-item (div) 上 */
+.toc-item.active {
+    background-color: var(--link-color);
+    color: #fff;
+    transform: translateX(0);
+}
+
+.toc-item > a {
+    text-decoration: none;
+    color: inherit; /* 继承父级 div 的颜色 (用于 active 状态) */
+    flex-grow: 1;
+}
+
+.toggle-icon {
+    margin-right: 8px;
+    transition: transform 0.3s;
+    user-select: none;
+    flex-shrink: 0;
+    padding-left: 5px; /* 为图标本身增加一点空间 */
+}
+
+.toggle-icon.rotated {
+    transform: rotate(90deg);
+}
+
+/* 子列表的 padding-left 现在为 0，因为缩进由 JS 控制 */
+.child-list {
+    list-style-type: none;
+    padding-left: 20px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease-in-out;
+}
+
+.child-list.open {
+    max-height: 1500px; /* 增加最大高度以适应更多内容 */
+    transition: max-height 0.5s ease-in-out;
+}
+
+.docs-content {
+    flex-grow: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
+    font-size: 1rem;
+    line-height: 1.7;
+    scroll-behavior: smooth;
+}
+
+.docs-content h1,
+.docs-content h2,
+.docs-content h3,
+.docs-content h4 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.docs-content h1 { font-size: 2.2rem; }
+.docs-content h2 { font-size: 1.8rem; }
+.docs-content h3 { font-size: 1.5rem; }
+.docs-content h4 { font-size: 1.2rem; }
+
+@media (max-width: 768px) {
+    .docs-sidebar { display: none; }
+    .docs-container { flex-direction: column; height: auto; }
+    .docs-content { padding: 20px; }
+}

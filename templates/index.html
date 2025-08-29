@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交互式词典</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/docs-style.css">
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="搜索词条或含义..." autocomplete="off">
+        <button id="doc-button" class="doc-button">文档</button>
+        <ul id="search-results-list" class="search-results-list"></ul>
+    </div>
+    <div class="main-container">
+        <div class="sidebar">
+            <h2>词条列表</h2>
+            <div class="sidebar-actions">
+                <button id="add-button" class="edit-button">新增词条</button>
+                <button id="edit-button" class="edit-button" disabled>编辑当前词条</button>
+                <button id="delete-button" class="edit-button" disabled>删除当前词条</button>
+            </div>
+            <ul id="entry-list" class="entry-tree-list"></ul>
+        </div>
+
+        <div class="content">
+            <p id="no-data-message" style="display:none;text-align:center;color:#777;margin-top:50px;"></p>
+            <div id="entry-display" class="entry-display">
+                <h2 id="entry-title" class="entry-title"></h2>
+                <div id="type-section" class="info-section"><h3>词类</h3><ul id="type-list" class="tags-list"></ul></div>
+                <div id="meaning-section" class="info-section"><h3>含义</h3><ul id="meaning-list" class="tags-list"></ul></div>
+                <div id="from-section" class="info-section"><h3>构成来源词素</h3><ul id="from-list" class="tags-list"></ul></div>
+                <div id="explanation-section" class="info-section"><h3>解释</h3><ul id="explanation-list" class="tags-list"></ul></div>
+                <div id="to-section" class="info-section"><h3>派生词汇</h3><ul id="to-list" class="tags-list"></ul></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>编辑词条</h2>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-form">
+                    <label for="form-lemma">词条 (Lemma):</label>
+                    <input type="text" id="form-lemma" name="lemma" required>
+                    <label for="form-type">词类 (Type, 用分号分隔):</label>
+                    <input type="text" id="form-type" name="type">
+                    <label for="form-meaning">含义 (Meaning, 用分号分隔):</label>
+                    <input type="text" id="form-meaning" name="meaning">
+                    <label for="form-from">构成来源词素 (From, 用分号分隔):</label>
+                    <input type="text" id="form-from" name="from">
+                    <label for="form-explanation">解释 (Explanation):</label>
+                    <input type="text" id="form-explanation" name="explanation">
+                    <label for="form-to">派生词汇 (To, 用分号分隔):</label>
+                    <input type="text" id="form-to" name="to">
+                    <div class="button-row">
+                        <button type="button" id="cancel-button" class="save-button cancel">取消</button>
+                        <button type="submit" class="save-button save">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/static/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>

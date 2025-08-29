@@ -1,0 +1,85 @@
+{
+    "fper": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "拿",
+            "取"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pʰper"
+        ],
+        "To": [
+            "phuperic",
+            "phunperof"
+        ]
+    },
+    "pʰunpʰerof": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "消耗",
+            "耗费",
+            "消费"
+        ],
+        "From": [
+            "fper",
+            "/INF",
+            "<n>",
+            "of"
+        ],
+        "Explanation": [
+            "pʰ<n>per/INF-of"
+        ],
+        "To": [
+            "pʰunpʰerofma"
+        ]
+    },
+    "pʰunpʰerofma": {
+        "Type": [
+            "n",
+            "abstract",
+            "inanim."
+        ],
+        "Meaning": [
+            "消耗品"
+        ],
+        "From": [
+            "pʰunpʰerof",
+            "ma"
+        ],
+        "Explanation": [
+            "pʰ<n>per/INF-of-ma"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "kukak": {
+        "Type": [
+            "v"
+        ],
+        "Meaning": [
+            "击打",
+            "打"
+        ],
+        "From": [
+            "kkak",
+            "<w>"
+        ],
+        "Explanation": [
+            "k<w>kak"
+        ],
+        "To": [
+            "kukakil",
+            "kukʰakmoŋ"
+        ]
+    }
+}
