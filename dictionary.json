@@ -15,8 +15,8 @@
             "pʰper"
         ],
         "To": [
-            "phuperic",
-            "phunperof"
+            "pʰuperic",
+            "pʰunpʰerof"
         ]
     },
     "pʰunpʰerof": {
@@ -31,12 +31,12 @@
         ],
         "From": [
             "fper",
-            "/INF",
+            "\\INF",
             "<n>",
             "of"
         ],
         "Explanation": [
-            "pʰ<n>per/INF-of"
+            "pʰ<n>per\\INF-of"
         ],
         "To": [
             "pʰunpʰerofma"
@@ -46,7 +46,7 @@
         "Type": [
             "n",
             "abstract",
-            "inanim."
+            "inan."
         ],
         "Meaning": [
             "消耗品"
@@ -56,7 +56,7 @@
             "ma"
         ],
         "Explanation": [
-            "pʰ<n>per/INF-of-ma"
+            "pʰ<n>per\\INF-of-ma"
         ],
         "To": [
             "0"
@@ -81,5 +81,2498 @@
             "kukakil",
             "kukʰakmoŋ"
         ]
+    },
+    "kpaa": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "看"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "kpah"
+        ],
+        "To": [
+            "kunpaa",
+            "kupaa",
+            "tˀakpaa"
+        ]
+    },
+    "kunpaa": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "凝视"
+        ],
+        "From": [
+            "kpaa",
+            "<w>"
+        ],
+        "Explanation": [
+            "k<w>pah"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tˀakpaa": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "自视",
+            "看自己",
+            "自认为"
+        ],
+        "From": [
+            "tˀ",
+            "kpaa"
+        ],
+        "Explanation": [
+            "tˀ-(a/ɨ)-kpah"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "taŋ": {
+        "Type": [
+            "v",
+            "root",
+            "intr."
+        ],
+        "Meaning": [
+            "知道",
+            "懂"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "ˀtaŋ"
+        ],
+        "To": [
+            "ˀotaŋ",
+            "qˀaataŋ",
+            "aatʰaŋmoŋ",
+            "eatʰaŋmast"
+        ]
+    },
+    "ˀotaŋ": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "顿悟",
+            "领悟"
+        ],
+        "From": [
+            "taŋ",
+            "<w>"
+        ],
+        "Explanation": [
+            "ˀ<w>taŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "qˀaataŋ": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "了解",
+            "知道"
+        ],
+        "From": [
+            "qˀ",
+            "taŋ"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-ˀtaŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "aatʰaŋmoŋ": {
+        "Type": [
+            "n",
+            "inan.",
+            "abstract"
+        ],
+        "Meaning": [
+            "知识"
+        ],
+        "From": [
+            "a",
+            "taŋ",
+            "\\INF",
+            "moŋ"
+        ],
+        "Explanation": [
+            "a-ˀtaŋ-moŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "eatʰaŋmast": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim.",
+            "concrete",
+            "st"
+        ],
+        "Meaning": [
+            "先知",
+            "智者"
+        ],
+        "From": [
+            "e",
+            "taŋ",
+            "\\INF",
+            "mast"
+        ],
+        "Explanation": [
+            "e-ˀtaŋ\\INF-mast"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ktap": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "偷",
+            "窃"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [],
+        "To": [
+            "eklapir",
+            "aktʰaptamɨ",
+            "kutap",
+            "kuntap"
+        ]
+    },
+    "aktʰaptamɨ": {
+        "Type": [
+            "n",
+            "inan.",
+            "concrete"
+        ],
+        "Meaning": [
+            "赃物"
+        ],
+        "From": [
+            "a",
+            "ktap",
+            "\\INF",
+            "tamɨ"
+        ],
+        "Explanation": [
+            "a-ktap\\INF-tamɨ"
+        ],
+        "To": []
+    },
+    "eklapir": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim.",
+            "concrete",
+            "m"
+        ],
+        "Meaning": [
+            "小偷",
+            "贼"
+        ],
+        "From": [
+            "e",
+            "ktap",
+            "/PFV",
+            "ir"
+        ],
+        "Explanation": [
+            "e-ktap/PFV-ir"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "kutap": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "抢劫",
+            "盗取"
+        ],
+        "From": [
+            "ktap",
+            "<w>"
+        ],
+        "Explanation": [
+            "k<w>tap"
+        ],
+        "To": [
+            "ekulapir",
+            "akʰutapmoŋ"
+        ]
+    },
+    "ekulapir": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim.",
+            "concrete",
+            "m"
+        ],
+        "Meaning": [
+            "强盗",
+            "盗匪"
+        ],
+        "From": [
+            "e",
+            "kutap",
+            "/PFV",
+            "ir"
+        ],
+        "Explanation": [
+            "e-kutap/PFV-ir"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ptef": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "喜欢"
+        ],
+        "From": [],
+        "Explanation": [
+            "ptepʰ"
+        ],
+        "To": []
+    },
+    "qʰaw": {
+        "Type": [
+            "n",
+            "root"
+        ],
+        "Meaning": [
+            "少"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "qʰawi",
+            "qʰawitan"
+        ]
+    },
+    "qʰawi": {
+        "Type": [
+            "v",
+            "stative",
+            "intr."
+        ],
+        "Meaning": [
+            "少的"
+        ],
+        "From": [
+            "qʰaw",
+            "i"
+        ],
+        "Explanation": [
+            "qʰaw-i"
+        ],
+        "To": []
+    },
+    "qʰawitan": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "减少"
+        ],
+        "From": [
+            "qʰaw",
+            "itan"
+        ],
+        "Explanation": [
+            "qʰaw-itan"
+        ],
+        "To": []
+    },
+    "ptɨs": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "衰败",
+            "腐败"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": [
+            "tˀɨptɨs",
+            "aptʰɨsma"
+        ]
+    },
+    "tˀɨptɨs": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "衰败",
+            "腐败"
+        ],
+        "From": [
+            "tˀ",
+            "ptɨs"
+        ],
+        "Explanation": [
+            "tˀ-(a/ɨ)-ptɨs"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "aptʰɨsma": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "堕落，腐化"
+        ],
+        "From": [
+            "a",
+            "ptɨs",
+            "\\INF",
+            "ma"
+        ],
+        "Explanation": [
+            "a-ptɨs\\INF-ma"
+        ],
+        "To": []
+    },
+    "rkoc": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "竖直",
+            "指导",
+            "管理"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "rkotʰ"
+        ],
+        "To": [
+            "erkʰocmast",
+            "arkʰocmoŋ",
+            "rkotʰu"
+        ]
+    },
+    "erkʰocmast": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim.",
+            "concrete"
+        ],
+        "Meaning": [
+            "统治者"
+        ],
+        "From": [
+            "rkoc",
+            "mast"
+        ],
+        "Explanation": [
+            "erkoc-mast"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "arkʰocmoŋ": {
+        "Type": [
+            "n",
+            "abstract",
+            "inan."
+        ],
+        "Meaning": [
+            "统治",
+            "制度"
+        ],
+        "From": [
+            "a",
+            "rkoc",
+            "\\INF",
+            "moŋ"
+        ],
+        "Explanation": [
+            "a-rkoc\\INF-moŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "rkotʰic": {
+        "Type": [
+            "v； stative"
+        ],
+        "Meaning": [
+            "直的",
+            "正直的"
+        ],
+        "From": [
+            "rkoc",
+            "iʔ"
+        ],
+        "Explanation": [
+            "rkoc-iʔ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tpir": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "旋转"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "tpir"
+        ],
+        "To": [
+            "qˀɨtpir",
+            "atpirr",
+            "tpirri"
+        ]
+    },
+    "qˀɨtpir": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "转动",
+            "旋转"
+        ],
+        "From": [
+            "qˀ",
+            "tpir"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-tpir"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "atpirr": {
+        "Type": [
+            "n",
+            "inan.",
+            "concrete"
+        ],
+        "Meaning": [
+            "圆形"
+        ],
+        "From": [
+            "a",
+            "tpir"
+        ],
+        "Explanation": [
+            "a-tpir"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tpirric": {
+        "Type": [
+            "adj"
+        ],
+        "Meaning": [
+            "圆形的"
+        ],
+        "From": [
+            "tpir",
+            "ic"
+        ],
+        "Explanation": [
+            "tpir-ic"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tim": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "杀"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "htim"
+        ],
+        "To": [
+            "tˀɨɨtim",
+            "hurtim",
+            "hutim",
+            "ehutʰimu",
+            "huntim"
+        ]
+    },
+    "tˀɨɨtim": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "死亡"
+        ],
+        "From": [
+            "tˀ",
+            "tim"
+        ],
+        "Explanation": [
+            "tˀ-(a/ɨ)-htim"
+        ],
+        "To": [
+            "atˀɨɨtʰim",
+            "etˀɨɨlimu"
+        ]
+    },
+    "atˀɨtʰim": {
+        "Type": [
+            "n",
+            "abstract",
+            "inan."
+        ],
+        "Meaning": [
+            "死亡"
+        ],
+        "From": [
+            "a",
+            "ʰtim",
+            "\\INF"
+        ],
+        "Explanation": [
+            "a-ʰtim"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "etˀɨlimu": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim."
+        ],
+        "Meaning": [
+            "死者"
+        ],
+        "From": [
+            "e",
+            "ʰtim",
+            "\\INF",
+            "u"
+        ],
+        "Explanation": [
+            "e-ʰtim-u"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "hurtim": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "屠杀"
+        ],
+        "From": [
+            "tim",
+            "<r>"
+        ],
+        "Explanation": [
+            "h<r>tim"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "huʰtim": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "刺杀"
+        ],
+        "From": [
+            "hu-",
+            "ʰtim"
+        ],
+        "Explanation": [
+            "hu-ʰtim"
+        ],
+        "To": [
+            "ehutʰimu"
+        ]
+    },
+    "ehutʰimu": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim.",
+            "concrete"
+        ],
+        "Meaning": [
+            "刺客"
+        ],
+        "From": [
+            "e",
+            "tim",
+            "\\INF",
+            "<w>",
+            "r"
+        ],
+        "Explanation": [
+            "e-h<w>tim-r"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "huntim": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "谋杀"
+        ],
+        "From": [
+            "tim",
+            "<n>"
+        ],
+        "Explanation": [
+            "h<n>tim"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "pʰtoŋ": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "落下",
+            "摔倒"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pʰtoŋ"
+        ],
+        "To": [
+            "qˀapʰtoŋ",
+            "qˀapʰtoŋis"
+        ]
+    },
+    "qˀapʰtoŋ": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "降下"
+        ],
+        "From": [
+            "qˀ",
+            "pʰtoŋ"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-pʰtoŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "qˀapʰtoŋis": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "降伏"
+        ],
+        "From": [
+            "qˀapʰtoŋ",
+            "is"
+        ],
+        "Explanation": [
+            "qˀapʰtoŋ-is"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ras": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "轻推"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "ras"
+        ],
+        "To": [
+            "ruras",
+            "tˀaruras",
+            "runas"
+        ]
+    },
+    "ruras": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "摇动"
+        ],
+        "From": [
+            "ras",
+            "<r>"
+        ],
+        "Explanation": [
+            "r<r>as"
+        ],
+        "To": [
+            "tˀaruras"
+        ]
+    },
+    "tˀaruras": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "摇晃"
+        ],
+        "From": [
+            "tˀ",
+            "ruras"
+        ],
+        "Explanation": [
+            "tˀ-(a/ɨ)-rʔ<r>as"
+        ],
+        "To": []
+    },
+    "runas": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "推动",
+            "加速"
+        ],
+        "From": [
+            "ras",
+            "<n>"
+        ],
+        "Explanation": [
+            "rʔ<n>as"
+        ],
+        "To": [
+            "arunaasma",
+            "arunaatsaŋ",
+            "erunaatsaŋu"
+        ]
+    },
+    "arunaasma": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "加速"
+        ],
+        "From": [
+            "run as",
+            "ma"
+        ],
+        "Explanation": [
+            "ru-nas-ma"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "arunaatsaŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "加速主义"
+        ],
+        "From": [
+            "run as",
+            "tsaŋ"
+        ],
+        "Explanation": [
+            "ru-nas-tsaŋ"
+        ],
+        "To": [
+            "erunaatsaŋu"
+        ]
+    },
+    "erunaatsaŋu": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim."
+        ],
+        "Meaning": [
+            "加速主义者"
+        ],
+        "From": [
+            "e",
+            "arunaatsaŋ"
+        ],
+        "Explanation": [
+            "e-arunaatsaŋ-u"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "mpaa": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "运动",
+            "运行"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "mpah"
+        ],
+        "To": [
+            "qˀampaa"
+        ]
+    },
+    "qˀampaa": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "活动"
+        ],
+        "From": [
+            "qˀ",
+            "mpaa"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-mpah"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "luq": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "解开",
+            "分解"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "lʔuq"
+        ],
+        "To": [
+            "luqus",
+            "alʰuqusmoŋ",
+            "tˀunluq"
+        ]
+    },
+    "luqus": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "解析",
+            "分析"
+        ],
+        "From": [
+            "luq",
+            "us"
+        ],
+        "Explanation": [
+            "lʔuq-us"
+        ],
+        "To": [
+            "alhuqusmoŋ"
+        ]
+    },
+    "alʰuqusmoŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "分析"
+        ],
+        "From": [
+            "a",
+            "luq",
+            "\\INF",
+            "moŋ"
+        ],
+        "Explanation": [
+            "a-luq-moŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tˀunluq": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "解开"
+        ],
+        "From": [
+            "tˀ",
+            "luq"
+        ],
+        "Explanation": [
+            "tˀ-(a/ɨ)-luq"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "jau": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "要",
+            "想要"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "jau"
+        ],
+        "To": [
+            "jaulu",
+            "aihaul u"
+        ]
+    },
+    "jaulu": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "嫉妒",
+            "羡慕"
+        ],
+        "From": [
+            "jau",
+            "lu"
+        ],
+        "Explanation": [
+            "jau-lu"
+        ],
+        "To": [
+            "aihaulu"
+        ]
+    },
+    "aihaulu": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "嫉妒"
+        ],
+        "From": [
+            "jau",
+            "a",
+            "lu"
+        ],
+        "Explanation": [
+            "a-jau-lu"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tʰɨr": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "自由"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "tʰɨr"
+        ],
+        "To": [
+            "qˀɨɨtʰɨr",
+            "aatʰɨrmoŋ"
+        ]
+    },
+    "qˀɨɨtʰɨr": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "解放"
+        ],
+        "From": [
+            "qˀ",
+            "tʰɨr"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-tʰɨr"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "aatʰɨrmoŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "自由"
+        ],
+        "From": [
+            "a",
+            "tʰɨr",
+            "moŋ"
+        ],
+        "Explanation": [
+            "a-tʰɨr-moŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "pʰtepʰ": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "喜欢"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pʰtepʰ"
+        ],
+        "To": [
+            "apʰtefma"
+        ]
+    },
+    "apʰtefma": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "喜爱"
+        ],
+        "From": [
+            "a",
+            "pʰtepʰ",
+            "ma"
+        ],
+        "Explanation": [
+            "a-pʰtepʰ-ma"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "koʰ": {
+        "Type": [
+            "aux"
+        ],
+        "Meaning": [
+            "能",
+            "可以"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "koʰ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "stʰal": {
+        "Type": [
+            "n",
+            "root"
+        ],
+        "Meaning": [
+            "星星"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "stʰal"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "sal-": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "甜"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "sal-"
+        ],
+        "To": [
+            "sali",
+            "asalots",
+            "asalmoŋ"
+        ]
+    },
+    "sali": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "甜的"
+        ],
+        "From": [
+            "sal",
+            "i"
+        ],
+        "Explanation": [
+            "sal-i"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "asalots": {
+        "Type": [
+            "n",
+            "concrete",
+            "inan."
+        ],
+        "Meaning": [
+            "甜食"
+        ],
+        "From": [
+            "a",
+            "sal",
+            "ots"
+        ],
+        "Explanation": [
+            "a-sal-ots"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "asalmoŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "甜蜜"
+        ],
+        "From": [
+            "a",
+            "sal",
+            "moŋ"
+        ],
+        "Explanation": [
+            "a-sal-moŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "mol-": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "多"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "mol-"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "hul-": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "坏"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "hul-"
+        ],
+        "To": [
+            "huli",
+            "hulij"
+        ]
+    },
+    "huli": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "邪恶"
+        ],
+        "From": [
+            "hul",
+            "iʔ"
+        ],
+        "Explanation": [
+            "hul-i"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "hulij": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "邪恶"
+        ],
+        "From": [
+            "hul-",
+            "-ij"
+        ],
+        "Explanation": [
+            "hul-ij"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "kako-": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "恶劣"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "kako-"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tˀon-": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "好"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "tˀon-"
+        ],
+        "To": [
+            "tˀonit",
+            "atˀon",
+            "etˀonu",
+            "tˀon-otʰan",
+            "qˀatˀonitʰan"
+        ]
+    },
+    "tˀonit": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "好的"
+        ],
+        "From": [
+            "tˀon-",
+            "-it"
+        ],
+        "Explanation": [
+            "tˀon-it"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "atˀon": {
+        "Type": [
+            "n",
+            "concrete",
+            "inan."
+        ],
+        "Meaning": [
+            "好物"
+        ],
+        "From": [
+            "a",
+            "tˀon"
+        ],
+        "Explanation": [
+            "a-tˀon"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "etˀonu": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim.",
+            "concrete"
+        ],
+        "Meaning": [
+            "好人"
+        ],
+        "From": [
+            "e",
+            "tˀon",
+            "r"
+        ],
+        "Explanation": [
+            "e-tˀon-r"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tˀon-otʰan": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "变好"
+        ],
+        "From": [
+            "tˀon-",
+            "otʰan"
+        ],
+        "Explanation": [
+            "tˀon-otʰan"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "sesu-": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "美好"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "sesu-"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "pʰol-": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "疯"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pʰol-"
+        ],
+        "To": [
+            "pʰolic",
+            "pʰolitan",
+            "apʰolmoŋ",
+            "epʰolim"
+        ]
+    },
+    "pʰolic": {
+        "Type": [
+            "adj"
+        ],
+        "Meaning": [
+            "疯狂的"
+        ],
+        "From": [
+            "pʰol-",
+            "-ic"
+        ],
+        "Explanation": [
+            "pʰol-ic"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "pʰolitan": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "发疯"
+        ],
+        "From": [
+            "pʰol",
+            "itan"
+        ],
+        "Explanation": [
+            "pʰol-itan"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "apʰolmoŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "疯狂"
+        ],
+        "From": [
+            "a",
+            "pʰol",
+            "moŋ"
+        ],
+        "Explanation": [
+            "a-pʰol-moŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "epʰolim": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim."
+        ],
+        "Meaning": [
+            "疯子"
+        ],
+        "From": [
+            "e",
+            "pʰol",
+            "-im"
+        ],
+        "Explanation": [
+            "e-pʰol-im"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "pˀo": {
+        "Type": [
+            "n",
+            "root"
+        ],
+        "Meaning": [
+            "城市"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pˀo"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "rosra": {
+        "Type": [
+            "n",
+            "inan.",
+            "concrete"
+        ],
+        "Meaning": [
+            "玫瑰"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "kʰrua": {
+        "Type": [
+            "n",
+            "root",
+            "anim.",
+            "concrete",
+            "k"
+        ],
+        "Meaning": [
+            "花"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "mi": {
+        "Type": [
+            "n",
+            "root"
+        ],
+        "Meaning": [
+            "土"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "mi"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "mluɨ": {
+        "Type": [
+            "n",
+            "root"
+        ],
+        "Meaning": [
+            "狼",
+            "野性"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "mluɨ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tˀon": {
+        "Type": [
+            "root",
+            "n"
+        ],
+        "Meaning": [
+            "好"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "tˀon"
+        ],
+        "To": [
+            "tˀonit",
+            "atˀon",
+            "etˀonu",
+            "tˀon-otʰan",
+            "qˀatˀonitʰan"
+        ]
+    },
+    "tˀoni": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "好的"
+        ],
+        "From": [
+            "tˀon",
+            "i"
+        ],
+        "Explanation": [
+            "tˀon-i"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tpiri": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "圆形的"
+        ],
+        "From": [
+            "tpir",
+            "i"
+        ],
+        "Explanation": [
+            "tpir-i"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "hutim": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "刺杀"
+        ],
+        "From": [
+            "tim",
+            "<w>"
+        ],
+        "Explanation": [
+            "h<w>tim"
+        ],
+        "To": [
+            "ehutimu"
+        ]
+    },
+    "atˀɨɨtʰim": {
+        "Type": [
+            "n",
+            "abstract",
+            "inan."
+        ],
+        "Meaning": [
+            "死亡"
+        ],
+        "From": [
+            "a",
+            "tˀɨɨtim",
+            "\\INF"
+        ],
+        "Explanation": [
+            "a-tˀ-(a/ɨ)-htim\\INF"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "etˀɨɨlimu": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim."
+        ],
+        "Meaning": [
+            "死者"
+        ],
+        "From": [
+            "e",
+            "tˀɨɨtim",
+            "\\PFV",
+            "r"
+        ],
+        "Explanation": [
+            "e-tˀ-(a/ɨ)-htim\\PFV-r"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tˀonutan": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "变好"
+        ],
+        "From": [
+            "tˀon",
+            "utan"
+        ],
+        "Explanation": [
+            "tˀon-utan"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "stal": {
+        "Type": [
+            "n",
+            "root"
+        ],
+        "Meaning": [
+            "星星"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "stʰal"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "sesu": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "美好"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "sal": {
+        "Type": [
+            "root",
+            "n"
+        ],
+        "Meaning": [
+            "甜"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "sal"
+        ],
+        "To": [
+            "sali",
+            "asalots",
+            "asalmoŋ"
+        ]
+    },
+    "mol": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "多"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": [
+            "molu",
+            "molutan",
+            "molalis"
+        ]
+    },
+    "molu": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "多"
+        ],
+        "From": [
+            "mol",
+            "u"
+        ],
+        "Explanation": [
+            "mol-u"
+        ],
+        "To": []
+    },
+    "molutan": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "增多"
+        ],
+        "From": [
+            "mol",
+            "utan"
+        ],
+        "Explanation": [
+            "mol-utan"
+        ],
+        "To": []
+    },
+    "amni": {
+        "Type": [
+            "n",
+            "inani.",
+            "concrete"
+        ],
+        "Meaning": [
+            "土"
+        ],
+        "From": [
+            "a",
+            "mni"
+        ],
+        "Explanation": [
+            "a-mni"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "arunasma": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "加速"
+        ],
+        "From": [
+            "a",
+            "runas",
+            "ma"
+        ],
+        "Explanation": [
+            "a-r<n>ʔas-ma"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "arunatsaŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "加速主义"
+        ],
+        "From": [
+            "a",
+            "runas",
+            "taŋ"
+        ],
+        "Explanation": [
+            "r<n>ʔas-taŋ"
+        ],
+        "To": [
+            "erunaatsaŋu"
+        ]
+    },
+    "erunatsaŋu": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim."
+        ],
+        "Meaning": [
+            "加速主义者"
+        ],
+        "From": [
+            "e",
+            "runas",
+            "taŋ",
+            "r"
+        ],
+        "Explanation": [
+            "e-runas-taŋ-r"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "pʰol": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "疯"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pʰol"
+        ],
+        "To": [
+            "pʰoli",
+            "pʰolitan",
+            "apʰolmoŋ",
+            "epʰolim"
+        ]
+    },
+    "pʰoli": {
+        "Type": [
+            "adj"
+        ],
+        "Meaning": [
+            "疯狂的"
+        ],
+        "From": [
+            "pʰol",
+            "iʔ"
+        ],
+        "Explanation": [
+            "pʰol-iʔ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "pʰtef": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "喜欢"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pʰtepʰ"
+        ],
+        "To": [
+            "apʰtefma"
+        ]
+    },
+    "aftefma": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "喜爱"
+        ],
+        "From": [
+            "a",
+            "ftef",
+            "ma"
+        ],
+        "Explanation": [
+            "a-pʰtepʰ-ma"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ftef": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "喜欢"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pʰtepʰ"
+        ],
+        "To": [
+            "aftefma"
+        ]
+    },
+    "jaw": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "要",
+            "想要"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "jʔaw"
+        ],
+        "To": [
+            "jawlu",
+            "ajhawlu"
+        ]
+    },
+    "hul": {
+        "Type": [
+            "root"
+        ],
+        "Meaning": [
+            "坏"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "hul"
+        ],
+        "To": [
+            "huli",
+            "hulij"
+        ]
+    },
+    "ahulijɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "邪恶"
+        ],
+        "From": [
+            "a",
+            "hul",
+            "iʔ",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "hul-iʔ\\INF-ɨŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "jawlu": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "嫉妒",
+            "羡慕"
+        ],
+        "From": [
+            "jaw",
+            "lu"
+        ],
+        "Explanation": [
+            "jaw-luʔ"
+        ],
+        "To": [
+            "ajhawlu"
+        ]
+    },
+    "ku": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "能",
+            "可以"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "kuʔ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "kʰakʰu": {
+        "Type": [
+            "v",
+            "root",
+            "stative"
+        ],
+        "Meaning": [
+            "坏",
+            "恶劣",
+            "恶意"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "kʰakʰuʔ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "alhuqusmoŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "分析"
+        ],
+        "From": [
+            "a",
+            "luqus",
+            "\\INF",
+            "moŋ"
+        ],
+        "Explanation": [
+            "a-lʔuq\\INF-us-moŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tˀɨlnuq": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "解开"
+        ],
+        "From": [
+            "tˀ",
+            "luq",
+            "<n>"
+        ],
+        "Explanation": [
+            "tˀ-(a/ɨ)-l<n>ʔuq"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "mlu": {
+        "Type": [
+            "v",
+            "root",
+            "stative"
+        ],
+        "Meaning": [
+            "野性, 野外"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "mlu"
+        ],
+        "To": [
+            "emluɨŋ"
+        ]
+    },
+    "emluɨŋ": {
+        "Type": [
+            "n",
+            "anim.",
+            "concrete",
+            "f"
+        ],
+        "Meaning": [
+            "狼"
+        ],
+        "From": [
+            "e",
+            "mlu",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "狼"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "kkak": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "敲击声(拟声词)"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "kukak"
+        ]
+    },
+    "kʰu": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "能",
+            "可以"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "kʰuʔ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "rkotʰi": {
+        "Type": [
+            "v； stative"
+        ],
+        "Meaning": [
+            "直的",
+            "正直的"
+        ],
+        "From": [
+            "rkoc",
+            "iʔ"
+        ],
+        "Explanation": [
+            "rkoc-iʔ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "rkotʰu": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "直的",
+            "正直的"
+        ],
+        "From": [
+            "rkoc",
+            "uʔ"
+        ],
+        "Explanation": [
+            "rkoc-uʔ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ots": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "东西",
+            "杂物",
+            "玩意儿"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "没有定指态，常用重叠态 tsots"
+        ],
+        "To": []
+    },
+    "ajhawluwɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "嫉妒"
+        ],
+        "From": [
+            "jawlu",
+            "a",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "a-jʔaw-lu\\INF-ɨŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "lu": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "来"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "lunaj"
+        ]
+    },
+    "hehi": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "去"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": []
     }
 }
