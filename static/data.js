@@ -3,7 +3,7 @@
 /**
  * Builds the tree data structure (both parent → children and child → parents).
  * @param {Object} dictionaryData - The dictionary data.
- * @returns {Object} The root nodes of the tree.
+ * @returns {Object} The tree data, reverse tree data, and root nodes.
  */
 export function buildTreeData(dictionaryData) {
     const treeData = {};         // parent -> children
@@ -14,7 +14,8 @@ export function buildTreeData(dictionaryData) {
         const entry = dictionaryData[lemma];
         if (entry.From) {
             entry.From.forEach(fromWord => {
-                if (fromWord in dictionaryData) {
+                // 确保 fromWord 存在于词典中，避免链接到不存在的词条
+                if (dictionaryData[fromWord]) {
                     if (!treeData[fromWord]) {
                         treeData[fromWord] = [];
                     }
@@ -38,7 +39,7 @@ export function buildTreeData(dictionaryData) {
     const rootNodes = Object.keys(dictionaryData).filter(lemma => !hasParent.has(lemma)).sort();
 
     function sortTree(nodes) {
-        nodes.sort();
+        nodes.sort((a, b) => a.localeCompare(b));
         nodes.forEach(node => {
             if (treeData[node]) {
                 sortTree(treeData[node]);

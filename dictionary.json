@@ -696,49 +696,6 @@
             "etˀɨɨlimu"
         ]
     },
-    "atˀɨtʰim": {
-        "Type": [
-            "n",
-            "abstract",
-            "inan."
-        ],
-        "Meaning": [
-            "死亡"
-        ],
-        "From": [
-            "a",
-            "ʰtim",
-            "\\INF"
-        ],
-        "Explanation": [
-            "a-ʰtim"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "etˀɨlimu": {
-        "Type": [
-            "n",
-            "hum.",
-            "anim."
-        ],
-        "Meaning": [
-            "死者"
-        ],
-        "From": [
-            "e",
-            "ʰtim",
-            "\\INF",
-            "u"
-        ],
-        "Explanation": [
-            "e-ʰtim-u"
-        ],
-        "To": [
-            "0"
-        ]
-    },
     "hurtim": {
         "Type": [
             "v",
@@ -756,25 +713,6 @@
         ],
         "To": [
             "0"
-        ]
-    },
-    "huʰtim": {
-        "Type": [
-            "v",
-            "tr."
-        ],
-        "Meaning": [
-            "刺杀"
-        ],
-        "From": [
-            "hu-",
-            "ʰtim"
-        ],
-        "Explanation": [
-            "hu-ʰtim"
-        ],
-        "To": [
-            "ehutʰimu"
         ]
     },
     "ehutʰimu": {
@@ -851,13 +789,13 @@
         ],
         "From": [
             "qˀ",
-            "pʰtoŋ"
+            "ftoŋ"
         ],
         "Explanation": [
             "qˀ-(a/ɨ)-pʰtoŋ"
         ],
         "To": [
-            "0"
+            "qˀaftoŋis"
         ]
     },
     "qˀapʰtoŋis": {
@@ -967,11 +905,11 @@
             "加速"
         ],
         "From": [
-            "run as",
+            "runas",
             "ma"
         ],
         "Explanation": [
-            "ru-nas-ma"
+            "rʔ<n>as-ma"
         ],
         "To": [
             "0"
@@ -986,11 +924,11 @@
             "加速主义"
         ],
         "From": [
-            "run as",
-            "tsaŋ"
+            "runas",
+            "taŋ"
         ],
         "Explanation": [
-            "ru-nas-tsaŋ"
+            "rʔ<n>as-taŋ"
         ],
         "To": [
             "erunaatsaŋu"
@@ -1007,7 +945,8 @@
         ],
         "From": [
             "e",
-            "arunaatsaŋ"
+            "arunaatsaŋ",
+            "r"
         ],
         "Explanation": [
             "e-arunaatsaŋ-u"
@@ -1137,66 +1076,6 @@
             "0"
         ]
     },
-    "jau": {
-        "Type": [
-            "v",
-            "root"
-        ],
-        "Meaning": [
-            "要",
-            "想要"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "jau"
-        ],
-        "To": [
-            "jaulu",
-            "aihaul u"
-        ]
-    },
-    "jaulu": {
-        "Type": [
-            "v",
-            "tr."
-        ],
-        "Meaning": [
-            "嫉妒",
-            "羡慕"
-        ],
-        "From": [
-            "jau",
-            "lu"
-        ],
-        "Explanation": [
-            "jau-lu"
-        ],
-        "To": [
-            "aihaulu"
-        ]
-    },
-    "aihaulu": {
-        "Type": [
-            "n",
-            "abstract"
-        ],
-        "Meaning": [
-            "嫉妒"
-        ],
-        "From": [
-            "jau",
-            "a",
-            "lu"
-        ],
-        "Explanation": [
-            "a-jau-lu"
-        ],
-        "To": [
-            "0"
-        ]
-    },
     "tʰɨr": {
         "Type": [
             "v",
@@ -1256,24 +1135,6 @@
             "0"
         ]
     },
-    "pʰtepʰ": {
-        "Type": [
-            "v",
-            "root"
-        ],
-        "Meaning": [
-            "喜欢"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "pʰtepʰ"
-        ],
-        "To": [
-            "apʰtefma"
-        ]
-    },
     "apʰtefma": {
         "Type": [
             "n",
@@ -1284,29 +1145,11 @@
         ],
         "From": [
             "a",
-            "pʰtepʰ",
+            "ftepʰ",
             "ma"
         ],
         "Explanation": [
             "a-pʰtepʰ-ma"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "koʰ": {
-        "Type": [
-            "aux"
-        ],
-        "Meaning": [
-            "能",
-            "可以"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "koʰ"
         ],
         "To": [
             "0"
@@ -1328,25 +1171,6 @@
         ],
         "To": [
             "0"
-        ]
-    },
-    "sal-": {
-        "Type": [
-            "root"
-        ],
-        "Meaning": [
-            "甜"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "sal-"
-        ],
-        "To": [
-            "sali",
-            "asalots",
-            "asalmoŋ"
         ]
     },
     "sali": {
@@ -1409,41 +1233,6 @@
             "0"
         ]
     },
-    "mol-": {
-        "Type": [
-            "root"
-        ],
-        "Meaning": [
-            "多"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "mol-"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "hul-": {
-        "Type": [
-            "root"
-        ],
-        "Meaning": [
-            "坏"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "hul-"
-        ],
-        "To": [
-            "huli",
-            "hulij"
-        ]
-    },
     "huli": {
         "Type": [
             "v",
@@ -1458,82 +1247,6 @@
         ],
         "Explanation": [
             "hul-i"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "hulij": {
-        "Type": [
-            "n",
-            "abstract"
-        ],
-        "Meaning": [
-            "邪恶"
-        ],
-        "From": [
-            "hul-",
-            "-ij"
-        ],
-        "Explanation": [
-            "hul-ij"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "kako-": {
-        "Type": [
-            "root"
-        ],
-        "Meaning": [
-            "恶劣"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "kako-"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "tˀon-": {
-        "Type": [
-            "root"
-        ],
-        "Meaning": [
-            "好"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "tˀon-"
-        ],
-        "To": [
-            "tˀonit",
-            "atˀon",
-            "etˀonu",
-            "tˀon-otʰan",
-            "qˀatˀonitʰan"
-        ]
-    },
-    "tˀonit": {
-        "Type": [
-            "v",
-            "stative"
-        ],
-        "Meaning": [
-            "好的"
-        ],
-        "From": [
-            "tˀon-",
-            "-it"
-        ],
-        "Explanation": [
-            "tˀon-it"
         ],
         "To": [
             "0"
@@ -1576,80 +1289,6 @@
         ],
         "Explanation": [
             "e-tˀon-r"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "tˀon-otʰan": {
-        "Type": [
-            "v",
-            "intr."
-        ],
-        "Meaning": [
-            "变好"
-        ],
-        "From": [
-            "tˀon-",
-            "otʰan"
-        ],
-        "Explanation": [
-            "tˀon-otʰan"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "sesu-": {
-        "Type": [
-            "root"
-        ],
-        "Meaning": [
-            "美好"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "sesu-"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "pʰol-": {
-        "Type": [
-            "root"
-        ],
-        "Meaning": [
-            "疯"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "pʰol-"
-        ],
-        "To": [
-            "pʰolic",
-            "pʰolitan",
-            "apʰolmoŋ",
-            "epʰolim"
-        ]
-    },
-    "pʰolic": {
-        "Type": [
-            "adj"
-        ],
-        "Meaning": [
-            "疯狂的"
-        ],
-        "From": [
-            "pʰol-",
-            "-ic"
-        ],
-        "Explanation": [
-            "pʰol-ic"
         ],
         "To": [
             "0"
@@ -1825,11 +1464,11 @@
             "tˀon"
         ],
         "To": [
-            "tˀonit",
+            "tˀoni",
             "atˀon",
             "etˀonu",
-            "tˀon-otʰan",
-            "qˀatˀonitʰan"
+            "tˀonutan",
+            "tˀonualis"
         ]
     },
     "tˀoni": {
@@ -2233,7 +1872,7 @@
             "pʰtepʰ"
         ],
         "To": [
-            "aftefma"
+            "apʰtefma"
         ]
     },
     "jaw": {
@@ -2271,7 +1910,7 @@
         ],
         "To": [
             "huli",
-            "hulij"
+            "ahulijɨŋ"
         ]
     },
     "ahulijɨŋ": {
@@ -2285,12 +1924,11 @@
         "From": [
             "a",
             "hul",
-            "iʔ",
             "\\INF",
             "ɨŋ"
         ],
         "Explanation": [
-            "hul-iʔ\\INF-ɨŋ"
+            "a-hul\\INF-ɨŋ"
         ],
         "To": [
             "0"
@@ -2307,7 +1945,7 @@
         ],
         "From": [
             "jaw",
-            "lu"
+            "luʔ"
         ],
         "Explanation": [
             "jaw-luʔ"
@@ -2573,6 +2211,287 @@
         ],
         "From": [],
         "Explanation": [],
+        "To": []
+    },
+    "nkas": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "残留",
+            "残存",
+            "残余"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": []
+    },
+    "hulijɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "邪恶"
+        ],
+        "From": [
+            "hul",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "hul\\INF-ɨŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tˀonualis": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "更好"
+        ],
+        "From": [
+            "tˀon",
+            "uʔ",
+            "alis"
+        ],
+        "Explanation": [
+            "tˀon-uʔ-alis"
+        ],
+        "To": []
+    },
+    "nkats": {
+        "Type": [
+            "v",
+            "root",
+            "intr."
+        ],
+        "Meaning": [
+            "残留",
+            "残余"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": [
+            "tˀanunkats",
+            "nunɨatsi",
+            "nunkʰatsmoŋ"
+        ]
+    },
+    "nunɨatsijɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "赘余物",
+            "残渣"
+        ],
+        "From": [
+            "nunɨatsi",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "anunɨatsijɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "赘余物",
+            "残渣"
+        ],
+        "From": [
+            "a",
+            "nunɨatsi",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "nunɨatsi": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "残存",
+            "冗余"
+        ],
+        "From": [
+            "nkats",
+            "\\PFV",
+            "<n>",
+            "iʔ"
+        ],
+        "Explanation": [
+            "n<n>kats\\PFV-iʔ"
+        ],
+        "To": [
+            "nunɨatsijɨŋ"
+        ]
+    },
+    "ehuntimu": {
+        "Type": [
+            "n",
+            "anim.",
+            "hum."
+        ],
+        "Meaning": [
+            "谋杀者"
+        ],
+        "From": [
+            "e",
+            "huntim",
+            "\\INF",
+            "r"
+        ],
+        "Explanation": [
+            "e-huntim\\INF-r"
+        ],
+        "To": []
+    },
+    "ppaq": {
+        "Type": [
+            "v",
+            "root",
+            "tr."
+        ],
+        "Meaning": [
+            "做"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": []
+    },
+    "paq": {
+        "Type": [
+            "v",
+            "root",
+            "tr."
+        ],
+        "Meaning": [
+            "做"
+        ],
+        "From": [],
+        "Explanation": [
+            "ʔpaq"
+        ],
+        "To": []
+    },
+    "ftoŋ": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "落下",
+            "摔倒"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "pʰtoŋ"
+        ],
+        "To": [
+            "qˀaftoŋ",
+            "qˀaftoŋis"
+        ]
+    },
+    "qˀaftoŋ": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "降下"
+        ],
+        "From": [
+            "qˀ",
+            "ftoŋ"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-pʰtoŋ"
+        ],
+        "To": [
+            "qˀaftoŋis"
+        ]
+    },
+    "qˀaftoŋis": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "降伏"
+        ],
+        "From": [
+            "qˀaftoŋ",
+            "is"
+        ],
+        "Explanation": [
+            "qˀapʰtoŋ-is"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ftoŋep": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "向低处去",
+            "安定"
+        ],
+        "From": [
+            "ftoŋ",
+            "ep"
+        ],
+        "Explanation": [
+            "ftoŋ-ep"
+        ],
+        "To": [
+            "aftoŋepmoŋ"
+        ]
+    },
+    "aftoŋepmoŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "情况",
+            "关头"
+        ],
+        "From": [
+            "a",
+            "ftoŋep",
+            "moŋ"
+        ],
+        "Explanation": [
+            "a-ftoŋep-moŋ"
+        ],
         "To": []
     }
 }

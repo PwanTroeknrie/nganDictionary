@@ -16,6 +16,7 @@ let allDictionaryData = {};
 let initialEntry = '';
 let popularTags = { Type: {}, From: {} };
 let treeData = {};
+let reverseTreeData = {}; // 新增：用于存储子到父的映射
 let docHeadingsMap = {}; // 用于存储从 docs.md 解析出的标题和释义
 
 // 用于实现撤销/重做功能
@@ -178,11 +179,30 @@ export function displayEntry(word) {
     if (newActiveElement) {
         newActiveElement.classList.add('active');
         activeEntryElement = newActiveElement;
+
+        // 新增：将词条滚动到可视区域
+        newActiveElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
         editButton.disabled = false;
         deleteButton.disabled = false;
     } else {
         editButton.disabled = true;
         deleteButton.disabled = true;
+    }
+
+    // 新增：自动展开父级
+    let currentWord = word;
+    while (reverseTreeData[currentWord] && reverseTreeData[currentWord].length > 0) {
+        const parentWord = reverseTreeData[currentWord][0]; // 假设只有一个直接父级
+        const parentElement = document.querySelector(`.entry-item[data-word="${parentWord}"]`);
+        if (parentElement && !parentElement.classList.contains('expanded')) {
+            parentElement.classList.add('expanded');
+            const childList = parentElement.nextElementSibling;
+            if (childList) {
+                childList.classList.add('open');
+            }
+        }
+        currentWord = parentWord;
     }
 
     const url = `/entry/${word}`;
@@ -233,8 +253,9 @@ export function displayEntry(word) {
  */
 function loadEntryList() {
     entryListElement.innerHTML = '';
-    const { treeData: newTreeData, rootNodes } = buildTreeData(allDictionaryData);
+    const { treeData: newTreeData, reverseTreeData: newReverseTreeData, rootNodes } = buildTreeData(allDictionaryData);
     treeData = newTreeData;
+    reverseTreeData = newReverseTreeData;
     renderTree(entryListElement, rootNodes, treeData, allDictionaryData);
 }
 
