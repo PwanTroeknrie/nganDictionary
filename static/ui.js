@@ -115,8 +115,9 @@ export function renderTagButtons(container, inputField, tags) {
  * @param {string[]} nodes - The array of entries to render.
  * @param {Object} treeData - The tree structure data.
  * @param {Object} dictionaryData - The dictionary data.
+ * @param {string} [parentWord] - The parent word for this level.
  */
-export function renderTree(parentElement, nodes, treeData, dictionaryData) {
+export function renderTree(parentElement, nodes, treeData, dictionaryData, parentWord = null) {
     nodes.forEach(word => {
         const hasChildren = treeData[word] && treeData[word].length > 0;
         const li = document.createElement('li');
@@ -124,30 +125,39 @@ export function renderTree(parentElement, nodes, treeData, dictionaryData) {
         const entryItem = document.createElement('div');
         entryItem.classList.add('entry-item');
         entryItem.setAttribute('data-word', word);
+        // 添加父词条属性
+        if (parentWord) {
+            entryItem.setAttribute('data-parent', parentWord);
+        }
 
         if (hasChildren) {
+            entryItem.classList.add('has-children');
             const toggleIcon = document.createElement('span');
             toggleIcon.classList.add('toggle-icon');
             toggleIcon.textContent = '>';
             entryItem.appendChild(toggleIcon);
 
-            toggleIcon.addEventListener('click', (event) => {
+            // 更新事件监听器来切换 expanded 类
+            entryItem.addEventListener('click', (event) => {
+                // 阻止事件冒泡到父级 li
                 event.stopPropagation();
-                toggleIcon.classList.toggle('rotated');
+                // 仅切换展开/折叠状态
+                entryItem.classList.toggle('expanded');
                 const childList = li.querySelector('.child-list');
                 if (childList) {
                     childList.classList.toggle('open');
                 }
+            });
+        } else {
+            // 如果没有子项，仍然监听点击事件来展示词条
+            entryItem.addEventListener('click', () => {
+                window.dispatchEvent(new CustomEvent('entryClick', { detail: word }));
             });
         }
 
         const wordSpan = document.createElement('span');
         wordSpan.textContent = word;
         entryItem.appendChild(wordSpan);
-
-        entryItem.addEventListener('click', () => {
-            window.dispatchEvent(new CustomEvent('entryClick', { detail: word }));
-        });
 
         entryItem.addEventListener('mouseenter', (event) => {
             const entryData = dictionaryData[word];
@@ -165,13 +175,15 @@ export function renderTree(parentElement, nodes, treeData, dictionaryData) {
         if (hasChildren) {
             const childList = document.createElement('ul');
             childList.classList.add('child-list');
-            renderTree(childList, treeData[word], treeData, dictionaryData);
+            // 递归渲染子节点，并传递当前词条作为父词条
+            renderTree(childList, treeData[word], treeData, dictionaryData, word);
             li.appendChild(childList);
         }
 
         parentElement.appendChild(li);
     });
 }
+
 
 /**
  * Displays a toast message at the bottom right.
