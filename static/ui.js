@@ -136,28 +136,35 @@ export function renderTree(parentElement, nodes, treeData, dictionaryData, paren
             toggleIcon.classList.add('toggle-icon');
             toggleIcon.textContent = '>';
             entryItem.appendChild(toggleIcon);
-
-            // 更新事件监听器来切换 expanded 类
-            entryItem.addEventListener('click', (event) => {
-                // 阻止事件冒泡到父级 li
-                event.stopPropagation();
-                // 仅切换展开/折叠状态
-                entryItem.classList.toggle('expanded');
-                const childList = li.querySelector('.child-list');
-                if (childList) {
-                    childList.classList.toggle('open');
-                }
-            });
-        } else {
-            // 如果没有子项，仍然监听点击事件来展示词条
-            entryItem.addEventListener('click', () => {
-                window.dispatchEvent(new CustomEvent('entryClick', { detail: word }));
-            });
         }
 
         const wordSpan = document.createElement('span');
         wordSpan.textContent = word;
         entryItem.appendChild(wordSpan);
+
+        // 统一处理点击事件，通过事件目标判断是展开还是跳转
+        entryItem.addEventListener('click', (event) => {
+            // 阻止事件冒泡到父级 li
+            event.stopPropagation();
+
+            // 检查点击事件是否发生在折叠图标上
+            if (event.target.classList.contains('toggle-icon')) {
+                // 如果有子节点，切换展开/折叠状态
+                if (hasChildren) {
+                    const parentItem = event.target.closest('.entry-item');
+                    if (parentItem) {
+                        parentItem.classList.toggle('expanded');
+                        const childList = li.querySelector('.child-list');
+                        if (childList) {
+                            childList.classList.toggle('open');
+                        }
+                    }
+                }
+            } else {
+                // 如果点击的不是折叠图标，则触发词条跳转事件
+                window.dispatchEvent(new CustomEvent('entryClick', { detail: word }));
+            }
+        });
 
         entryItem.addEventListener('mouseenter', (event) => {
             const entryData = dictionaryData[word];
