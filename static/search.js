@@ -45,7 +45,7 @@ export function setupSearch(dictionaryData, func) {
  * @param {string} query - The search query.
  */
 function handleSearch(query) {
-    if (query.length < 2) {
+    if (query.length < 1) {
         searchResultsList.style.display = 'none';
         return;
     }
