@@ -1135,26 +1135,6 @@
             "0"
         ]
     },
-    "apʰtefma": {
-        "Type": [
-            "n",
-            "abstract"
-        ],
-        "Meaning": [
-            "喜爱"
-        ],
-        "From": [
-            "a",
-            "ftepʰ",
-            "ma"
-        ],
-        "Explanation": [
-            "a-pʰtepʰ-ma"
-        ],
-        "To": [
-            "0"
-        ]
-    },
     "stʰal": {
         "Type": [
             "n",
@@ -1846,12 +1826,11 @@
             "喜爱"
         ],
         "From": [
-            "a",
             "ftef",
             "ma"
         ],
         "Explanation": [
-            "a-pʰtepʰ-ma"
+            "pʰtepʰ-ma"
         ],
         "To": [
             "0"
@@ -1892,7 +1871,7 @@
         ],
         "To": [
             "jawlu",
-            "ajhawlu"
+            "ihawlu"
         ]
     },
     "hul": {
@@ -2176,12 +2155,11 @@
         ],
         "From": [
             "jawlu",
-            "a",
             "\\INF",
             "ɨŋ"
         ],
         "Explanation": [
-            "a-jʔaw-lu\\INF-ɨŋ"
+            "jʔaw-lu\\INF-ɨŋ"
         ],
         "To": [
             "0"
@@ -2493,5 +2471,204 @@
             "a-ftoŋep-moŋ"
         ],
         "To": []
+    },
+    "ituŋ": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "整合",
+            "变完整"
+        ],
+        "From": [
+            "jɨtu"
+        ],
+        "Explanation": [
+            "jtuŋ > ituŋ"
+        ],
+        "To": [
+            "ituŋmic"
+        ]
+    },
+    "jɨtu": {
+        "Type": [],
+        "Meaning": [],
+        "From": [
+            "ɨt"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "ɨt": {
+        "Type": [
+            "num."
+        ],
+        "Meaning": [
+            "1",
+            "一"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": [
+            "jɨtu"
+        ]
+    },
+    "mni": {
+        "Type": [
+            "n",
+            "inani.",
+            "concrete"
+        ],
+        "Meaning": [
+            "土"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "0"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ftefma": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "喜爱"
+        ],
+        "From": [
+            "ftef",
+            "ma"
+        ],
+        "Explanation": [
+            "pʰtepʰ-ma"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ihawluwɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "嫉妒"
+        ],
+        "From": [
+            "jawlu",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "jʔaw-lu\\INF-ɨŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "jhawluwɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "嫉妒"
+        ],
+        "From": [
+            "jawlu",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "jʔaw-lu\\INF-ɨŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "spip": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "监视",
+            "检查"
+        ],
+        "From": [],
+        "Explanation": [
+            ""
+        ],
+        "To": [
+            "pˀospiku"
+        ]
+    },
+    "pˀospiku": {
+        "Type": [
+            "n",
+            "anim.",
+            "hum."
+        ],
+        "Meaning": [
+            "警察"
+        ],
+        "From": [
+            "pˀo",
+            "spik",
+            "r"
+        ],
+        "Explanation": [
+            "pˀo-spik-r > pˀo-spiku"
+        ],
+        "To": [
+            "pˀospikir"
+        ]
+    },
+    "pˀospikir": {
+        "Type": [
+            "n",
+            "hum.",
+            "anim."
+        ],
+        "Meaning": [
+            "条子",
+            "黑警"
+        ],
+        "From": [
+            "pˀo",
+            "spik",
+            "ir"
+        ],
+        "Explanation": [
+            ""
+        ],
+        "To": []
+    },
+    "spik": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "监视",
+            "检查"
+        ],
+        "From": [],
+        "Explanation": [
+            ""
+        ],
+        "To": [
+            "pˀospiku"
+        ]
     }
 }
