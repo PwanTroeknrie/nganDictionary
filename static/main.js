@@ -69,8 +69,7 @@ let fromTagsContainer;
 
 /**
  * 获取并解析 docs.md 文件，构建一个映射。
- * 映射的键是纯文本关键字 (如 'v')，值是一个包含原始标题和释义的对象。
- * 例如：'### 动词 v' -> 'v': { original: '动词 v', definition: '动词' }
+ * 映射的键是纯文本关键字，值是一个包含原始标题和释义的对象。
  */
 async function loadDocHeadingsMap() {
     try {
@@ -82,20 +81,28 @@ async function loadDocHeadingsMap() {
         const markdown = await response.text();
         const headingsRegex = /^(?:###|####) (.*)/gm;
         let match;
+
+        // 正则表达式用于移除 Markdown 的转义反斜杠
+        const unescapeRegex = /\\([\\*_{}\[\]()#+\-.!<>])/g;
+
         while ((match = headingsRegex.exec(markdown)) !== null) {
-            const originalHeading = match[1].trim(); // 例: "动词 v" 或 "memper<w>"
+            const originalHeading = match[1].trim();
 
             // 解析释义和关键字
             const parts = originalHeading.split(' ');
-            const keywordWithTags = parts.pop() || ''; // 最后一部分是关键字
-            const definition = parts.join(' ').trim(); // 剩下的是释义
+            const keywordWithTags = parts.pop() || '';
+            const definition = parts.join(' ').trim();
 
-            const cleanKeyword = keywordWithTags.replace(/<w>/g, '').trim(); // 例: "v" 或 "memper"
+            let mapKey = keywordWithTags;
+
+            mapKey = mapKey.replace(unescapeRegex, '$1');
+
+            const cleanKeyword = mapKey.trim();
 
             if (cleanKeyword) {
                 docHeadingsMap[cleanKeyword] = {
                     original: originalHeading,
-                    definition: definition || null // 如果没有释义部分，则为 null
+                    definition: definition || null
                 };
             }
         }
