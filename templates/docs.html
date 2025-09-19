@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="/static/docs-style.css">
 </head>
 <body>
+    <!-- 新增：主题切换器 -->
+    <div id="theme-switcher-container">
+        <button id="theme-toggle-btn" aria-label="切换主题"></button>
+    </div>
+
     <div class="docs-container">
         <div class="docs-sidebar">
             <h3>文档大纲</h3>
@@ -22,5 +27,7 @@
     <!-- 引入 Markdown 解析库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script type="module" src="/static/docs.js"></script>
+    <!-- 新增：引入主题切换脚本 -->
+    <script src="/static/theme.js"></script>
 </body>
 </html>

@@ -626,10 +626,11 @@
         ],
         "From": [
             "a",
-            "tpir"
+            "tpir",
+            "r"
         ],
         "Explanation": [
-            "a-tpir"
+            "a-tpir-r"
         ],
         "To": [
             "0"
@@ -644,10 +645,10 @@
         ],
         "From": [
             "tpir",
-            "ic"
+            "iʔ"
         ],
         "Explanation": [
-            "tpir-ic"
+            "tpir-iʔ"
         ],
         "To": [
             "0"
@@ -756,27 +757,6 @@
         ],
         "To": [
             "0"
-        ]
-    },
-    "pʰtoŋ": {
-        "Type": [
-            "v",
-            "intr.",
-            "root"
-        ],
-        "Meaning": [
-            "落下",
-            "摔倒"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "pʰtoŋ"
-        ],
-        "To": [
-            "qˀapʰtoŋ",
-            "qˀapʰtoŋis"
         ]
     },
     "qˀapʰtoŋ": {
@@ -1472,18 +1452,17 @@
     },
     "tpiri": {
         "Type": [
-            "v",
-            "stative"
+            "adj"
         ],
         "Meaning": [
             "圆形的"
         ],
         "From": [
             "tpir",
-            "i"
+            "iʔ"
         ],
         "Explanation": [
-            "tpir-i"
+            "tpir-iʔ"
         ],
         "To": [
             "0"
@@ -1655,10 +1634,10 @@
         ],
         "From": [
             "mol",
-            "u"
+            "uʔ"
         ],
         "Explanation": [
-            "mol-u"
+            "mol-uʔ"
         ],
         "To": []
     },
@@ -1797,24 +1776,6 @@
         ],
         "To": [
             "0"
-        ]
-    },
-    "pʰtef": {
-        "Type": [
-            "v",
-            "root"
-        ],
-        "Meaning": [
-            "喜欢"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "pʰtepʰ"
-        ],
-        "To": [
-            "apʰtefma"
         ]
     },
     "aftefma": {
@@ -2174,7 +2135,9 @@
             "来"
         ],
         "From": [],
-        "Explanation": [],
+        "Explanation": [
+            "luʔ > lu (IIdII)"
+        ],
         "To": [
             "lunaj"
         ]
@@ -2346,19 +2309,6 @@
         ],
         "To": []
     },
-    "ppaq": {
-        "Type": [
-            "v",
-            "root",
-            "tr."
-        ],
-        "Meaning": [
-            "做"
-        ],
-        "From": [],
-        "Explanation": [],
-        "To": []
-    },
     "paq": {
         "Type": [
             "v",
@@ -2372,7 +2322,9 @@
         "Explanation": [
             "ʔpaq"
         ],
-        "To": []
+        "To": [
+            "waqma"
+        ]
     },
     "ftoŋ": {
         "Type": [
@@ -2391,6 +2343,7 @@
             "pʰtoŋ"
         ],
         "To": [
+            "ftoŋep",
             "qˀaftoŋ",
             "qˀaftoŋis"
         ]
@@ -2606,9 +2559,7 @@
             "检查"
         ],
         "From": [],
-        "Explanation": [
-            ""
-        ],
+        "Explanation": [],
         "To": [
             "pˀospiku"
         ]
@@ -2649,9 +2600,7 @@
             "spik",
             "ir"
         ],
-        "Explanation": [
-            ""
-        ],
+        "Explanation": [],
         "To": []
     },
     "spik": {
@@ -2664,11 +2613,376 @@
             "检查"
         ],
         "From": [],
-        "Explanation": [
-            ""
-        ],
+        "Explanation": [],
         "To": [
             "pˀospiku"
+        ]
+    },
+    "siku": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "拥有",
+            "掌握"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": []
+    },
+    "sku": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "拥有",
+            "掌握"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": []
+    },
+    "utam": {
+        "Type": [
+            "v",
+            "root"
+        ],
+        "Meaning": [
+            "斥责"
+        ],
+        "From": [],
+        "Explanation": [
+            "rtam"
+        ],
+        "To": [
+            "rutamlu"
+        ]
+    },
+    "rutamlu": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "辱骂",
+            "谩骂"
+        ],
+        "From": [
+            "utam",
+            "luʔ"
+        ],
+        "Explanation": [
+            "r<w>tam-luʔ"
+        ],
+        "To": [
+            "rutamluwɨŋ"
+        ]
+    },
+    "rutamluwɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "辱骂",
+            "谩骂行为"
+        ],
+        "From": [
+            "rutamlu",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "r<w>tam-luw-ɨŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tkon": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "给"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "turkon",
+            "tunkon"
+        ]
+    },
+    "lem": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "说"
+        ],
+        "From": [],
+        "Explanation": [
+            "lʔem > lem (VdV) PROG: lˀem > lam PFV: laem INF: lhem > uhem"
+        ],
+        "To": []
+    },
+    "lemma": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "词汇",
+            "词条",
+            "法条"
+        ],
+        "From": [
+            "lem",
+            "ma"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "lemip": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "话语"
+        ],
+        "From": [
+            "lem",
+            "ip"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "titslu": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "吵闹",
+            "喧闹"
+        ],
+        "From": [
+            "tits",
+            "luʔ"
+        ],
+        "Explanation": [
+            "tits-luʔ"
+        ],
+        "To": [
+            "qˀɨtitslu"
+        ]
+    },
+    "qˀɨtitslu": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "闹(灾害), 使...受吵闹"
+        ],
+        "From": [
+            "qˀ",
+            "titslu"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-tits-luʔ"
+        ],
+        "To": []
+    },
+    "ptor": {
+        "Type": [
+            "v",
+            "root",
+            "tr."
+        ],
+        "Meaning": [
+            "放置"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "ptorus"
+        ]
+    },
+    "ptorus": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "支持"
+        ],
+        "From": [
+            "ptor",
+            "us"
+        ],
+        "Explanation": [
+            "ptor-us"
+        ],
+        "To": [
+            "ptorusɨm"
+        ]
+    },
+    "ptorusɨm": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "反对"
+        ],
+        "From": [
+            "ptorus",
+            "ɨm"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "ts'ats": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "大"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": []
+    },
+    "tsˀas": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "大"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": []
+    },
+    "tsequ": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "到达",
+            "到来"
+        ],
+        "From": [
+            "tseq",
+            "uʔ"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "ŋɨki": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "认识"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "ŋɨkiŋaj"
+        ]
+    },
+    "ŋɨkiŋaj": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "承认"
+        ],
+        "From": [
+            "ŋɨki",
+            "ŋaj"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "waqma": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "做完的事",
+            "事实"
+        ],
+        "From": [
+            "paq",
+            "\\PFV",
+            "ma"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "qqan": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "分成两半",
+            "平分"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "qunoanip"
+        ]
+    },
+    "qunoanip": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "党派"
+        ],
+        "From": [
+            "qqan",
+            "<n>",
+            "\\PFV",
+            "ip"
+        ],
+        "Explanation": [
+            "q<n>qan\\PFV-ip"
+        ],
+        "To": []
+    },
+    "tits": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "吵闹声",
+            "喧嚣"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "titslu"
         ]
     }
 }

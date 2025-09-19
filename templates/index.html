@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="/static/docs-style.css">
 </head>
 <body>
+    <!-- 主题切换器 -->
+    <div id="theme-switcher-container">
+        <button id="theme-toggle-btn" aria-label="切换主题"></button>
+    </div>
+
     <div class="search-container">
         <input type="text" id="search-input" placeholder="搜索词条或含义..." autocomplete="off">
         <button id="doc-button" class="doc-button">文档</button>
@@ -69,5 +74,7 @@
 
     <script type="module" src="/static/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- 引入新的主题切换脚本 -->
+    <script src="/static/theme.js"></script>
 </body>
 </html>
