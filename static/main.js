@@ -1,4 +1,4 @@
-// 应用主入口和全局状态管理
+// main.js - 应用主入口（已移除文档解析逻辑，改为引用 docs.js 导出的函数）
 import { fetchDictionaryData, saveEntry, deleteEntry } from './api.js';
 import { buildTreeData, collectPopularTags } from './data.js';
 import {
@@ -8,22 +8,19 @@ import {
 import { initializeInputHistory, recordHistory, handleUndoRedo } from './utils.js';
 import { processFormData, fillFormWithEntryData, resetForm } from './form-handler.js';
 import { setupSearch } from './search.js';
-// 引入新的文档处理模块
-import { openDocumentation } from './docs.js';
+import { openDocumentation, loadDocHeadingsMap, setupDocumentationLinks } from './docs.js';
 
-// 全局变量来存储词典数据和状态
+// 全局状态
 let allDictionaryData = {};
 let initialEntry = '';
 let popularTags = { Type: {}, From: {} };
 let treeData = {};
-let reverseTreeData = {}; // 新增：用于存储子到父的映射
-let docHeadingsMap = {}; // 用于存储从 docs.md 解析出的标题和释义
+let reverseTreeData = {};
+let docHeadingsMap = {};
 
-// 用于实现撤销/重做功能
 let inputHistory = {};
 let historyIndex = {};
 
-// 获取所有 DOM 元素
 const entryDisplay = document.getElementById('entry-display');
 const entryTitle = document.getElementById('entry-title');
 const entryListElement = document.getElementById('entry-list');
@@ -40,10 +37,8 @@ const formMeaning = document.getElementById('form-meaning');
 const formFrom = document.getElementById('form-from');
 const formExplanation = document.getElementById('form-explanation');
 const formTo = document.getElementById('form-to');
-// 获取新的文档按钮
 const docButton = document.getElementById('doc-button');
 
-// 获取所有词条信息区域的容器和列表
 const sections = {
     'Type': document.getElementById('type-section'),
     'Meaning': document.getElementById('meaning-section'),
@@ -62,100 +57,9 @@ const lists = {
 
 const formInputs = [formLemma, formType, formMeaning, formFrom, formExplanation, formTo];
 let activeEntryElement = null;
-
-// 声明全局变量来存储标签容器
 let typeTagsContainer;
 let fromTagsContainer;
 
-/**
- * 获取并解析 docs.md 文件，构建一个映射。
- * 映射的键是纯文本关键字，值是一个包含原始标题和释义的对象。
- */
-async function loadDocHeadingsMap() {
-    try {
-        const response = await fetch('/static/docs.md');
-        if (!response.ok) {
-            console.error('Failed to load docs.md for heading mapping.');
-            return;
-        }
-        const markdown = await response.text();
-        const headingsRegex = /^(?:###|####) (.*)/gm;
-        let match;
-
-        // 正则表达式用于移除 Markdown 的转义反斜杠
-        const unescapeRegex = /\\([\\*_{}\[\]()#+\-.!<>])/g;
-
-        while ((match = headingsRegex.exec(markdown)) !== null) {
-            const originalHeading = match[1].trim();
-
-            // 解析释义和关键字
-            const parts = originalHeading.split(' ');
-            const keywordWithTags = parts.pop() || '';
-            const definition = parts.join(' ').trim();
-
-            let mapKey = keywordWithTags;
-
-            mapKey = mapKey.replace(unescapeRegex, '$1');
-
-            const cleanKeyword = mapKey.trim();
-
-            if (cleanKeyword) {
-                docHeadingsMap[cleanKeyword] = {
-                    original: originalHeading,
-                    definition: definition || null
-                };
-            }
-        }
-    } catch (error) {
-        console.error('Error loading or parsing docs.md:', error);
-    }
-}
-
-/**
- * 为词条详情页上的链接设置点击和悬停事件。
- * 匹配文档标题的项目会变成绿色链接，并增加鼠标悬停显示释义的浮动提示框。
- */
-function setupDocumentationLinks(headingsMap) {
-    const linkLists = [lists['Type'], lists['From']];
-
-    linkLists.forEach(list => {
-        if (!list) return;
-
-        list.querySelectorAll('li').forEach(item => {
-            const itemText = item.textContent.trim();
-
-            if (headingsMap.hasOwnProperty(itemText)) {
-                const docInfo = headingsMap[itemText];
-
-                // 设置样式和点击事件
-                item.style.color = 'green';
-                item.style.cursor = 'pointer';
-
-                item.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    // 使用原始标题（包含释义和<w>标签）来确保链接正确
-                    openDocumentation(docInfo.original);
-                });
-
-                // 添加悬停事件来显示释义
-                if (docInfo.definition) {
-                    item.addEventListener('mouseenter', (event) => {
-                        showTooltip(docInfo.definition, event.clientX, event.clientY);
-                    });
-                    item.addEventListener('mouseleave', () => {
-                        hideTooltip();
-                    });
-                }
-            }
-        });
-    });
-}
-
-
-/**
- * Renders the entry details based on the dictionary data.
- * @param {string} word - The entry to display.
- */
 export function displayEntry(word) {
     const entry = allDictionaryData[word];
     const noDataMessage = document.getElementById('no-data-message');
@@ -166,8 +70,10 @@ export function displayEntry(word) {
             lists[key].innerHTML = '';
             sections[key].style.display = 'none';
         }
-        noDataMessage.style.display = 'block';
-        noDataMessage.textContent = '词条未找到或已被删除。';
+        if (noDataMessage) {
+            noDataMessage.style.display = 'block';
+            noDataMessage.textContent = '词条未找到或已被删除。';
+        }
         entryDisplay.style.display = 'none';
         editButton.disabled = true;
         deleteButton.disabled = true;
@@ -178,18 +84,13 @@ export function displayEntry(word) {
         return;
     }
 
-    if (activeEntryElement) {
-        activeEntryElement.classList.remove('active');
-    }
+    if (activeEntryElement) activeEntryElement.classList.remove('active');
 
     const newActiveElement = document.querySelector(`.entry-item[data-word="${word}"]`);
     if (newActiveElement) {
         newActiveElement.classList.add('active');
         activeEntryElement = newActiveElement;
-
-        // 新增：将词条滚动到可视区域
         newActiveElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
         editButton.disabled = false;
         deleteButton.disabled = false;
     } else {
@@ -197,17 +98,15 @@ export function displayEntry(word) {
         deleteButton.disabled = true;
     }
 
-    // 新增：自动展开父级
+    // 自动展开父级
     let currentWord = word;
     while (reverseTreeData[currentWord] && reverseTreeData[currentWord].length > 0) {
-        const parentWord = reverseTreeData[currentWord][0]; // 假设只有一个直接父级
+        const parentWord = reverseTreeData[currentWord][0];
         const parentElement = document.querySelector(`.entry-item[data-word="${parentWord}"]`);
         if (parentElement && !parentElement.classList.contains('expanded')) {
             parentElement.classList.add('expanded');
             const childList = parentElement.nextElementSibling;
-            if (childList) {
-                childList.classList.add('open');
-            }
+            if (childList) childList.classList.add('open');
         }
         currentWord = parentWord;
     }
@@ -242,22 +141,22 @@ export function displayEntry(word) {
     }
 
     if (!anySectionDisplayed) {
-        noDataMessage.style.display = 'block';
-        noDataMessage.textContent = '此词条没有详细信息，请使用新增/编辑功能添加内容。';
+        if (noDataMessage) {
+            noDataMessage.style.display = 'block';
+            noDataMessage.textContent = '此词条没有详细信息，请使用新增/编辑功能添加内容。';
+        }
     } else {
-        noDataMessage.style.display = 'none';
+        if (noDataMessage) noDataMessage.style.display = 'none';
     }
 
     setTimeout(() => {
         entryDisplay.classList.add('visible');
     }, 50);
 
+    // 根据已加载的文档映射来增强链接（如果有）
     setupDocumentationLinks(docHeadingsMap);
 }
 
-/**
- * Reloads the tree-structured entry list.
- */
 function loadEntryList() {
     entryListElement.innerHTML = '';
     const { treeData: newTreeData, reverseTreeData: newReverseTreeData, rootNodes } = buildTreeData(allDictionaryData);
@@ -266,7 +165,7 @@ function loadEntryList() {
     renderTree(entryListElement, rootNodes, treeData, allDictionaryData);
 }
 
-// 事件监听器
+// 事件绑定
 addButton.addEventListener('click', () => {
     resetForm(editForm);
     const { inputHistory: newInputHistory, historyIndex: newHistoryIndex } = initializeInputHistory(formInputs);
@@ -282,9 +181,7 @@ docButton.addEventListener('click', () => {
     openDocumentation();
 });
 
-
 let currentEditingLemma = null;
-
 
 editButton.addEventListener('click', () => {
     if (activeEntryElement) {
@@ -315,7 +212,6 @@ deleteButton.addEventListener('click', async () => {
     if (confirm(`您确定要删除词条 "${word}" 吗？此操作无法撤销。`)) {
         try {
             const result = await deleteEntry(word);
-
             if (result.success) {
                 showToast('词条删除成功！');
                 delete allDictionaryData[word];
@@ -350,17 +246,20 @@ editModal.addEventListener('keydown', (event) => {
 });
 
 formInputs.forEach(input => {
+    if (!input) return;
     input.addEventListener('input', (e) => {
         recordHistory(e, inputHistory, historyIndex);
     });
 });
 
-formExplanation.addEventListener('input', (event) => {
-    if (event.target.value.includes(';')) {
-        event.target.value = event.target.value.replace(/;/g, '');
-        alert('解释字段不能包含分号，一个词条只能有一个解释。');
-    }
-});
+if (formExplanation) {
+    formExplanation.addEventListener('input', (event) => {
+        if (event.target.value.includes(';')) {
+            event.target.value = event.target.value.replace(/;/g, '');
+            alert('解释字段不能包含分号，一个词条只能有一个解释。');
+        }
+    });
+}
 
 editForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -378,7 +277,6 @@ editForm.addEventListener('submit', async (event) => {
             popularTags = collectPopularTags(allDictionaryData);
             loadEntryList();
             displayEntry(formData.lemma);
-
             currentEditingLemma = null;
         } else {
             alert('保存失败: ' + result.message);
@@ -401,48 +299,59 @@ window.addEventListener('beforeunload', () => {
     navigator.sendBeacon('/save_on_exit', '');
 });
 
+// 初始化：先并行加载 字典数据 和 docs 映射，再继续 UI 初始化
 document.addEventListener('DOMContentLoaded', async () => {
-    const formType = document.getElementById('form-type');
-    const formFrom = document.getElementById('form-from');
-
+    // 在表单后面插入 tag 容器
     typeTagsContainer = document.createElement('div');
     typeTagsContainer.classList.add('tag-container');
-    formType.insertAdjacentElement('afterend', typeTagsContainer);
+    if (formType) formType.insertAdjacentElement('afterend', typeTagsContainer);
 
     fromTagsContainer = document.createElement('div');
     fromTagsContainer.classList.add('tag-container');
-    formFrom.insertAdjacentElement('afterend', fromTagsContainer);
+    if (formFrom) formFrom.insertAdjacentElement('afterend', fromTagsContainer);
 
-    const [{ data, initialEntry: initial }] = await Promise.all([
-        fetchDictionaryData(),
-        loadDocHeadingsMap() // 加载文档标题
-    ]);
+    try {
+        // 并行加载字典数据和文档映射
+        const [dictResp, headingsMap] = await Promise.all([
+            fetchDictionaryData(),
+            loadDocHeadingsMap()
+        ]);
 
-    allDictionaryData = data;
-    initialEntry = initial;
-    popularTags = collectPopularTags(allDictionaryData);
+        // fetchDictionaryData 期望返回 { data, initialEntry: '...' }
+        allDictionaryData = dictResp.data || {};
+        initialEntry = dictResp.initialEntry || '';
+        popularTags = collectPopularTags(allDictionaryData);
 
-    if (Object.keys(allDictionaryData).length > 0) {
-        loadEntryList();
-        const urlPath = window.location.pathname;
-        const parts = urlPath.split('/');
-        const wordFromUrl = decodeURIComponent(parts[parts.length - 1]);
+        // docs 映射
+        docHeadingsMap = headingsMap || {};
 
-        if (allDictionaryData[wordFromUrl] && urlPath.startsWith('/entry/')) {
-            displayEntry(wordFromUrl);
+        if (Object.keys(allDictionaryData).length > 0) {
+            loadEntryList();
+
+            const urlPath = window.location.pathname;
+            const parts = urlPath.split('/');
+            const wordFromUrl = decodeURIComponent(parts[parts.length - 1]);
+
+            if (allDictionaryData[wordFromUrl] && urlPath.startsWith('/entry/')) {
+                displayEntry(wordFromUrl);
+            } else {
+                displayEntry(initialEntry);
+            }
         } else {
-            displayEntry(initialEntry);
+            entryDisplay.style.display = 'none';
+            editButton.disabled = true;
+            deleteButton.disabled = true;
+            const noDataMessage = document.getElementById('no-data-message');
+            if (noDataMessage) {
+                noDataMessage.style.display = 'block';
+                noDataMessage.textContent = '词典数据为空，请使用"新增词条"按钮添加第一个词条。';
+            }
         }
-    } else {
-        entryDisplay.style.display = 'none';
-        editButton.disabled = true;
-        deleteButton.disabled = true;
-        const noDataMessage = document.getElementById('no-data-message');
-        if (noDataMessage) {
-            noDataMessage.style.display = 'block';
-            noDataMessage.textContent = '词典数据为空，请使用"新增词条"按钮添加第一个词条。';
-        }
-    }
 
-    setupSearch(allDictionaryData, displayEntry);
+        // 初始化搜索（放在加载数据之后）
+        setupSearch(allDictionaryData, displayEntry);
+    } catch (err) {
+        console.error('初始化时发生错误：', err);
+        alert('初始化失败，请在控制台查看错误详情。');
+    }
 });
