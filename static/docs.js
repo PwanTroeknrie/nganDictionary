@@ -1,6 +1,7 @@
 // docs.js - 文档渲染与文档映射功能
 
 import { showTooltip, hideTooltip } from './ui.js';
+import { toSafeBase64 } from './utils.js';
 
 /**
  * 渲染 Markdown，构建大纲并设置滚动高亮（用于 /templates/docs.html 页面）
@@ -23,10 +24,20 @@ export async function renderDocumentation() {
 
         const headings = contentContainer.querySelectorAll('h1, h2, h3, h4');
         const path = [];
+        const unescapeRegex = /\\([\\*_{}[\]()#+\-.!<>])/g;
+
 
         headings.forEach(heading => {
             const level = parseInt(heading.tagName.substring(1), 10);
-            const id = heading.textContent.trim().toLowerCase().replace(/\s+/g, '-').replace(/<w>/g, 'w');
+            const originalHeading = heading.textContent.trim();
+            const parts = originalHeading.split(' ');
+            const keywordWithTags = parts.pop() || '';
+            const definition = parts.join(' ').trim() || 'heading';
+
+            // Base64 编码关键词，作为安全的唯一ID后缀
+            const safeIdSuffix = toSafeBase64(keywordWithTags.replace(unescapeRegex, '$1').trim());
+            // 创建锚点ID，包含释义前缀和 Base64 后缀，避免冲突
+            const id = `${definition.replace(/\s+/g, '-')}-${safeIdSuffix}`;
             heading.id = id;
 
             const li = document.createElement('li');
@@ -36,7 +47,7 @@ export async function renderDocumentation() {
 
             const a = document.createElement('a');
             a.href = `#${id}`;
-            a.textContent = heading.textContent;
+            a.textContent = originalHeading;
             tocItemDiv.appendChild(a);
             li.appendChild(tocItemDiv);
 
@@ -78,11 +89,11 @@ export async function renderDocumentation() {
         const params = new URLSearchParams(window.location.search);
         const affix = params.get('affix');
         if (affix) {
-            const cleanAffixId = affix.trim().toLowerCase().replace(/\s+/g, '-').replace(/<w>/g, 'w');
-            const targetElement = document.getElementById(cleanAffixId);
+            // 根据 Base64 编码的 affix 查找目标元素
+            const targetElement = document.getElementById(affix);
             if (targetElement) {
                 targetElement.scrollIntoView({ behavior: 'smooth' });
-                let activeLink = tocContainer.querySelector(`a[href="#${cleanAffixId}"]`);
+                let activeLink = tocContainer.querySelector(`a[href="#${affix}"]`);
                 let current = activeLink;
                 while (current && current !== tocContainer) {
                     if (current.classList && current.classList.contains('child-list')) {
@@ -134,18 +145,28 @@ export function updateActiveLinkOnScroll() {
 
 /**
  * 打开文档页面（可带 affix 参数）
+ * affix 参数应为文档标题中的原始关键词
  */
 export function openDocumentation(affix = null) {
     let url = '/templates/docs.html';
     if (affix) {
-        url += `?affix=${encodeURIComponent(affix)}`;
+        const unescapeRegex = /\\([\\*_{}[\]()#+\-.!<>])/g;
+        const cleanAffix = affix.replace(unescapeRegex, '$1').trim();
+        const parts = cleanAffix.split(' ');
+        const keywordWithTags = parts.pop() || '';
+        const definition = parts.join(' ').trim() || 'heading';
+
+        // 生成与 renderDocumentation 中相同的 ID 格式
+        const safeIdSuffix = toSafeBase64(keywordWithTags);
+        const idToLink = `${definition.replace(/\s+/g, '-')}-${safeIdSuffix}`;
+
+        url += `?affix=${encodeURIComponent(idToLink)}`;
     }
     window.open(url, '_blank');
 }
 
 /**
- * 解析 docs.md，返回一个映射（key -> { original, definition }）
- * 注意：调用方应 await 这个函数并获得返回值。
+ * 解析 docs.md，返回一个映射（key -> { original, definition, base64Id }）
  */
 export async function loadDocHeadingsMap() {
     const map = {};
@@ -158,19 +179,24 @@ export async function loadDocHeadingsMap() {
         const markdown = await response.text();
         const headingsRegex = /^(?:###|####) (.*)/gm;
         let match;
-        const unescapeRegex = /\\([\\*_{}\[\]()#+\-.!<>])/g;
+        const unescapeRegex = /\\([\\*_{}[\]()#+\-.!<>])/g;
 
         while ((match = headingsRegex.exec(markdown)) !== null) {
             const originalHeading = match[1].trim();
             const parts = originalHeading.split(' ');
             const keywordWithTags = parts.pop() || '';
-            const definition = parts.join(' ').trim();
+            const definition = parts.join(' ').trim() || 'heading';
 
             let mapKey = keywordWithTags.replace(unescapeRegex, '$1').trim();
             if (mapKey) {
+                // 生成与 renderDocumentation 中相同的 ID 格式
+                const safeIdSuffix = toSafeBase64(mapKey);
+                const idToLink = `${definition.replace(/\s+/g, '-')}-${safeIdSuffix}`;
+
                 map[mapKey] = {
                     original: originalHeading,
-                    definition: definition || null
+                    definition: definition,
+                    id: idToLink
                 };
             }
         }
@@ -182,7 +208,7 @@ export async function loadDocHeadingsMap() {
 
 /**
  * 在主界面（词条详情）中，把匹配文档标题的列表项设为可点击并显示释义 tooltip。
- * headingsMap: 上面返回的 map（key -> { original, definition }）
+ * headingsMap: 上面返回的 map（key -> { original, definition, id }）
  */
 export function setupDocumentationLinks(headingsMap = {}) {
     if (!headingsMap || typeof headingsMap !== 'object') return;
@@ -206,6 +232,7 @@ export function setupDocumentationLinks(headingsMap = {}) {
 
                 item.addEventListener('click', (event) => {
                     event.stopPropagation();
+                    // 调用 openDocumentation 并传入文档ID
                     openDocumentation(docInfo.original);
                 });
 

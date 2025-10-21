@@ -759,44 +759,6 @@
             "0"
         ]
     },
-    "qˀapʰtoŋ": {
-        "Type": [
-            "v",
-            "tr."
-        ],
-        "Meaning": [
-            "降下"
-        ],
-        "From": [
-            "qˀ",
-            "ftoŋ"
-        ],
-        "Explanation": [
-            "qˀ-(a/ɨ)-pʰtoŋ"
-        ],
-        "To": [
-            "qˀaftoŋis"
-        ]
-    },
-    "qˀapʰtoŋis": {
-        "Type": [
-            "v",
-            "tr."
-        ],
-        "Meaning": [
-            "降伏"
-        ],
-        "From": [
-            "qˀapʰtoŋ",
-            "is"
-        ],
-        "Explanation": [
-            "qˀapʰtoŋ-is"
-        ],
-        "To": [
-            "0"
-        ]
-    },
     "ras": {
         "Type": [
             "v",
@@ -992,7 +954,7 @@
         ],
         "To": [
             "luqus",
-            "alʰuqusmoŋ",
+            "uhuqusmoŋ",
             "tˀunluq"
         ]
     },
@@ -1086,7 +1048,7 @@
         ],
         "From": [
             "qˀ",
-            "tʰɨr"
+            "tɨr"
         ],
         "Explanation": [
             "qˀ-(a/ɨ)-tʰɨr"
@@ -1105,29 +1067,12 @@
         ],
         "From": [
             "a",
-            "tʰɨr",
+            "tɨr",
+            "\\INF",
             "moŋ"
         ],
         "Explanation": [
-            "a-tʰɨr-moŋ"
-        ],
-        "To": [
-            "0"
-        ]
-    },
-    "stʰal": {
-        "Type": [
-            "n",
-            "root"
-        ],
-        "Meaning": [
-            "星星"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "stʰal"
+            "a-htɨr-moŋ"
         ],
         "To": [
             "0"
@@ -1372,24 +1317,6 @@
             "0"
         ]
     },
-    "mi": {
-        "Type": [
-            "n",
-            "root"
-        ],
-        "Meaning": [
-            "土"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "mi"
-        ],
-        "To": [
-            "0"
-        ]
-    },
     "mluɨ": {
         "Type": [
             "n",
@@ -1564,7 +1491,7 @@
             "stʰal"
         ],
         "To": [
-            "0"
+            "stalip"
         ]
     },
     "sesu": {
@@ -1657,26 +1584,6 @@
             "mol-utan"
         ],
         "To": []
-    },
-    "amni": {
-        "Type": [
-            "n",
-            "inani.",
-            "concrete"
-        ],
-        "Meaning": [
-            "土"
-        ],
-        "From": [
-            "a",
-            "mni"
-        ],
-        "Explanation": [
-            "a-mni"
-        ],
-        "To": [
-            "0"
-        ]
     },
     "arunasma": {
         "Type": [
@@ -1778,25 +1685,6 @@
             "0"
         ]
     },
-    "aftefma": {
-        "Type": [
-            "n",
-            "abstract"
-        ],
-        "Meaning": [
-            "喜爱"
-        ],
-        "From": [
-            "ftef",
-            "ma"
-        ],
-        "Explanation": [
-            "pʰtepʰ-ma"
-        ],
-        "To": [
-            "0"
-        ]
-    },
     "ftef": {
         "Type": [
             "v",
@@ -1812,7 +1700,7 @@
             "pʰtepʰ"
         ],
         "To": [
-            "apʰtefma"
+            "ftefma"
         ]
     },
     "jaw": {
@@ -1944,12 +1832,12 @@
         ],
         "From": [
             "a",
-            "luqus",
+            "luq",
             "\\INF",
             "moŋ"
         ],
         "Explanation": [
-            "a-lʔuq\\INF-us-moŋ"
+            "a-luq-moŋ"
         ],
         "To": [
             "0"
@@ -2152,25 +2040,10 @@
         ],
         "From": [],
         "Explanation": [],
-        "To": []
-    },
-    "nkas": {
-        "Type": [
-            "v",
-            "root"
-        ],
-        "Meaning": [
-            "残留",
-            "残存",
-            "残余"
-        ],
-        "From": [
-            "0"
-        ],
-        "Explanation": [
-            "0"
-        ],
-        "To": []
+        "To": [
+            "hehiof",
+            "hehir"
+        ]
     },
     "hulijɨŋ": {
         "Type": [
@@ -2181,15 +2054,15 @@
             "邪恶"
         ],
         "From": [
-            "hul",
+            "huli",
             "\\INF",
             "ɨŋ"
         ],
         "Explanation": [
-            "hul\\INF-ɨŋ"
+            "hul-i\\INF-ɨŋ"
         ],
         "To": [
-            "0"
+            "hulijɨŋ"
         ]
     },
     "tˀonualis": {
@@ -2345,7 +2218,8 @@
         "To": [
             "ftoŋep",
             "qˀaftoŋ",
-            "qˀaftoŋis"
+            "qˀaftoŋis",
+            "pʰutoŋ"
         ]
     },
     "qˀaftoŋ": {
@@ -2445,8 +2319,14 @@
         ]
     },
     "jɨtu": {
-        "Type": [],
-        "Meaning": [],
+        "Type": [
+            "num.",
+            "collective"
+        ],
+        "Meaning": [
+            "团体",
+            "联合"
+        ],
         "From": [
             "ɨt"
         ],
@@ -2549,21 +2429,6 @@
             "0"
         ]
     },
-    "spip": {
-        "Type": [
-            "v",
-            "root"
-        ],
-        "Meaning": [
-            "监视",
-            "检查"
-        ],
-        "From": [],
-        "Explanation": [],
-        "To": [
-            "pˀospiku"
-        ]
-    },
     "pˀospiku": {
         "Type": [
             "n",
@@ -2641,7 +2506,9 @@
             "掌握"
         ],
         "From": [],
-        "Explanation": [],
+        "Explanation": [
+            "skuʔ > sku (VdII)"
+        ],
         "To": []
     },
     "utam": {
@@ -2728,7 +2595,11 @@
         "Explanation": [
             "lʔem > lem (VdV) PROG: lˀem > lam PFV: laem INF: lhem > uhem"
         ],
-        "To": []
+        "To": [
+            "lemip",
+            "lemma",
+            "rrem"
+        ]
     },
     "lemma": {
         "Type": [
@@ -2845,18 +2716,6 @@
             "ptorus",
             "ɨm"
         ],
-        "Explanation": [],
-        "To": []
-    },
-    "ts'ats": {
-        "Type": [
-            "v",
-            "stative"
-        ],
-        "Meaning": [
-            "大"
-        ],
-        "From": [],
         "Explanation": [],
         "To": []
     },
@@ -2983,6 +2842,922 @@
         "Explanation": [],
         "To": [
             "titslu"
+        ]
+    },
+    "hehiof": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "前进, 激进"
+        ],
+        "From": [
+            "hehi",
+            "of"
+        ],
+        "Explanation": [
+            "hehi-of"
+        ],
+        "To": []
+    },
+    "rrem": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "反复说",
+            "说回去"
+        ],
+        "From": [
+            "lem",
+            "<r>"
+        ],
+        "Explanation": [
+            "l<r>ʔem > rrem"
+        ],
+        "To": []
+    },
+    "jami": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "满足",
+            "饱"
+        ],
+        "From": [],
+        "Explanation": [
+            "jamiʔ > jami (IIdII)"
+        ],
+        "To": [
+            "jamijɨŋ"
+        ]
+    },
+    "jamijɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "饱足",
+            "餍足"
+        ],
+        "From": [
+            "jami",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "stalip": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "星座"
+        ],
+        "From": [
+            "stal",
+            "ip"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "pqun": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "运输",
+            "运送"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "tˀɨpqun"
+        ]
+    },
+    "tˀɨpqun": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "载着东西运动",
+            "负重运动"
+        ],
+        "From": [
+            "tˀ",
+            "pqun"
+        ],
+        "Explanation": [
+            "tˀ-(a/ɨ)-pqun"
+        ],
+        "To": [
+            "tˀɨpqunil"
+        ]
+    },
+    "tˀɨpqunil": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "载具",
+            "车辆",
+            "飞船"
+        ],
+        "From": [
+            "tˀɨpqun",
+            "il"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "hehir": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "回去"
+        ],
+        "From": [
+            "hehi",
+            "<r>"
+        ],
+        "Explanation": [
+            "hehiʔ-r"
+        ],
+        "To": []
+    },
+    "pʰutoŋ": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "(突然)下坠",
+            "下冲"
+        ],
+        "From": [
+            "ftoŋ",
+            "<w>"
+        ],
+        "Explanation": [
+            "pʰ<w>toŋ"
+        ],
+        "To": []
+    },
+    "uhuqusmoŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "分析"
+        ],
+        "From": [
+            "luq",
+            "\\INF",
+            "moŋ"
+        ],
+        "Explanation": [
+            "luq\\INF-moŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "ar": {
+        "Type": [
+            "num."
+        ],
+        "Meaning": [
+            "2"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": []
+    },
+    "tiŋkan": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "舔"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "tiŋkʰano",
+            "tiŋkʰanip"
+        ]
+    },
+    "tiŋkʰano": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "舌头"
+        ],
+        "From": [
+            "tiŋkan",
+            "\\INF",
+            "on"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "tiŋkʰanip": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "语言"
+        ],
+        "From": [
+            "tiŋkan",
+            "\\INF",
+            "ip"
+        ],
+        "Explanation": [
+            "tiŋkan\\INF-ip"
+        ],
+        "To": [
+            "tiŋkʰaniptaŋ"
+        ]
+    },
+    "tiŋkʰaniptaŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "语言学"
+        ],
+        "From": [
+            "tiŋkʰanip",
+            "taŋ"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "atiŋkʰaniptaŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "语言学"
+        ],
+        "From": [
+            "a",
+            "tiŋkʰanip",
+            "taŋ"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "etiŋkʰaniptaŋ": {
+        "Type": [
+            "n",
+            "anim.",
+            "hum."
+        ],
+        "Meaning": [
+            "语言学家"
+        ],
+        "From": [
+            "e",
+            "tiŋkʰanip",
+            "taŋ"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "tɨr": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "自由"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "htɨr"
+        ],
+        "To": [
+            "qˀɨɨtʰɨr",
+            "aatʰɨrmoŋ"
+        ]
+    },
+    "qˀɨɨtɨr": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "解放"
+        ],
+        "From": [
+            "qˀ",
+            "tɨr"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-htɨr"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "uts": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "目",
+            "眼"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "lts > uts"
+        ],
+        "To": [
+            "onilts"
+        ]
+    },
+    "onilts": {
+        "Type": [
+            "n",
+            "concrete",
+            "dim."
+        ],
+        "Meaning": [
+            "眼睛"
+        ],
+        "From": [
+            "oni",
+            "uts"
+        ],
+        "Explanation": [
+            "uts 的小称, 但更加常见的形式"
+        ],
+        "To": []
+    },
+    "sɨmaŋ": {
+        "Type": [
+            "n",
+            "anim."
+        ],
+        "Meaning": [
+            "生命",
+            "活力"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "sɨmaŋu"
+        ]
+    },
+    "sɨmaŋu": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "有生命"
+        ],
+        "From": [
+            "sɨmaŋ",
+            "uʔ"
+        ],
+        "Explanation": [
+            "sɨmaŋ-uʔ"
+        ],
+        "To": []
+    },
+    "xrox": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "血"
+        ],
+        "From": [],
+        "Explanation": [
+            "qʰrokʰ > xrox"
+        ],
+        "To": [
+            "xrokʰu"
+        ]
+    },
+    "sof": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "身体"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "sopʰitʰan"
+        ]
+    },
+    "sopʰitʰan": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "实体"
+        ],
+        "From": [
+            "sof",
+            "itan",
+            "\\INF"
+        ],
+        "Explanation": [
+            "sopʰ-itan/INF"
+        ],
+        "To": []
+    },
+    "xrokʰu": {
+        "Type": [
+            "v",
+            "stative"
+        ],
+        "Meaning": [
+            "血腥的"
+        ],
+        "From": [
+            "xrox",
+            "uʔ"
+        ],
+        "Explanation": [
+            "qʰrokʰ-uʔ"
+        ],
+        "To": []
+    },
+    "tsˀar": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "战争"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "qˀatsˀarutan"
+        ]
+    },
+    "qˀatsˀarutan": {
+        "Type": [
+            "n",
+            "tr."
+        ],
+        "Meaning": [
+            "交战"
+        ],
+        "From": [
+            "qˀ",
+            "tsˀar",
+            "utan"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-tsˀar-utan"
+        ],
+        "To": []
+    },
+    "jarrts": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "双眼"
+        ],
+        "From": [
+            "jar",
+            "uts"
+        ],
+        "Explanation": [
+            "uts 的双数, jar-lts > jarrts"
+        ],
+        "To": []
+    },
+    "tsquj": {
+        "Type": [
+            "v",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "到达"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "tsurquj"
+        ]
+    },
+    "tsurquj": {
+        "Type": [
+            "v",
+            "intr."
+        ],
+        "Meaning": [
+            "回归",
+            "回到"
+        ],
+        "From": [
+            "tsquj",
+            "<r>"
+        ],
+        "Explanation": [
+            "ts<r>quj"
+        ],
+        "To": []
+    },
+    "tstʰal": {
+        "Type": [
+            "n",
+            "root"
+        ],
+        "Meaning": [
+            "星星"
+        ],
+        "From": [
+            "0"
+        ],
+        "Explanation": [
+            "stʰal > tstʰal"
+        ],
+        "To": [
+            "tstʰalip"
+        ]
+    },
+    "tstʰalip": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "星座"
+        ],
+        "From": [
+            "tstʰal",
+            "ip"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "kʰatsaq": {
+        "Type": [
+            "n",
+            "intr.",
+            "root"
+        ],
+        "Meaning": [
+            "庆祝"
+        ],
+        "From": [],
+        "Explanation": [
+            "kʰastaq > kʰatsaq"
+        ],
+        "To": [
+            "kʰatstʰaqɨp"
+        ]
+    },
+    "kʰatstʰaqɨp": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "庆典",
+            "节日"
+        ],
+        "From": [
+            "kʰatsaq",
+            "\\INF",
+            "ip"
+        ],
+        "Explanation": [
+            "kʰatsaq\\INF-ip →  kʰastʰaq-ip > kʰatstʰaqɨp"
+        ],
+        "To": []
+    },
+    "ut": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "手"
+        ],
+        "From": [],
+        "Explanation": [
+            "nt > ut"
+        ],
+        "To": [
+            "jarrt"
+        ]
+    },
+    "jarrt": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "双手"
+        ],
+        "From": [
+            "jar",
+            "ut"
+        ],
+        "Explanation": [
+            "jar-nt > jarrt"
+        ],
+        "To": []
+    },
+    "okkʰiant": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "大手",
+            "手"
+        ],
+        "From": [
+            "okkʰia",
+            "ut"
+        ],
+        "Explanation": [
+            "okkʰia-nt"
+        ],
+        "To": []
+    },
+    "okkʰolant": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "大手",
+            "手"
+        ],
+        "From": [
+            "okkʰola",
+            "ut"
+        ],
+        "Explanation": [
+            "okkʰola-nt"
+        ],
+        "To": []
+    },
+    "kʰoc": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "口"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "kʰotʰet"
+        ]
+    },
+    "kʰottʰet": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "口腔"
+        ],
+        "From": [
+            "kʰoc",
+            "tʰet"
+        ],
+        "Explanation": [],
+        "To": []
+    },
+    "tʰet": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "空腔",
+            "腔室"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": []
+    },
+    "lus": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "丢失",
+            "失"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "uhusma"
+        ]
+    },
+    "kpiɨ": {
+        "Type": [
+            "v",
+            "tr.",
+            "root"
+        ],
+        "Meaning": [
+            "锁",
+            "封锁"
+        ],
+        "From": [],
+        "Explanation": [
+            "kˀpiˀ > kpiɨ"
+        ],
+        "To": [
+            "kˀopiɨ",
+            "kpʰiˀɨŋ"
+        ]
+    },
+    "kpʰiˀɨŋ": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "锁"
+        ],
+        "From": [
+            "kpiɨ",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "kpiɨ\\INF-ɨŋ"
+        ],
+        "To": []
+    },
+    "us": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "鲜肉",
+            "血肉"
+        ],
+        "From": [],
+        "Explanation": [
+            "ms > us"
+        ],
+        "To": [
+            "ommams"
+        ]
+    },
+    "ommams": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "大肉",
+            "肉"
+        ],
+        "From": [
+            "omma",
+            "ms"
+        ],
+        "Explanation": [
+            "omma-ms"
+        ],
+        "To": []
+    },
+    "ms": {
+        "Type": [
+            "n",
+            "concrete"
+        ],
+        "Meaning": [
+            "鲜肉",
+            "血肉"
+        ],
+        "From": [],
+        "Explanation": [
+            "ms > us | ums (intermedial)"
+        ],
+        "To": [
+            "ommams"
+        ]
+    },
+    "ahulɨjɨŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "邪恶"
+        ],
+        "From": [
+            "a",
+            "hul",
+            "\\INF",
+            "ɨŋ"
+        ],
+        "Explanation": [
+            "a-hul\\INF-ɨŋ"
+        ],
+        "To": [
+            "0"
+        ]
+    },
+    "tpon": {
+        "Type": [
+            "v",
+            "intr.",
+            "stative"
+        ],
+        "Meaning": [
+            "转变",
+            "转化"
+        ],
+        "From": [],
+        "Explanation": [],
+        "To": [
+            "qˀatpon"
+        ]
+    },
+    "qˀatpon": {
+        "Type": [
+            "v",
+            "tr."
+        ],
+        "Meaning": [
+            "转变为",
+            "转化成"
+        ],
+        "From": [
+            "qˀ",
+            "tpon"
+        ],
+        "Explanation": [
+            "qˀ-(a/ɨ)-tpɨr"
+        ],
+        "To": []
+    },
+    "tpʰonmoŋ": {
+        "Type": [
+            "n",
+            "abstract"
+        ],
+        "Meaning": [
+            "转变",
+            "转化"
+        ],
+        "From": [
+            "tpon",
+            "\\INF",
+            "moŋ"
+        ],
+        "Explanation": [],
+        "To": [
+            "qˀatpon"
         ]
     }
 }
