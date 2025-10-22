@@ -5,9 +5,12 @@ import os
 
 app = Flask(__name__, static_folder='static')
 
+# 修改文件路径定义，确保它们指向应用根目录
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 # 文件路径
-DICTIONARY_FILE_JSON = 'dictionary.json'
-DICTIONARY_FILE_EXCEL = 'dictionary.xlsx'
+DICTIONARY_FILE_JSON = os.path.join(BASE_DIR, 'dictionary.json')
+DICTIONARY_FILE_EXCEL = os.path.join(BASE_DIR, 'dictionary.xlsx')
 
 # 全局变量
 dictionary_data = {}
