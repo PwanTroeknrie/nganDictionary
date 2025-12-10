@@ -1,0 +1,44 @@
+# entry.toml
+id = 3
+word = ""
+transliteration = "fper"
+
+[[senses]]
+#基本信息
+order = 1
+pos = "v"
+
+#变体
+alternations = [" "," ",]
+
+#发音IPA转写，可使用模板
+sound = "fper" #or sound = "{{grc-IPA}}"
+
+#标签
+tags = ["v", "root"] #or tags = "{{grc-tag|r|5}}"
+
+#词源
+derived_from = ["0"]
+etymology_text = "pʰper"
+
+#派生词
+derived_to = ["pʰuperic", "pʰunpʰerof"]
+
+#词义
+[[senses.definitions]]
+text = "拿"
+examples = [ex=" "]
+
+[[senses.definitions]]
+text = "取"
+
+[[senses.definitions.examples]]
+ex = " " 
+tf = " "
+src = " "
+
+#曲折表格
+
+inflection = ["{{grc-decl|οἶκος|ου}}",
+"{{grc-decl|οἶκος|ου|dial=epi}}",
+"{{grc-decl|ϝοῖκος|ου|dial=lak}}"]

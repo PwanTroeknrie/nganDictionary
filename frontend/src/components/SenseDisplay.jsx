@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { ArrowRight, X, Plus, ExternalLink } from 'lucide-react';
+import { ArrowRight, X, Plus } from 'lucide-react';
 
 // --- Custom Hook for Shortcuts ---
 /**
- * Handles global keyboard shortcuts (Ctrl+S/Cmd+S: Save, Ctrl+Q/Cmd+Q/Esc: Cancel, Ctrl+N/Cmd+N: Add Definition)
+ * 处理全局键盘快捷键 (Ctrl+S/Cmd+S: Save, Ctrl+Q/Cmd+Q/Esc: Cancel, Ctrl+N/Cmd+N: Add Definition)
  */
 const useShortcuts = ({ editingSection, save, cancel, addDefinition}) => {
   useEffect(() => {
@@ -45,7 +45,7 @@ const useShortcuts = ({ editingSection, save, cancel, addDefinition}) => {
 // --- Helper Components for Forms ---
 
 /**
- * Tag-style array editor
+ * 标签样式的数组编辑器
  */
 const ArrayEditor = ({ items, onChange, label, placeholder }) => {
   const handleItemChange = (index, value) => {
@@ -62,7 +62,7 @@ const ArrayEditor = ({ items, onChange, label, placeholder }) => {
     onChange(items.filter((_, i) => i !== index));
   };
 
-  const tagInputBaseClasses = "pl-4 pr-6 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-gray-800 dark:text-white dark:bg-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm";
+  const tagInputBaseClasses = "pl-4 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-gray-800 dark:text-white dark:bg-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm";
 
   return (
     <div>
@@ -78,7 +78,7 @@ const ArrayEditor = ({ items, onChange, label, placeholder }) => {
               value={item}
               onChange={(e) => handleItemChange(index, e.target.value)}
               placeholder={placeholder}
-              // Dynamically size input
+              // 动态计算 size，确保输入框足够显示内容
               size={Math.max(item.length > 0 ? item.length : placeholder.length, 12)}
               className={tagInputBaseClasses}
             />
@@ -86,9 +86,9 @@ const ArrayEditor = ({ items, onChange, label, placeholder }) => {
             <button
               type="button"
               onClick={() => removeItem(index)}
-              // Style: Absolute positioning on top right
+              // 样式：绝对定位在右上角
               className="absolute top-0 right-0 p-0.5 bg-red-500 text-white rounded-full -mt-1 -mr-1 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-              title="Delete"
+              title="删除"
             >
               <X className="w-3 h-3" />
             </button>
@@ -99,9 +99,9 @@ const ArrayEditor = ({ items, onChange, label, placeholder }) => {
         <button
           type="button"
           onClick={addItem}
-          // Style: Circular, translucent "+" button
+          // 样式：圆形的、半透明的 "+" 按钮
           className="w-8 h-8 flex items-center justify-center bg-blue-500/30 dark:bg-blue-400/30 text-blue-700 dark:text-blue-200 rounded-full hover:bg-blue-500/50 dark:hover:bg-blue-400/50 transition-colors shadow-md"
-          title="Add"
+          title="添加"
         >
           <Plus className="w-5 h-5" />
         </button>
@@ -143,7 +143,7 @@ const renderMorphologyTable = (tableData, chartType) => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">data-A</td>
                 </tr>
                 <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Form B</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Form B</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">data-B</td>
                 </tr>
             </tbody>
@@ -163,8 +163,8 @@ const SenseDisplay = ({
     entryTransliteration,
     onUpdateSense,
     onOpenContextMenu,
-    dictionaryMap, // New: For checking entry existence
-    onLinkClick,    // New: For handling link clicks
+    dictionaryMap, // 新增：用于检查词条是否存在
+    onLinkClick,    // 新增：用于处理点击跳转
 }) => {
   // --- Component State ---
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -172,7 +172,7 @@ const SenseDisplay = ({
   const [collapseMorphology, setCollapseMorphology] = useState(false);
 
   // Master editing switch
-  const [editingSection, setEditingSection] = useState(null);
+  const [editingSection, setEditingSection] = useState(null); // 'title', 'pronunciation', 'etymology', 'tags', 'definitions', 'derivation'
 
   // Form-specific editing states
   const [editingTitle, setEditingTitle] = useState(null);
@@ -192,7 +192,7 @@ const SenseDisplay = ({
 
   // --- Styling Helpers ---
   const editableClasses = "group p-3 rounded-xl transition-shadow duration-200 cursor-context-menu";
-  const activeClasses = "p-4 rounded-xl -m-3 shadow-2xl";
+  const activeClasses = "p-4 rounded-xl -m-3 shadow-2xl ring-4 ring-yellow-400/50 dark:ring-yellow-700/50";
   const tagAnimationClasses = "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md";
 
   // Common classes for new forms
@@ -208,10 +208,10 @@ const SenseDisplay = ({
     e.stopPropagation();
 
     if (editingSection === sectionName) {
-      // If already editing this section, cancel editing
+      // 如果已经在编辑此部分，则取消编辑
       setEditingSection(null);
     } else {
-      // Switch to editing new section
+      // 切换到编辑新部分
       setEditingSection(sectionName);
     }
 
@@ -260,7 +260,7 @@ const SenseDisplay = ({
    * Master Effect to control all editing states.
    */
   useEffect(() => {
-    // Clear all existing states
+    // 清除所有可能存在的旧状态
     setEditingTitle(null);
     setEditingPronunciation(null);
     setEditingEtymology(null);
@@ -268,7 +268,7 @@ const SenseDisplay = ({
     setEditingDerivation(null);
     setEditingDefinitions([]);
 
-    // Initialize state based on the new editingSection
+    // 根据新的 editingSection 初始化状态
     switch (editingSection) {
       case 'title': startEditingTitle(); break;
       case 'pronunciation': startEditingPronunciation(); break;
@@ -315,7 +315,7 @@ const SenseDisplay = ({
     if (onUpdateSense && editingEtymology) {
       const cleanedEtymology = {
         ...editingEtymology,
-        // Filter empty strings
+        // 过滤空字符串
         derived_from: editingEtymology.derived_from.filter(t => t.trim() !== '')
       };
       onUpdateSense(sense.sense_id, cleanedEtymology);
@@ -340,12 +340,12 @@ const SenseDisplay = ({
   }, [onUpdateSense, sense.sense_id, editingDerivation]);
 
   const saveDefinitions = useCallback(() => {
-    // Filter out definitions where both text and all examples are empty
+    // 过滤掉文本和例句都为空的定义
     const cleanedDefinitions = editingDefinitions.filter(def =>
       def.text.trim() !== '' || (Array.isArray(def.examples) && def.examples.some(ex => ex.trim() !== ''))
     ).map(def => ({
         ...def,
-        // Ensure examples also filter empty values
+        // 确保例句也过滤空值
         examples: Array.isArray(def.examples) ? def.examples.filter(ex => ex.trim() !== '') : [],
     }));
 
@@ -430,86 +430,32 @@ const SenseDisplay = ({
 
    // --- Linking Logic (Core Requirement) ---
    const getLinkTypeAndClass = useCallback((term) => {
-        // 1. Check for document link (DOC:)
+        // 1. 检查文档链接 (DOC: 开头)
         if (term.startsWith('DOC:')) {
             return {
                 type: 'doc',
-                // Purple: Document link
+                // 紫色：能跳转 docs
                 className: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-200 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-800'
             };
         }
 
-        // 2. Check for entry link (exists in dictionaryMap and is not the current entry)
+        // 2. 检查词条链接 (存在于 dictionaryMap 且不是当前词条本身)
+        // 假设 dictionaryMap 是 { 'word': {...entryData} } 形式的对象
         if (dictionaryMap && dictionaryMap[term] && term !== entryWord) {
             return {
                 type: 'entry',
-                // Green: Dictionary entry link
+                // 绿色：能跳转词条
                 className: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 cursor-pointer hover:bg-green-200 dark:hover:bg-green-800'
             };
         }
 
-        // 3. Default (not linkable)
+        // 3. 默认 (不能跳转) -> 使用主题蓝色/靛青
         return {
             type: 'none',
-            // Indigo/Blue: Non-linkable
+            // 蓝色/靛青：不能跳转
             className: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200'
         };
     }, [dictionaryMap, entryWord]);
-
-  // --- Helper Component for Link Tag Rendering ---
-  const LinkTag = ({ term, type, className }) => {
-    const handleLinkClick = (e) => {
-      e.preventDefault();
-      // Pass the original type and term (the word) to the parent handler
-      onLinkClick(type, term);
-    };
-
-    if (type === 'entry' && dictionaryMap[term]) {
-      // *** MODIFICATION START: Use ID for link and internal navigation (ArrowRight) ***
-      const targetId = dictionaryMap[term].id;
-      // Construct the URL using 'id' query parameter for consistency with DictionaryPage.jsx
-      const href = `/dictionary?id=${encodeURIComponent(targetId)}`;
-
-      return (
-        <a
-          href={href}
-          onClick={handleLinkClick}
-          // Removed target="_blank" for internal SPA navigation
-          className={`text-xs font-semibold mb-2 px-2 py-0.5 rounded-full whitespace-nowrap flex items-center gap-1 ${className} ${tagAnimationClasses}`}
-          title={`点击跳转到词条：${term} (ID: ${targetId})`}
-        >
-          {term}
-          {/* Using ArrowRight for internal link indicator */}
-          <ArrowRight className="w-3 h-3"/>
-        </a>
-      );
-      // *** MODIFICATION END ***
-    }
-
-    if (type === 'doc') {
-      return (
-        <span
-          onClick={handleLinkClick}
-          className={`text-xs font-semibold mb-2 px-2 py-0.5 rounded-full whitespace-nowrap flex items-center gap-1 ${className} ${tagAnimationClasses}`}
-          title={`点击跳转到文档锚点：${term.replace('DOC:', '')}`}
-        >
-          {term}
-          <ExternalLink className="w-3 h-3"/>
-        </span>
-      );
-    }
-
-    // Default Non-Linkable span
-    return (
-      <span
-        className={`text-xs font-semibold mb-2 px-2 py-0.5 rounded-full whitespace-nowrap ${className}`}
-        title='不可跳转'
-      >
-        {term}
-      </span>
-    );
-  };
-
 
 // --- Render ---
   return (
@@ -661,12 +607,14 @@ const SenseDisplay = ({
                         {sense.derived_from.map((term, index) => {
                             const { type, className } = getLinkTypeAndClass(term);
                             return (
-                                <LinkTag
+                                <span
                                     key={index}
-                                    term={term}
-                                    type={type}
-                                    className={className}
-                                />
+                                    onClick={type !== 'none' ? () => onLinkClick(type, term) : undefined}
+                                    className={`text-xs font-semibold mb-2 px-2 py-0.5 rounded-full whitespace-nowrap ${className} ${tagAnimationClasses}`}
+                                    title={type !== 'none' ? `点击跳转到 ${term}` : '不可跳转'}
+                                >
+                                    {term}
+                                </span>
                             );
                         })}
                       </div>
@@ -776,45 +724,52 @@ const SenseDisplay = ({
                                   />
                                   <button
                                     onClick={() => removeExample(defIndex, exIndex)}
-                                    type="button"
-                                    className="p-1.5 text-xs bg-red-400 hover:bg-red-500 text-white rounded-full transition-colors flex-shrink-0"
-                                    title="删除例句"
+                                    className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition-colors shadow-sm"
                                   >
-                                    <X className="w-3 h-3"/>
+                                    <X className="w-4 h-4" />
                                   </button>
                                 </div>
                               ))}
-                              <button
-                                onClick={() => addExample(defIndex)}
-                                type="button"
-                                className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded transition-colors flex items-center gap-1 mt-1"
-                              >
-                                <Plus className="w-3 h-3" /> 添加例句
-                              </button>
                             </div>
+                            <button
+                              onClick={() => addExample(defIndex)}
+                              className="mt-2 px-3 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded text-xs transition-colors shadow-md"
+                            >
+                              <Plus className="w-4 h-4 inline mr-1" /> 添加例句
+                            </button>
                           </div>
                         </div>
                       ))}
-                      <button
-                        onClick={addDefinition}
-                        type="button"
-                        className="w-full px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors flex items-center justify-center gap-2 mt-4"
-                      >
-                        <Plus className="w-4 h-4" /> 添加新释义 (Ctrl+N)
-                      </button>
-                      <FormButtons onSave={saveDefinitions} onCancel={handleMasterCancel} />
+                      <div className="flex gap-2 pt-3 border-t border-gray-300 dark:border-gray-600">
+                        <button
+                          onClick={addDefinition}
+                          className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm transition-colors shadow-md"
+                        >
+                          添加释义 (Ctrl+N)
+                        </button>
+                        <button
+                          onClick={saveDefinitions}
+                          className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded text-sm transition-colors shadow-md"
+                        >
+                          保存更改 (Ctrl+S)
+                        </button>
+                        <button
+                          onClick={handleMasterCancel} // Use master cancel
+                          className="px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white rounded text-sm transition-colors shadow-md"
+                        >
+                          取消 (Ctrl+Q / Esc)
+                        </button>
+                      </div>
                     </div>
                   ) : (
-                    <ol className="entryDefinitions list-decimal pl-5 space-y-4">
+                    <ol className="definitions list-decimal list-inside p-3 border border-gray-300 dark:border-gray-700 rounded-xl space-y-3">
                       {sense.definitions.map((def, index) => (
-                        <li key={index} className="text-gray-700 dark:text-gray-200">
-                          {/* Definition Text */}
-                          <p className="definitionText text-base font-medium">{def.text}</p>
-                          {/* Examples */}
+                        <li key={index} className="text-sm text-gray-800 dark:text-gray-200">
+                          <span>{def.text}</span>
                           {def.examples && def.examples.length > 0 && (
-                            <ul className="definitionExamples list-disc pl-5 mt-2 space-y-1 text-sm text-gray-500 dark:text-gray-400">
-                              {def.examples.map((ex, exIndex) => (
-                                <li key={exIndex}>{ex}</li>
+                            <ul className="list-disc list-inside ml-4 mt-2 space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                              {def.examples.map((ex, j) => (
+                                <li key={j}>{ex}</li>
                               ))}
                             </ul>
                           )}
@@ -826,60 +781,75 @@ const SenseDisplay = ({
               </div>
             )}
 
-            {/* Morphology Table Block (Mock) */}
-            {sense.table_data?.length > 0 && (
-              <div className="border border-gray-300 dark:border-gray-700 rounded-xl p-4">
+            {/* Morphology Section */}
+            {sense.chart_type && (
+              <div className={`${editableClasses} pt-2 border-gray-200 dark:border-gray-700`}>
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold border-l-4 border-blue-500 pl-2 mb-2">屈折变化 / Inflection</h3>
+                  <h3 className="text-lg font-extrabold border-l-4 border-blue-600 pl-2 mb-2 text-gray-900 dark:border-blue-500 dark:text-gray-100">
+                    形态学 / Morphology
+                  </h3>
+
                   <button
-                    className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                     onClick={() => setCollapseMorphology(prev => !prev)}
-                    title={collapseMorphology ? "展开表格" : "收起表格"}
+                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-400"
+                    title={collapseMorphology ? "展开形态变化" : "收起形态变化"}
                   >
-                    <ArrowRight className={`w-4 h-4 transition-transform ${collapseMorphology ? 'rotate-0' : 'rotate-90'}`} />
+                    <ArrowRight
+                      className={`w-4 h-4 transition-transform ${
+                        collapseMorphology ? "rotate-0" : "rotate-90"
+                      }`}
+                    />
                   </button>
                 </div>
 
-                <div className={`transition-all duration-500 ease-in-out overflow-hidden ${collapseMorphology ? 'max-h-0 opacity-0 p-0' : 'max-h-[1000px] opacity-100'}`}>
-                  <div className="overflow-x-auto mt-3">
-                    {renderMorphologyTable(sense.table_data, sense.chart_type || 'Custom')}
+                <div
+                  className={`transition-all duration-500 overflow-hidden ${
+                    collapseMorphology
+                      ? "max-h-0 opacity-0 p-0"
+                      : "max-h-[3000px] opacity-100 pt-2"
+                  }`}
+                >
+                  <div className="overflow-x-auto">
+                    {/* 调用模拟的形态学渲染函数 */}
+                    {renderMorphologyTable(sense.table_data, sense.chart_type)}
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Derived To Block - Editable (Form mode) */}
+            {/* Derivation Section - Editable (Form mode) */}
             {sense.derived_to?.length > 0 && (
               <div
-                className={`${editableClasses} flex flex-col pt-2 ${isEditingDerivation ? activeClasses : ''}`}
+                className={`${editableClasses} ${isEditingDerivation ? activeClasses : ''}`}
+                id={`entry-section-derivation-${sense.sense_id}`}
                 onContextMenu={(e) => handleContextMenu(e, 'derivation')}
-                title="右键编辑衍生词"
+                title="右键编辑派生词"
               >
-                <div className='flex items-baseline gap-2'>
-                  <span className="text-base font-bold text-gray-700 dark:text-gray-300">衍生至:</span>
-                </div>
+                <h3 className="text-lg font-bold border-l-4 border-blue-500 pl-2 mb-2">派生词 / Derivation</h3>
 
                 {isEditingDerivation && editingDerivation ? (
-                  <div className={`w-full mt-2 ${formWrapperClass}`}>
+                  <div className={`w-full ${formWrapperClass}`}>
                     <ArrayEditor
-                      label="衍生至 (Derived To)"
+                      label="派生词"
                       items={editingDerivation}
                       onChange={(newItems) => setEditingDerivation(newItems)}
-                      placeholder="输入衍生词..."
+                      placeholder="输入派生词..."
                     />
                     <FormButtons onSave={saveDerivation} onCancel={handleMasterCancel} />
                   </div>
                 ) : (
-                  <div className="derivedTo flex flex-wrap gap-2 mt-2">
+                  <div className="derivedTo flex flex-wrap gap-2 p-2">
                     {sense.derived_to.map((term, index) => {
                         const { type, className } = getLinkTypeAndClass(term);
                         return (
-                            <LinkTag
+                            <span
                                 key={index}
-                                term={term}
-                                type={type}
-                                className={className}
-                            />
+                                onClick={type !== 'none' ? () => onLinkClick(type, term) : undefined}
+                                className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${className} ${tagAnimationClasses}`}
+                                title={type !== 'none' ? `点击跳转到 ${term}` : '不可跳转'}
+                            >
+                                {term}
+                            </span>
                         );
                     })}
                   </div>
@@ -889,7 +859,6 @@ const SenseDisplay = ({
 
           </div>
         </div>
-
       </div>
     </div>
   );

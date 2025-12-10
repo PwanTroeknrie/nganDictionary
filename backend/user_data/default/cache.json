@@ -1,39 +1,148 @@
 [
   {
-    "id": 3,
+    "id": 1,
+    "word": "",
+    "transliteration": "t'angkanipa",
     "senses": [
       {
-        "chart_type": "",
+        "sense_id": 1,
+        "displayed_tag": "noun",
+        "ipa": "tˀaŋkʰanipa",
+        "derived_from": [
+          "tˀaŋkan",
+          "\\INF",
+          "ipa"
+        ],
+        "description": "tˀaŋkʰan\\INF-ip<a>",
+        "tags": [
+          "noun",
+          "ina.",
+          "abstract"
+        ],
         "definitions": [
           {
-            "examples": [],
-            "text": "拿"
+            "text": "定义: 语言学: 描述事物的名称或概念。",
+            "examples": [
+              "例句: t'angkanipa 表示‘概念单位’。",
+              "该词用于抽象名词的描述。"
+            ]
           },
           {
-            "examples": [],
-            "text": "取"
+            "text": "定义: 语法: 可作主语或宾语。",
+            "examples": [
+              "例句: t'angkanipa 可作句子的主语。",
+              "在句中作宾语时形式不变。"
+            ]
           }
         ],
+        "chart_type": "tˀaŋkʰanipa D2变格法无生名词",
+        "table_data": [
+          [
+            "核心词干",
+            "非核心词干",
+            "存在形"
+          ],
+          [
+            "tˀaŋkʰanipa",
+            "tˀaŋkʰanip",
+            "watˀaŋkʰanipa"
+          ],
+          [
+            "主格 Nom.",
+            "属格 Gen.",
+            "斜格 Obl."
+          ],
+          [
+            "tˀaŋkʰanipa",
+            "tˀaŋkʰanips",
+            "tˀaŋkʰanipx"
+          ]
+        ],
+        "derived_to": [
+          "tˀaŋkanipur",
+          "tˀaŋkanipsa"
+        ]
+      },
+      {
+        "sense_id": 2,
+        "displayed_tag": "verb",
+        "ipa": "tˀaŋkʰanipa.v",
+        "derived_from": [
+          "tˀaŋkan",
+          "ipa"
+        ],
+        "description": "由'tˀaŋkan'动词化。",
+        "tags": [
+          "v.t.",
+          "transitive",
+          "formal"
+        ],
+        "definitions": [
+          {
+            "text": "定义: 动作: 将事物命名或概念化。",
+            "examples": [
+              "例句: 研究者常用该动词表示‘命名行为’。"
+            ]
+          },
+          {
+            "text": "定义: 逻辑: 建立新的分类。",
+            "examples": [
+              "例句: t'angkanipa 表示概念生成过程。"
+            ]
+          }
+        ],
+        "chart_type": "动词变位",
+        "table_data": [
+          [
+            "人称",
+            "现在时",
+            "过去时"
+          ],
+          [
+            "1sg",
+            "tˀaŋkʰani.p'as",
+            "tˀaŋkʰani.p'es"
+          ]
+        ],
+        "derived_to": []
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "word": "fper",
+    "transliteration": "pʰper",
+    "senses": [
+      {
+        "sense_id": 1,
+        "displayed_tag": "v",
+        "ipa": "fper",
         "derived_from": [
           "0"
         ],
-        "derived_to": [
-          "pʰuperic",
-          "pʰunpʰerof"
-        ],
         "description": "pʰper",
-        "displayed_tag": "v",
-        "ipa": "fper",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "v",
           "root"
+        ],
+        "definitions": [
+          {
+            "text": "拿",
+            "examples": []
+          },
+          {
+            "text": "取",
+            "examples": []
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": [
+          "pʰuperic",
+          "pʰunpʰerof"
         ]
       }
-    ],
-    "transliteration": "fper",
-    "word": ""
+    ]
   },
   {
     "id": 4,
@@ -79,36 +188,36 @@
   },
   {
     "id": 5,
+    "word": "pʰunpʰerofma",
+    "transliteration": "pʰ<n>per\\INF-of-ma",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "消耗品"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "n",
+        "ipa": "pʰunpʰerofma",
         "derived_from": [
           "pʰunpʰerof",
           "ma"
         ],
-        "derived_to": [
-          "0"
-        ],
         "description": "pʰ<n>per\\INF-of-ma",
-        "displayed_tag": "n",
-        "ipa": "pʰunpʰerofma",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "n",
           "abstract",
           "inan."
+        ],
+        "definitions": [
+          {
+            "text": "消耗品",
+            "examples": []
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": [
+          "0"
         ]
       }
-    ],
-    "transliteration": "pʰ<n>per\\INF-of-ma",
-    "word": "pʰunpʰerofma"
+    ]
   },
   {
     "id": 6,
@@ -898,40 +1007,40 @@
   },
   {
     "id": 29,
+    "word": "arkʰocmoŋ",
+    "transliteration": "a-rkoc\\INF-moŋ",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [
-              "制度"
-            ],
-            "text": "统治"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "n",
+        "ipa": "arkʰocmoŋ",
         "derived_from": [
           "a",
           "rkoc",
           "\\INF",
           "moŋ"
         ],
-        "derived_to": [
-          "0"
-        ],
         "description": "a-rkoc\\INF-moŋ",
-        "displayed_tag": "n",
-        "ipa": "arkʰocmoŋ",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "n",
           "abstract",
           "inan."
+        ],
+        "definitions": [
+          {
+            "text": "统治",
+            "examples": [
+              "制度"
+            ]
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": [
+          "0"
         ]
       }
-    ],
-    "transliteration": "a-rkoc\\INF-moŋ",
-    "word": "arkʰocmoŋ"
+    ]
   },
   {
     "id": 30,
@@ -3771,100 +3880,102 @@
   },
   {
     "id": 116,
+    "word": "qˀaftoŋis",
+    "transliteration": "qˀapʰtoŋ-is",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "降伏"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "v",
+        "ipa": "qˀaftoŋis",
         "derived_from": [
           "qˀaftoŋ",
           "is"
         ],
-        "derived_to": [
-          "0"
-        ],
         "description": "qˀapʰtoŋ-is",
-        "displayed_tag": "v",
-        "ipa": "qˀaftoŋis",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "v",
           "tr."
+        ],
+        "definitions": [
+          {
+            "text": "降伏",
+            "examples": []
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": [
+          "0"
         ]
       }
-    ],
-    "transliteration": "q'aftoŋis",
-    "word": ""
+    ]
   },
   {
     "id": 117,
+    "word": "ftoŋep",
+    "transliteration": "ftoŋ-ep",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [
-              "安定"
-            ],
-            "text": "向低处去"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "v",
+        "ipa": "ftoŋep",
         "derived_from": [
           "ftoŋ",
           "ep"
         ],
-        "derived_to": [
-          "aftoŋepmoŋ"
-        ],
         "description": "ftoŋ-ep",
-        "displayed_tag": "v",
-        "ipa": "ftoŋep",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "v",
           "intr."
+        ],
+        "definitions": [
+          {
+            "text": "向低处去",
+            "examples": [
+              "安定"
+            ]
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": [
+          "aftoŋepmoŋ"
         ]
       }
-    ],
-    "transliteration": "ftoŋ-ep",
-    "word": "ftoŋep"
+    ]
   },
   {
     "id": 118,
+    "word": "aftoŋepmoŋ",
+    "transliteration": "a-ftoŋep-moŋ",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "情况，关头"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "n",
+        "ipa": "aftoŋepmoŋ",
         "derived_from": [
           "a",
           "ftoŋep",
           "moŋ"
         ],
-        "derived_to": [],
         "description": "a-ftoŋep-moŋ",
-        "displayed_tag": "n",
-        "ipa": "ftoŋepmoŋ",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "n",
           "abstract"
-        ]
+        ],
+        "definitions": [
+          {
+            "text": "情况",
+            "examples": [
+              "关头"
+            ]
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": []
       }
-    ],
-    "transliteration": "ftoŋepmoŋ",
-    "word": ""
+    ]
   },
   {
     "id": 119,
@@ -3996,35 +4107,35 @@
   },
   {
     "id": 123,
+    "word": "ftefma",
+    "transliteration": "pʰtepʰ-ma",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "喜爱"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "n",
+        "ipa": "ftefma",
         "derived_from": [
           "ftef",
           "ma"
         ],
-        "derived_to": [
-          "0"
-        ],
         "description": "pʰtepʰ-ma",
-        "displayed_tag": "n",
-        "ipa": "ftefma",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "n",
           "abstract"
+        ],
+        "definitions": [
+          {
+            "text": "喜爱",
+            "examples": []
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": [
+          "0"
         ]
       }
-    ],
-    "transliteration": "",
-    "word": "ftefmo"
+    ]
   },
   {
     "id": 124,
@@ -5165,35 +5276,35 @@
   },
   {
     "id": 160,
+    "word": "pʰutoŋ",
+    "transliteration": "pʰ<w>toŋ",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [
-              "下冲"
-            ],
-            "text": "(突然)下坠"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "v",
+        "ipa": "pʰutoŋ",
         "derived_from": [
           "ftoŋ",
           "<w>"
         ],
-        "derived_to": [],
         "description": "pʰ<w>toŋ",
-        "displayed_tag": "v",
-        "ipa": "pʰutoŋ",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "v",
           "intr."
-        ]
+        ],
+        "definitions": [
+          {
+            "text": "(突然)下坠",
+            "examples": [
+              "下冲"
+            ]
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": []
       }
-    ],
-    "transliteration": "phutong",
-    "word": ""
+    ]
   },
   {
     "id": 161,
@@ -5225,6 +5336,32 @@
         "derived_to": [
           "0"
         ]
+      }
+    ]
+  },
+  {
+    "id": 162,
+    "word": "ar",
+    "transliteration": "",
+    "senses": [
+      {
+        "sense_id": 1,
+        "displayed_tag": "num.",
+        "ipa": "ar",
+        "derived_from": [],
+        "description": "",
+        "tags": [
+          "num."
+        ],
+        "definitions": [
+          {
+            "text": "2",
+            "examples": []
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": []
       }
     ]
   },
@@ -5515,34 +5652,34 @@
   },
   {
     "id": 172,
+    "word": "onilts",
+    "transliteration": "uts 的小称",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "眼睛"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "n",
+        "ipa": "onilts",
         "derived_from": [
           "oni",
           "uts"
         ],
-        "derived_to": [],
         "description": "uts 的小称",
-        "displayed_tag": "noun",
-        "ipa": "onilts",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "n",
           "concrete",
           "dim."
-        ]
+        ],
+        "definitions": [
+          {
+            "text": "眼睛",
+            "examples": []
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": []
       }
-    ],
-    "transliteration": "uts 的小称",
-    "word": ""
+    ]
   },
   {
     "id": 173,
@@ -5696,40 +5833,25 @@
   },
   {
     "id": 178,
+    "word": "xrokʰu",
+    "transliteration": "qʰrokʰ-uʔ",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "血腥的"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "v",
+        "ipa": "xrokʰu",
         "derived_from": [
           "xrox",
           "uʔ"
         ],
-        "derived_to": [],
         "description": "qʰrokʰ-uʔ",
-        "displayed_tag": "v",
-        "ipa": "xrokʰu",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "v",
           "stative"
-        ]
-      },
-      {
-        "sense_id": 2,
-        "displayed_tag": "new",
-        "ipa": "",
-        "derived_from": [],
-        "description": "新的义项描述",
-        "tags": [],
+        ],
         "definitions": [
           {
-            "text": "新的释义",
+            "text": "血腥的",
             "examples": []
           }
         ],
@@ -5737,9 +5859,7 @@
         "table_data": [],
         "derived_to": []
       }
-    ],
-    "transliteration": "qʰrokʰ-uʔ",
-    "word": "xrokʰu"
+    ]
   },
   {
     "id": 179,
@@ -5803,33 +5923,33 @@
   },
   {
     "id": 181,
+    "word": "jarrts",
+    "transliteration": "uts 的双数",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "双眼"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "n",
+        "ipa": "jarrts",
         "derived_from": [
           "jar",
           "uts"
         ],
-        "derived_to": [],
         "description": "uts 的双数",
-        "displayed_tag": "n",
-        "ipa": "jarrts",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
-          "noun",
+          "n",
           "concrete"
-        ]
+        ],
+        "definitions": [
+          {
+            "text": "双眼",
+            "examples": []
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": []
       }
-    ],
-    "transliteration": "jarrts",
-    "word": ""
+    ]
   },
   {
     "id": 182,
@@ -5863,33 +5983,35 @@
   },
   {
     "id": 183,
+    "word": "tsurquj",
+    "transliteration": "ts<r>quj",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "回归; 回到\n"
-          }
-        ],
+        "sense_id": 1,
+        "displayed_tag": "v",
+        "ipa": "tsurquj",
         "derived_from": [
           "tsquj",
           "<r>"
         ],
-        "derived_to": [],
         "description": "ts<r>quj",
-        "displayed_tag": "v",
-        "ipa": "tsurquj",
-        "sense_id": 1,
-        "table_data": [],
         "tags": [
           "v",
           "intr."
-        ]
+        ],
+        "definitions": [
+          {
+            "text": "回归",
+            "examples": [
+              "回到"
+            ]
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": []
       }
-    ],
-    "transliteration": "ts<r>quj",
-    "word": "tsurquj"
+    ]
   },
   {
     "id": 184,
@@ -6017,34 +6139,32 @@
   },
   {
     "id": 188,
+    "word": "ut",
+    "transliteration": "nt",
     "senses": [
       {
-        "chart_type": "",
-        "definitions": [
-          {
-            "examples": [],
-            "text": "手"
-          }
-        ],
-        "derived_from": [
-          "nt"
-        ],
-        "derived_to": [
-          "jarrt"
-        ],
-        "description": "nt\n",
+        "sense_id": 1,
         "displayed_tag": "n",
         "ipa": "ut",
-        "sense_id": 1,
-        "table_data": [],
+        "derived_from": [],
+        "description": "nt",
         "tags": [
           "n",
           "concrete"
+        ],
+        "definitions": [
+          {
+            "text": "手",
+            "examples": []
+          }
+        ],
+        "chart_type": "",
+        "table_data": [],
+        "derived_to": [
+          "jarrt"
         ]
       }
-    ],
-    "transliteration": "nt",
-    "word": "ut"
+    ]
   },
   {
     "id": 189,
