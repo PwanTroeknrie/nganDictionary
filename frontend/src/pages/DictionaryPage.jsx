@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
 
 // 导入所有子组件
 import Header from '../components/Header.jsx';
@@ -20,16 +19,9 @@ const API_BASE_URL = 'http://127.0.0.1:5000/api/projects';
  * (其他 props 略)
  */
 function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCustomFont }) {
-    // --- 路由管理：替换 selectedEntryId 状态 ---
-    const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
-
-    // 核心替换：从 URL 查询参数中读取当前选中的词条ID
-    const selectedEntryId = searchParams.get('id');
-
     // --- 状态管理 ---
     const [entries, setEntries] = useState([]); // 原始的扁平列表数据
-    // ⛔ 移除了 [selectedEntryId, setSelectedEntryId] 的状态声明
+    const [selectedEntryId, setSelectedEntryId] = useState(null);
 
     const [editingSection, setEditingSection] = useState(null);
     const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
@@ -57,24 +49,11 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
         themeToggle: true,         // 主题切换开关
     };
 
-    // 💡 新增：统一处理词条跳转的函数 (更新 URL 查询参数)
-    const navigateToEntry = useCallback((entryId) => {
-        if (entryId) {
-            // 设置新的 'id' 查询参数，触发 URL 变化
-            setSearchParams({ id: entryId });
-        } else {
-             // 如果 id 为空 (例如没有词条)，移除 id 参数
-             setSearchParams({});
-        }
-    }, [setSearchParams]);
-
-
     // 核心数据获取函数
     const fetchEntries = useCallback(async (selectFirst = true) => {
         if (!projectId) {
             setEntries([]);
-            // ⛔ 移除了 setSelectedEntryId(null)
-            navigateToEntry(null);
+            setSelectedEntryId(null);
             return;
         }
 
@@ -108,19 +87,15 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
             if (data.length > 0 && selectFirst) {
                 // 保持当前选中，如果当前选中的已被删除或不存在，则选中第一个
                 if (!data.some(e => e.id === selectedEntryId)) {
-                    // 💡 替换：setSelectedEntryId(data[0].id);
-                    navigateToEntry(data[0].id);
+                    setSelectedEntryId(data[0].id);
                 }
             } else if (data.length === 0) {
-                // 如果没有词条，确保 URL 上没有 id 参数
-                // 💡 替换：setSelectedEntryId(null);
-                navigateToEntry(null);
+                setSelectedEntryId(null);
             }
         } catch (error) {
             console.error("Failed to fetch entries:", error);
         }
-    }, [projectId, selectedEntryId, navigateToEntry]); // 依赖项：selectedEntryId 现在来自路由
-
+    }, [projectId, selectedEntryId]);
 
     // 初始化示例数据 (用于首次加载或空项目)
     const initSampleData = async (id) => {
@@ -165,7 +140,7 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
         return { flatTreeEntries: flatList, dictionaryMap };
     }, [entries]); // 依赖原始 entries 列表
 
-    // 获取选中的词条对象 (selectedEntryId 依赖于 URL)
+    // 获取选中的词条对象
     const selectedEntry = useMemo(
         () => entries.find((e) => e.id === selectedEntryId),
         [entries, selectedEntryId]
@@ -176,7 +151,6 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
         setEntries(prevEntries =>
             prevEntries.map(e => e.id === updatedEntry.id ? updatedEntry : e)
         );
-        // selectedEntryId 现在是路由参数，但我们仍用它来判断是否是当前编辑的词条
         if (updatedEntry.id === selectedEntryId) {
             setHasLocalChanges(true);
             // 每次修改都将最新的未保存数据存入 Ref
@@ -363,8 +337,7 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
 
             // 成功后重新加载数据并选中新词条
             await fetchEntries(false);
-            // 💡 替换：setSelectedEntryId(createdEntry.id);
-            navigateToEntry(createdEntry.id);
+            setSelectedEntryId(createdEntry.id);
 
             console.log("New entry created successfully:", createdEntry);
 
@@ -372,7 +345,7 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
             console.error('Error creating new entry:', error);
             console.error('创建词条失败！请检查后端服务是否运行。');
         }
-    }, [projectId, fetchEntries, navigateToEntry]);
+    }, [projectId, fetchEntries]);
 
 
     // 7. 删除词条 (DELETE)
@@ -471,14 +444,14 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
         const selected = dictionaryMap[lemma];
 
         if (selected && selected.id) {
-            // 💡 替换：setSelectedEntryId(selected.id);
-            navigateToEntry(selected.id);
+            // 找到了！调用 setSelectedEntryId 来实现“跳转”
+            setSelectedEntryId(selected.id);
             // 确保左侧列表是打开的，以便用户看到高亮
             setIsWordListOpen(true);
         } else {
             console.warn(`Search selection failed: Lemma "${lemma}" not found in dictionaryMap.`);
         }
-    }, [dictionaryMap, navigateToEntry]); // 依赖 navigateToEntry
+    }, [dictionaryMap]); // 依赖 dictionaryMap
 
     const addDefinition = useCallback(() => {
         if (!selectedEntry) return;
@@ -526,8 +499,7 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
                 <WordList
                     entries={flatTreeEntries}
                     selectedEntryId={selectedEntryId}
-                    // 💡 替换 onSelect={setSelectedEntryId}
-                    onSelect={navigateToEntry}
+                    onSelect={setSelectedEntryId}
                     isOpen={isWordListOpen}
                     onDeleteEntry={handleDeleteEntry}
                     onAddNewEntry={handleCreateNewEntry}
