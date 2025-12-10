@@ -1,0 +1,125 @@
+/*!* ========================================================= *!*/
+/*!* 1. Tailwind & External Directives/Plugins *!*/
+/*!* ========================================================= *!*/
+@import "tailwindcss";
+@import 'highlight.js/styles/monokai.css'; /* 保持代码高亮样式 */
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ========================================================= */
+/* 2. Google Font Import (注释掉，按原样保留) */
+/* ========================================================= */
+/*@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap');*/
+
+/* ========================================================= */
+/* 3. Custom .font-word class with CSS Variable */
+/* ========================================================= */
+.font-word {
+  /* 使用 var(--custom-word-font) 作为主要字体，回退到 Noto Sans 和 sans-serif */
+  font-family: var(--custom-word-font), "Noto Sans", sans-serif;
+}
+
+/* ========================================================= */
+/* 4. 滚动条统一美化 (针对 Webkit & Firefox) */
+/* - 目标：.overflow-y-auto, .prose pre, .cm-scroller */
+/* ========================================================= */
+
+/* --- 通用滚动条选择器 --- */
+/* 统一选择所有需要自定义滚动条的元素，以便统一设置 Webkit 样式 */
+.overflow-y-auto,
+.prose pre,
+.cm-scroller {
+    /* --- Firefox 样式 (浅色) --- */
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6; /* Gray 300 | Gray 100 */
+}
+
+/* --- Webkit 滚动条尺寸 --- */
+/* 统一宽度/高度 */
+.overflow-y-auto::-webkit-scrollbar,
+.prose pre::-webkit-scrollbar,
+.cm-scroller::-webkit-scrollbar {
+    /* 统一使用 8px 宽度/高度，与 .overflow-y-auto 保持一致 */
+    width: 8px;
+    height: 8px;
+}
+
+/* --- Webkit 轨道样式 (浅色) --- */
+.overflow-y-auto::-webkit-scrollbar-track,
+.prose pre::-webkit-scrollbar-track,
+.cm-scroller::-webkit-scrollbar-track {
+    background: #f3f4f6; /* Gray 100 */
+    border-radius: 4px;
+}
+
+/* --- Webkit 滑块样式 (浅色) --- */
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.prose pre::-webkit-scrollbar-thumb,
+.cm-scroller::-webkit-scrollbar-thumb {
+    background-color: #d1d5db; /* Gray 300 */
+    border-radius: 4px;
+    /* 移除 prose pre 的 2px 边框以统一外观 */
+}
+
+/* --- Webkit 滑块悬停样式 (浅色) --- */
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.prose pre::-webkit-scrollbar-thumb:hover,
+.cm-scroller::-webkit-scrollbar-thumb:hover {
+    background-color: #9ca3af; /* Gray 400 */
+}
+
+/* ========================================================= */
+/* 5. 深色模式下的滚动条样式覆盖 (统一) */
+/* ========================================================= */
+
+/* --- Firefox 样式 (深色) --- */
+.dark .overflow-y-auto,
+.dark .prose pre,
+.dark .cm-scroller {
+    scrollbar-color: #4b5563 #1f2937; /* Gray 600 | Gray 800 */
+}
+
+/* --- Webkit 轨道样式 (深色) --- */
+.dark .overflow-y-auto::-webkit-scrollbar-track,
+.dark .prose pre::-webkit-scrollbar-track,
+.dark .cm-scroller::-webkit-scrollbar-track {
+    background: #1f2937; /* Gray 800 */
+}
+
+/* --- Webkit 滑块样式 (深色) --- */
+.dark .overflow-y-auto::-webkit-scrollbar-thumb,
+.dark .prose pre::-webkit-scrollbar-thumb,
+.dark .cm-scroller::-webkit-scrollbar-thumb {
+    background-color: #4b5563; /* Gray 600 */
+}
+
+/* --- Webkit 滑块悬停样式 (深色) --- */
+.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.dark .prose pre::-webkit-scrollbar-thumb:hover,
+.dark .cm-scroller::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280; /* Gray 500 */
+}
+
+/* ========================================================= */
+/* 6. 代码块背景和字体颜色覆盖 (针对 .prose pre) */
+/* - 目标是覆盖 monokai.css 的背景色，与 UI 保持一致 */
+/* ========================================================= */
+
+/* --- 代码块背景覆盖 (浅色) --- */
+.prose pre,
+.prose .hljs {
+    /* 统一使用 GitHub 浅色背景 */
+    background-color: #f6f8fa !important;
+    color: #333 !important;
+}
+
+
+/* --- 代码块背景覆盖 (深色) --- */
+.dark .prose pre,
+.dark .prose .hljs {
+    /* 统一使用 Tailwind Gray-800 */
+    background-color: #1f2937 !important;
+    /* 统一使用 Tailwind Gray-300 */
+    color: #d1d5db !important;
+}
+
