@@ -124,32 +124,63 @@ const FormButtons = ({ onSave, onCancel }) => (
   </div>
 );
 
-/**
- * Mock function for morphology table rendering
- */
-const renderMorphologyTable = (tableData, chartType) => {
+ // --- Morphology Table Renderer (MODIFIED) ---
+  const renderMorphologyTable = (data, caption) => {
+    if (!Array.isArray(data) || data.length === 0) return null;
+
+    const rows = data.map(row => Array.isArray(row) ? row : [String(row)]);
+
     return (
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                    <th colSpan="2" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Morphology Chart ({chartType})
+      <div
+        // 变更: 1. 添加 overflow-x-auto (允许水平滚动)
+        className="py-2 table-container bg-white dark:bg-gray-800 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 overflow-x-auto"
+      >
+        <table className="w-full Declension text-sm border-collapse">
+          {caption && (
+            <caption className="text-sm font-semibold text-white p-3 rounded-t-xl bg-blue-600 dark:bg-blue-400">
+              {caption}
+            </caption>
+          )}
+          <tbody>
+            {rows.map((row, rowIndex) => (
+              <tr
+                key={rowIndex}
+                // 移除了 hover 效果，因为它们在水平滚动时体验不佳
+                className={
+                  rowIndex % 2 === 0
+                    ? 'bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 transition duration-150'
+                    : 'bg-gray-50 dark:bg-gray-800/80 border-b border-gray-100 dark:border-gray-700 transition duration-150'
+                }
+              >
+                {row.map((cell, cellIndex) => {
+                  const isHeaderLike = rowIndex === 0 || rowIndex === 2;
+
+                  return isHeaderLike ? (
+                    <th
+                      key={cellIndex}
+                      // 变更: 3. 添加 whitespace-nowrap 确保表头不换行
+                      className="p-3 font-semibold text-blue-600 dark:text-blue-300 text-left border-r border-gray-200 dark:border-gray-700 last:border-r-0 whitespace-nowrap"
+                    >
+                      {cell}
                     </th>
-                </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Form A</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">data-A</td>
-                </tr>
-                <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Form B</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">data-B</td>
-                </tr>
-            </tbody>
+                  ) : (
+                    // 变更: 3. 添加 whitespace-nowrap 确保单元格内容不换行
+                    <td
+                      key={cellIndex}
+                      className="p-3 font-mono text-center border-r border-gray-200 dark:border-gray-700 last:border-r-0 text-gray-700 dark:text-gray-300 whitespace-nowrap"
+                    >
+                      {cell}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
         </table>
+      </div>
     );
-};
+  };
+
 
 
 /**
@@ -192,7 +223,7 @@ const SenseDisplay = ({
 
   // --- Styling Helpers ---
   const editableClasses = "group p-3 rounded-xl transition-shadow duration-200 cursor-context-menu";
-  const activeClasses = "p-4 rounded-xl -m-3 shadow-2xl ring-4 ring-yellow-400/50 dark:ring-yellow-700/50";
+  const activeClasses = "p-4 rounded-xl -m-3 shadow-2xl";
   const tagAnimationClasses = "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md";
 
   // Common classes for new forms
