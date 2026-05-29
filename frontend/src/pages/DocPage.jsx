@@ -270,9 +270,9 @@ const CustomHeading = forwardRef(({ level, children, onHeadingParsed, ...rest },
 /**
  * 目录递归渲染组件 (使用 memo 优化性能)
  */
-const RenderTocItem = memo(({ item, activeHeadingId, setActiveHeadingId }) => {
+const RenderTocItem = memo(({ item, activeHeadingId, setActiveHeadingId, expandAll }) => {
     const isActive = item.id === activeHeadingId;
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(expandAll);
     const hasChildren = item.children && item.children.length > 0;
 
     // 自动展开父级 (用于 deep link)
@@ -288,12 +288,15 @@ const RenderTocItem = memo(({ item, activeHeadingId, setActiveHeadingId }) => {
         e.preventDefault();
         const targetElement = document.getElementById(item.id);
         if (targetElement) {
-            // 使用 'smooth' 行为滚动到目标元素
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // 即时设置活动ID，提供即时反馈
+            const main = document.querySelector('main.overflow-y-auto');
+            if (main) {
+                const offset = targetElement.getBoundingClientRect().top + main.scrollTop - 80;
+                main.scrollTo({ top: offset, behavior: 'smooth' });
+            } else {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
             setActiveHeadingId(item.id);
         }
-        // 更新 URL search param 而非 hash
         const newUrl = `${window.location.origin}${window.location.pathname}?affix=${item.id}`;
         window.history.pushState(null, '', newUrl);
     };
@@ -309,10 +312,13 @@ const RenderTocItem = memo(({ item, activeHeadingId, setActiveHeadingId }) => {
             >
                 {hasChildren && (
                      <span
-                        className={`toggle-icon mr-1 transition-transform ${isOpen ? 'rotate-90' : ''}`}
+                        className="toggle-icon mr-1 transition-transform duration-200 flex-shrink-0"
+                        style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
                         onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
                      >
-                        ▶
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
                      </span>
                 )}
                 <span className="flex-grow truncate">
@@ -327,6 +333,7 @@ const RenderTocItem = memo(({ item, activeHeadingId, setActiveHeadingId }) => {
                             item={child}
                             activeHeadingId={activeHeadingId}
                             setActiveHeadingId={setActiveHeadingId}
+                            expandAll={expandAll}
                         />
                     ))}
                 </ul>
@@ -360,6 +367,8 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
     const [isFontInputVisible, setIsFontInputVisible] = useState(false);
     const [docLoading, setDocLoading] = useState(true);
     const [docError, setDocError] = useState('');
+    const [tocExpandAll, setTocExpandAll] = useState(true);
+    const [tocKey, setTocKey] = useState(0);
 
     // Resizing State
     const [rightPanelWidth, setRightPanelWidth] = useState(400); // 默认像素宽度
@@ -447,10 +456,16 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
             setTimeout(() => {
                 const targetElement = headingRefs.current[affix];
                 if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const main = document.querySelector('main.overflow-y-auto');
+                    if (main) {
+                        const offset = targetElement.getBoundingClientRect().top + main.scrollTop - 80;
+                        main.scrollTo({ top: offset, behavior: 'smooth' });
+                    } else {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                     setActiveHeadingId(affix);
                 }
-            }, 100); // 稍微延迟以确保 DOM 渲染完成
+            }, 500);
         }
     }, []);
 
@@ -636,15 +651,27 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
                     style={{ width: tocWidth }}
                 >
                     <div className={`p-4 h-full overflow-y-auto scrollbar-custom transition-opacity duration-300 ${isLeftOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                        <h3 className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-100">内容大纲</h3>
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">内容大纲</h3>
+                            <button
+                                onClick={() => { setTocExpandAll(prev => !prev); setTocKey(k => k + 1); }}
+                                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
+                                title={tocExpandAll ? '全部折叠' : '全部展开'}
+                            >
+                                <svg className="w-4 h-4 transition-transform duration-200" style={{ transform: tocExpandAll ? 'rotate(90deg)' : 'rotate(0deg)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </button>
+                        </div>
                         <nav>
-                            <ul className="list-none p-0">
+                            <ul key={tocKey} className="list-none p-0">
                                 {toc.map(item => (
                                     <RenderTocItem
                                         key={item.id}
                                         item={item}
                                         activeHeadingId={activeHeadingId}
                                         setActiveHeadingId={setActiveHeadingId}
+                                        expandAll={tocExpandAll}
                                     />
                                 ))}
                             </ul>
@@ -702,6 +729,7 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
                         {/* 确保 CodeMirror 的父容器占满剩余空间并具有相对定位 */}
                         <div className="flex-grow relative h-full overflow-hidden">
                             <CodeMirror
+                                key={isDarkMode ? 'dark' : 'light'}
                                 value={editorSource}
                                 height="100%"
                                 theme={isDarkMode ? githubDark : githubLight}
