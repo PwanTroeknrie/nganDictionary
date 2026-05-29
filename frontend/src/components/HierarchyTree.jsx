@@ -32,6 +32,9 @@ const HierarchyTree = ({ entry, isOpen, onAddSense, onDeleteSense }) => {
     // 确保在 'main' 元素内滚动
     const mainContent = document.querySelector('main.flex-1');
 
+    // 更新 URL hash
+    window.history.replaceState(null, '', `#${id}`);
+
     if (element && mainContent) {
         const elementRect = element.getBoundingClientRect();
         const containerRect = mainContent.getBoundingClientRect();

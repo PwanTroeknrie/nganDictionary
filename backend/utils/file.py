@@ -14,7 +14,7 @@ class DictionaryExcelConverter:
     def __init__(self):
         # 定义Excel中预期的列，用于参考，但在转换逻辑中并未严格检查
         self.required_columns = [
-            'id', 'word', 'transliteration', 'sense_id', 'displayed_tag',
+            'id', 'slug', 'word', 'transliteration', 'sense_id', 'displayed_tag',
             'ipa', 'derived_from', 'description', 'tags', 'definitions',
             'chart_type', 'table_data', 'derived_to'
         ]
@@ -30,6 +30,7 @@ class DictionaryExcelConverter:
             # 提取词条的基础信息
             base_info = {
                 'id': entry['id'],
+                'slug': entry.get('slug', ''),
                 'word': entry['word'],
                 'transliteration': entry['transliteration']
             }
@@ -92,6 +93,9 @@ class DictionaryExcelConverter:
                 'transliteration': first_row['transliteration'],
                 'senses': []
             }
+            # 保留 slug 字段（如果存在）
+            if 'slug' in first_row and str(first_row['slug']).strip():
+                entry['slug'] = str(first_row['slug']).strip()
 
             # 处理每个义项
             for _, row in entry_rows.iterrows():
@@ -239,6 +243,7 @@ class DictionaryExcelConverter:
     def validate_json_structure(self, json_data: List[Dict]) -> bool:
         """验证JSON数据结构是否符合预期"""
         required_keys = ['id', 'word', 'transliteration', 'senses']
+        optional_keys = ['slug']
         sense_required_keys = [
             'sense_id', 'displayed_tag', 'ipa', 'derived_from', 'description',
             'tags', 'definitions', 'chart_type', 'table_data', 'derived_to'

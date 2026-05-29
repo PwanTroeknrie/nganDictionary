@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      - DB_PATH=/app/data/ngandic.sqlite
+      - BASE_DATA_DIR=/app/data/user_data
+    volumes:
+      - backend_data:/app/data
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend_data:

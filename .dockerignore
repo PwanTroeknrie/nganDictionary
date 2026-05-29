@@ -1,0 +1,27 @@
+# Git
+.git
+.gitignore
+
+# Claude
+.claude
+CLAUDE.md
+log.md
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+backend/.venv
+backend/venv
+
+# Node
+frontend/node_modules
+frontend/dist
+
+# Temp
+temp_original_homepage.jsx
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db

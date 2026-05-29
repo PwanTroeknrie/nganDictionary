@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os
 import base64
+import re
 import pandas as pd
 import math
 from typing import Dict, List
@@ -14,11 +15,18 @@ from db import (
 app = Flask(__name__)
 CORS(app)
 
-BASE_DATA_DIR = './user_data'
+BASE_DATA_DIR = os.environ.get('BASE_DATA_DIR', './user_data')
 
 
 def word_to_slug(word: str) -> str:
     return base64.urlsafe_b64encode(word.encode('utf-8')).decode('ascii').rstrip('=')
+
+
+def _heading_id(text: str) -> str:
+    definition = text.strip()
+    safe_keyword = re.sub(r'\\([\\*_{}\[\]()#+\-.!<>])', r'\1', definition)
+    suffix = base64.urlsafe_b64encode(safe_keyword.encode('utf-8')).decode('ascii').rstrip('=')[:10]
+    return definition.replace(' ', '-') + '-' + suffix
 
 
 def _human_size(bytes_val: int) -> str:
@@ -555,22 +563,53 @@ def upload_document(project_id: str):
         return jsonify({'error': str(e)}), 500
 
 
+# ── doc headings ───────────────────────────────────────────────
+
+@app.route('/api/projects/<project_id>/docs/headings', methods=['GET'])
+def get_doc_headings(project_id: str):
+    try:
+        project_dir = os.path.join(BASE_DATA_DIR, project_id)
+        doc_path = os.path.join(project_dir, 'docs.md')
+        headings = []
+        if os.path.isfile(doc_path):
+            with open(doc_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    text = None
+                    if line.startswith('#### '):
+                        text = line[5:].strip()
+                    elif line.startswith('### '):
+                        text = line[4:].strip()
+                    if text:
+                        # Remove markdown escapes (e.g. \<w\> → <w>)
+                        text = text.replace('\\<', '<').replace('\\>', '>')
+                        level = 4 if line.startswith('#### ') else 3
+                        headings.append({
+                            'text': text,
+                            'level': level,
+                            'id': _heading_id(text)
+                        })
+        return jsonify({'headings': headings})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 # ── startup ─────────────────────────────────────────────────────
 
+os.makedirs(BASE_DATA_DIR, exist_ok=True)
+init_db()
+
+for pid in os.listdir(BASE_DATA_DIR):
+    project_dir = os.path.join(BASE_DATA_DIR, pid)
+    if not os.path.isdir(project_dir):
+        continue
+    if migrate_config_from_file(pid):
+        print(f"Migrated config for {pid}")
+    cache_path = os.path.join(project_dir, 'cache.json')
+    if os.path.exists(cache_path):
+        count = migrate_from_json(pid)
+        if count > 0:
+            print(f"Migrated {count} entries from {pid}/cache.json")
+
 if __name__ == '__main__':
-    os.makedirs(BASE_DATA_DIR, exist_ok=True)
-    init_db()
-
-    for pid in os.listdir(BASE_DATA_DIR):
-        project_dir = os.path.join(BASE_DATA_DIR, pid)
-        if not os.path.isdir(project_dir):
-            continue
-        if migrate_config_from_file(pid):
-            print(f"Migrated config for {pid}")
-        cache_path = os.path.join(project_dir, 'cache.json')
-        if os.path.exists(cache_path):
-            count = migrate_from_json(pid)
-            if count > 0:
-                print(f"Migrated {count} entries from {pid}/cache.json")
-
     app.run(debug=True, host='0.0.0.0', port=5000)

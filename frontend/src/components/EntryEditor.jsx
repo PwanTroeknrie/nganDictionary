@@ -4,8 +4,11 @@ import EntryDisplay from './EntryDisplay.jsx'; // 导入 EntryDisplay - 修复�
 const EntryEditor = forwardRef(({
         entry,
         isGlobalEditMode,
-        onUpdateEntry, // 我们将使用这个 prop 来保存更改
-        onUpdateSense
+        onUpdateEntry,
+        onUpdateSense,
+        dictionaryMap,
+        onLinkClick,
+        docHeadingsMap,
     }, ref) => {
 
     // 1. **状态管理**：用于存储在全局编辑模式下 textarea 中的 JSON 字符串
@@ -125,6 +128,9 @@ const EntryEditor = forwardRef(({
             entry={entry}
             onUpdateEntry={onUpdateEntry}
             onUpdateSense={onUpdateSense}
+            dictionaryMap={dictionaryMap}
+            onLinkClick={onLinkClick}
+            docHeadingsMap={docHeadingsMap}
         />}
     </main>
   );

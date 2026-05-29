@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import SenseDisplay from './SenseDisplay'; // 导入 SenseDisplay
 
 // (假设) onUpdateSense 是从父组件传递下来的
-const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense }) => {
+const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense, dictionaryMap, onLinkClick, docHeadingsMap }) => {
 
     // --- 状态管理 ---
     const [editingSection, setEditingSection] = useState(null); // 'mainWord'
@@ -163,6 +163,9 @@ const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense }) => {
                     entryWord={entry.word}
                     entryTransliteration={entry.transliteration}
                     onUpdateSense={onUpdateSense}
+                    dictionaryMap={dictionaryMap}
+                    onLinkClick={onLinkClick}
+                    docHeadingsMap={docHeadingsMap}
                 />
             ))}
             </>
