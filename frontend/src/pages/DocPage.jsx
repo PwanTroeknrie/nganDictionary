@@ -11,8 +11,7 @@ import { python } from "@codemirror/lang-python";
 
 
 
-// We use a dummy object for useNavigate since we are making a single runnable file
-const useNavigate = () => (path) => console.log(`Navigating to: ${path}`);
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // ... (I. ICON and HEADER DEFINITIONS 保持不变) ...
 const createIcon = (d) => (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d={d}/></svg>;
@@ -341,55 +340,26 @@ const RenderTocItem = memo(({ item, activeHeadingId, setActiveHeadingId }) => {
 // III. 主页面组件 DocPage
 // =================================================================
 
-// 默认 Markdown 内容
-const initialMarkdown = `
-# 实时 Markdown 编辑器
+const fallbackMarkdown = `# 欢迎使用 Ngandic 文档编辑器
 
-这是一个演示文档。右侧面板是 **Markdown 源代码编辑器**。
+请从左侧选择一个项目，开始编辑文档。
 
----
-
-## 🚀 实时预览功能 (Live Preview)
-
-当你修改右侧代码时，这里的渲染结果会即时更新。
-
-### 调整面板大小
-
-你可以**拖动**编辑器与预览区之间的蓝色分割线来调整两个面板的相对大小。
-
-### 🎨 语法示例
-
-1.  **列表:**
-    * 苹果
-    * 香蕉
-    * 橙子
-2.  **粗体与斜体:** **加粗** 和 *斜体*。
-3.  **引用块:**
-> 生活就像骑自行车，想保持平衡就得不断前进。
-
-\`\`\`javascript
-function calculateSum(a, b) {
-  // 这是代码高亮演示
-  return a + b;
-}
-console.log(calculateSum(5, 3)); // 输出 8
-\`\`\`
-
-## 📌 导航 (Table of Contents)
-
-左侧的内容大纲会随着你滚动文档而实时高亮显示当前章节。
+> 提示：在项目管理中心点击"进入编辑/预览"来加载项目文档。
 `;
 
-export default function DocPage({ schemeName = 'default' }) {
+export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setCustomFont }) {
+    const [searchParams] = useSearchParams();
+    const projectId = searchParams.get('project') || 'default';
+
     // 状态管理
-    const [editorSource, setEditorSource] = useState(initialMarkdown); // 可编辑的 Markdown 源
+    const [editorSource, setEditorSource] = useState('');
     const [toc, setToc] = useState([]);
     const [activeHeadingId, setActiveHeadingId] = useState(null);
     const [isLeftOpen, setIsLeftOpen] = useState(true);
     const [isRightOpen, setIsRightOpen] = useState(true);
-    const [isDarkMode, setIsDarkMode] = useState(false);
-    const [customFont, setCustomFont] = useState('');
     const [isFontInputVisible, setIsFontInputVisible] = useState(false);
+    const [docLoading, setDocLoading] = useState(true);
+    const [docError, setDocError] = useState('');
 
     // Resizing State
     const [rightPanelWidth, setRightPanelWidth] = useState(400); // 默认像素宽度
@@ -398,7 +368,7 @@ export default function DocPage({ schemeName = 'default' }) {
     const containerRef = useRef(null);
     const headingRefs = useRef({}); // 存储标题 DOM 引用 { id: DOMElement }
     const flatHeadings = useRef([]); // 存储标题解析信息 { id, original, level }
-    const headingStructureRef = useRef(getHeadingStructure(initialMarkdown)); // 存储标题结构哈希值
+    const headingStructureRef = useRef(getHeadingStructure(''));
 
     // Resizing constants
     const MIN_WIDTH = 250;
@@ -519,13 +489,6 @@ export default function DocPage({ schemeName = 'default' }) {
 
 
     // --- 效果 hooks ---
-    useEffect(() => {
-        // 黑暗模式初始化
-        setIsDarkMode(document.documentElement.classList.contains('dark'));
-        // 首次加载时调用一次 buildToc 确保 TOC 初始状态正确
-        setTimeout(buildToc, 100);
-    }, [buildToc]);
-
     // 滚动高亮 Intersection Observer 绑定逻辑
     useEffect(() => {
         // Intersection Observer 配置：在标题进入视口顶部 80px 时激活
@@ -566,13 +529,43 @@ export default function DocPage({ schemeName = 'default' }) {
     }, [toc.length, activeHeadingId]); // 当 TOC 结构变化时重新绑定
 
 
-    // --- 布局控制和样式计算 ---
-    const toggleTheme = () => {
-        const newMode = !isDarkMode;
-        setIsDarkMode(newMode);
-        document.documentElement.classList.toggle('dark', newMode);
-    };
+    // --- 文档加载 ---
+    const fetchDocument = useCallback(async () => {
+        setDocLoading(true);
+        setDocError('');
+        // Clear previous TOC state before loading new content
+        flatHeadings.current = [];
+        headingRefs.current = {};
+        try {
+            const r = await fetch(`/api/projects/${projectId}/docs`);
+            if (r.ok) {
+                const data = await r.json();
+                setEditorSource(data.content || '');
+            } else {
+                throw new Error('加载失败');
+            }
+        } catch (e) {
+            console.error('Failed to fetch document:', e);
+            setDocError('加载文档失败');
+            setEditorSource(fallbackMarkdown);
+        } finally {
+            setDocLoading(false);
+        }
+    }, [projectId]);
 
+    useEffect(() => {
+        fetchDocument();
+    }, [fetchDocument]);
+
+    useEffect(() => {
+        if (editorSource) {
+            headingStructureRef.current = getHeadingStructure(editorSource);
+            const timer = setTimeout(() => buildToc(), 300);
+            return () => clearTimeout(timer);
+        }
+    }, [editorSource, buildToc]);
+
+    // --- 布局控制和样式计算 ---
     const toggleGlobalEditMode = () => console.log("Global Edit Mode toggle is inactive on DocPage.");
     const toggleLeftPanel = () => setIsLeftOpen(prev => !prev);
     const toggleRightPanel = () => setIsRightOpen(prev => {
@@ -659,11 +652,23 @@ export default function DocPage({ schemeName = 'default' }) {
                     </div>
                 </aside>
 
-                {/* --- 中间 内容显示区 (实时渲染结果) --- (保持不变) */}
+                {/* --- 中间 内容显示区 (实时渲染结果) --- */}
                 <main
                     className={`flex-grow overflow-y-auto bg-white dark:bg-gray-800 p-8 scrollbar-custom`}
                 >
                     <div className="max-w-3xl mx-auto">
+                        {docLoading && (
+                            <div className="flex items-center justify-center h-64">
+                                <p className="text-gray-500 dark:text-gray-400 animate-pulse">加载文档中...</p>
+                            </div>
+                        )}
+                        {!docLoading && docError && (
+                            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg mb-4">
+                                <p>{docError}</p>
+                                <button onClick={fetchDocument} className="underline mt-1 text-sm">重试</button>
+                            </div>
+                        )}
+                        {!docLoading && (
                         <div className="prose dark:prose-invert max-w-none">
                             <ReactMarkdown
                                 components={componentMap}
@@ -673,6 +678,7 @@ export default function DocPage({ schemeName = 'default' }) {
                                 {editorSource}
                             </ReactMarkdown>
                         </div>
+                        )}
                     </div>
                 </main>
 

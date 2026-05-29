@@ -43,11 +43,21 @@ export default function App() {
           path="/dictionary"
           element={
             <DictionaryPage
-              projectId="default"
               customFont={customFont}
               setCustomFont={setCustomFont}
-              isDarkMode={isDarkMode} // 传递主题状态
-              toggleTheme={toggleTheme} // 传递主题切换函数
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/dictionary/:slug"
+          element={
+            <DictionaryPage
+              customFont={customFont}
+              setCustomFont={setCustomFont}
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
             />
           }
         />
@@ -57,6 +67,8 @@ export default function App() {
             <DocPage
               customFont={customFont}
               setCustomFont={setCustomFont}
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
             />
           }
         />
@@ -66,6 +78,8 @@ export default function App() {
             <HomePage
               customFont={customFont}
               setCustomFont={setCustomFont}
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
             />
           }
         />
