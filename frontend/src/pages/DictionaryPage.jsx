@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import clsx from 'clsx';
 
 // 导入所有子组件
 import Header from '../components/Header.jsx';
@@ -8,9 +10,33 @@ import HierarchyTree from '../components/HierarchyTree';
 
 // 导入所有Hook函数
 import { useShortcuts } from '../hooks/useShortcuts';
+import { wordToSlug } from '../lib/slugUtils.js';
 
 // 定义 API 的基础 URL
-const API_BASE_URL = 'http://127.0.0.1:5000/api/projects';
+const API_BASE_URL = '/api/projects';
+
+// ── auth helpers ──
+const getAuthHeaders = (projectId) => {
+    try {
+        const stored = sessionStorage.getItem(`auth_${projectId}`);
+        if (stored) {
+            const { code } = JSON.parse(stored);
+            if (code) return { 'X-Auth-Code': code, 'Content-Type': 'application/json' };
+        }
+    } catch {}
+    return { 'Content-Type': 'application/json' };
+};
+
+const getAuthLevel = (projectId) => {
+    try {
+        const stored = sessionStorage.getItem(`auth_${projectId}`);
+        if (stored) {
+            const { level } = JSON.parse(stored);
+            return level || '';
+        }
+    } catch {}
+    return '';
+};
 
 /**
  * 词典页面组件
@@ -18,25 +44,37 @@ const API_BASE_URL = 'http://127.0.0.1:5000/api/projects';
  * @param {string} props.projectId - 当前选定的项目ID
  * (其他 props 略)
  */
-function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCustomFont }) {
+function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) {
+    // --- URL 同步 ---
+    const { slug: urlSlug } = useParams();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // projectId from query param (?project=xxx) or fallback to 'default'
+    const projectId = new URLSearchParams(location.search).get('project') || 'default';
+    const authLevel = getAuthLevel(projectId);
+    const isReadOnly = !authLevel;  // guest = read-only
+
     // --- 状态管理 ---
-    const [entries, setEntries] = useState([]); // 原始的扁平列表数据
-    const [selectedEntryId, setSelectedEntryId] = useState(null);
+    const [entries, setEntries] = useState([]);
+    const [selectedEntrySlug, setSelectedEntrySlug] = useState(urlSlug || null);
+    const [fetchError, setFetchError] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     const [editingSection, setEditingSection] = useState(null);
     const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
     const [isWordListOpen, setIsWordListOpen] = useState(true);
     const [isTreeOpen, setIsTreeOpen] = useState(true);
     const [isFontInputVisible, setIsFontInputVisible] = useState(false);
-    const [isReadOnly, setIsReadOnly] = useState(false);
 
     // 追踪本地是否有未保存的修改 (仅针对当前 selectedEntryId)
     const [hasLocalChanges, setHasLocalChanges] = useState(false);
 
     // --- Ref 绑定 ---
     const entryEditorRef = useRef(null);
-    // 关键 Ref: 用于存储最新的被修改的词条对象，以便在 Entry 切换或卸载时进行保存
     const lastModifiedEntryRef = useRef(null);
+    // 保存时用的 slug（DB 中当前的 slug），和显示用的 selectedEntrySlug 解耦
+    const savedSlugRef = useRef(null);
 
      // --- 配置: 头部按钮可见性控制 (您可以修改这些值来控制按钮显示) ---
     const buttonVisibility = {
@@ -53,54 +91,63 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
     const fetchEntries = useCallback(async (selectFirst = true) => {
         if (!projectId) {
             setEntries([]);
-            setSelectedEntryId(null);
+            setSelectedEntrySlug(null);
+            setIsLoading(false);
             return;
         }
 
+        setIsLoading(true);
+        setFetchError('');
         try {
-            // 增加指数退避逻辑
             let response;
-            for (let i = 0; i < 3; i++) { // 尝试最多 3 次
+            for (let i = 0; i < 3; i++) {
                 response = await fetch(`${API_BASE_URL}/${projectId}/entries`);
                 if (response.ok) break;
-                if (response.status === 404 && i === 0) { // 首次 404 尝试初始化
+                if (response.status === 404 && i === 0) {
                     await initSampleData(projectId);
-                    // 继续下一次循环，重新尝试获取数据
-                    await new Promise(resolve => setTimeout(resolve, 500)); // 略微等待
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     continue;
                 }
-                if (i < 2) { // 如果不是最后一次尝试，等待并重试
+                if (i < 2) {
                     await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
                 } else {
-                    throw new Error('Network response was not ok after retries.');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
             }
 
             if (!response.ok) {
-                throw new Error('Failed to fetch entries.');
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
             setEntries(data);
+            console.log(`[DictionaryPage] Loaded ${data.length} entries for project "${projectId}"`);
 
-            // 如果设置了 selectFirst 并且没有选中词条，则选中第一个
             if (data.length > 0 && selectFirst) {
-                // 保持当前选中，如果当前选中的已被删除或不存在，则选中第一个
-                if (!data.some(e => e.id === selectedEntryId)) {
-                    setSelectedEntryId(data[0].id);
-                }
+                setSelectedEntrySlug(prev => {
+                    if (!data.some(e => e.slug === prev)) {
+                        return data[0].slug;
+                    }
+                    return prev;
+                });
             } else if (data.length === 0) {
-                setSelectedEntryId(null);
+                setSelectedEntrySlug(null);
             }
         } catch (error) {
-            console.error("Failed to fetch entries:", error);
+            console.error("[DictionaryPage] Failed to fetch entries:", error);
+            setFetchError(`加载失败: ${error.message}`);
+        } finally {
+            setIsLoading(false);
         }
-    }, [projectId, selectedEntryId]);
+    }, [projectId]);
 
     // 初始化示例数据 (用于首次加载或空项目)
     const initSampleData = async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/${id}/init-sample`, { method: 'POST' });
+            const response = await fetch(`${API_BASE_URL}/${id}/init-sample`, {
+                method: 'POST',
+                headers: getAuthHeaders(id)
+            });
             if (!response.ok) {
                 throw new Error('Failed to initialize sample data');
             }
@@ -115,6 +162,19 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
     useEffect(() => {
         fetchEntries();
     }, [projectId, fetchEntries]);
+
+    // 获取选中的词条对象 (必须在此声明，后续 useEffect/handleEntryChange 依赖它)
+    const selectedEntry = useMemo(
+        () => entries.find((e) => e.slug === selectedEntrySlug),
+        [entries, selectedEntrySlug]
+    );
+
+    // 选中词条变化时同步 savedSlugRef（仅在无本地修改时）
+    useEffect(() => {
+        if (!hasLocalChanges && selectedEntry) {
+            savedSlugRef.current = selectedEntry.slug;
+        }
+    }, [selectedEntry, hasLocalChanges]);
 
 
     // --- 派生状态 (树状构建) ---
@@ -140,23 +200,18 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
         return { flatTreeEntries: flatList, dictionaryMap };
     }, [entries]); // 依赖原始 entries 列表
 
-    // 获取选中的词条对象
-    const selectedEntry = useMemo(
-        () => entries.find((e) => e.id === selectedEntryId),
-        [entries, selectedEntryId]
-    );
-
     // 负责将修改后的词条对象更新到本地状态 (entries) 中
     const handleEntryChange = useCallback((updatedEntry) => {
         setEntries(prevEntries =>
             prevEntries.map(e => e.id === updatedEntry.id ? updatedEntry : e)
         );
-        if (updatedEntry.id === selectedEntryId) {
-            setHasLocalChanges(true);
-            // 每次修改都将最新的未保存数据存入 Ref
-            lastModifiedEntryRef.current = updatedEntry;
+        setHasLocalChanges(true);
+        lastModifiedEntryRef.current = updatedEntry;
+        // 如果 slug 变了（word 被修改），更新 URL
+        if (updatedEntry.slug !== selectedEntrySlug) {
+            setSelectedEntrySlug(updatedEntry.slug);
         }
-    }, [selectedEntryId]);
+    }, [selectedEntrySlug]);
 
     // 4. 核心保存函数 (PUT) - 提交指定的词条对象到 API
     const commitEntrySave = useCallback(async (entryToSave, isCleanup = false) => {
@@ -164,16 +219,17 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
             return false;
         }
 
-        console.log(`[Save] Committing entry: ${entryToSave.word} (ID: ${entryToSave.id})`);
+        // 用 DB 中当前的 slug 发请求（不是可能已变化的新 slug）
+        const urlSlug = savedSlugRef.current || entryToSave.slug;
 
-        const entryId = entryToSave.id;
+        console.log(`[Save] Committing entry: ${entryToSave.word} (urlSlug: ${urlSlug}, newSlug: ${entryToSave.slug})`);
 
         try {
             let response;
             for (let i = 0; i < 3; i++) {
-                response = await fetch(`${API_BASE_URL}/${projectId}/entries/${entryId}`, {
+                response = await fetch(`${API_BASE_URL}/${projectId}/entries/${urlSlug}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(projectId),
                     body: JSON.stringify(entryToSave),
                 });
                 if (response.ok) break;
@@ -184,30 +240,40 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
                 }
             }
 
-            if (!response.ok) throw new Error('Failed to save entry.');
+            if (response.status === 401) {
+                alert('授权已过期或无效，请返回项目页面重新授权');
+                return false;
+            }
+            if (!response.ok) {
+                alert(`保存失败: HTTP ${response.status}`);
+                return false;
+            }
 
             const updatedEntry = await response.json();
 
-            // 如果保存的是当前选中的词条，则清除本地修改标记
-            if (entryId === selectedEntryId) {
-                 setHasLocalChanges(false);
-                 lastModifiedEntryRef.current = null; // 清除 Ref
+            // 同步 DB 中的 slug
+            savedSlugRef.current = updatedEntry.slug;
+            if (updatedEntry.slug !== selectedEntrySlug) {
+                setSelectedEntrySlug(updatedEntry.slug);
             }
 
-            // 更新本地 entries 状态
+            setHasLocalChanges(false);
+            lastModifiedEntryRef.current = null;
+
+            // 用 id 匹配更新本地 entries
             setEntries(prevEntries =>
-                prevEntries.map(e => e.id === entryId ? updatedEntry : e)
+                prevEntries.map(e => e.id === updatedEntry.id ? updatedEntry : e)
             );
 
-            console.log(`[Save] Successful commit for ID: ${entryId}`);
+            console.log(`[Save] Successful: slug=${updatedEntry.slug}`);
             return true;
 
         } catch (error) {
-            console.error(`[Save] Failed commit for ID: ${entryId}:`, error);
-            console.error('保存失败！');
+            console.error(`[Save] Failed:`, error);
+            alert(`保存失败: ${error.message}`);
             return false;
         }
-    }, [projectId, selectedEntryId]); // 依赖 selectedEntryId 用于正确清除 hasLocalChanges
+    }, [projectId, selectedEntrySlug]);
 
     // 5. 触发保存 (Ctrl+S 或手动按钮)
     const saveDefinitions = useCallback(async () => {
@@ -242,7 +308,45 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
             // 当 Entry 切换、项目切换或组件卸载时，自动保存上一个 Entry 的修改
             saveIfDirty();
         };
-    }, [projectId, selectedEntryId, saveIfDirty]);
+    }, [projectId, selectedEntrySlug, saveIfDirty]);
+
+    // --- Effect: URL slug 变化时同步到状态（浏览器前进/后退 / 直接输入 URL）---
+    useEffect(() => {
+        if (urlSlug && urlSlug !== selectedEntrySlug) {
+            setSelectedEntrySlug(urlSlug);
+        }
+    }, [urlSlug]);
+
+    // --- Effect: selectedEntrySlug 变化时同步到浏览器 URL ---
+    useEffect(() => {
+        if (selectedEntrySlug && selectedEntrySlug !== urlSlug) {
+            // 保留 project 查询参数和 hash
+            navigate(`/dictionary/${selectedEntrySlug}${location.search}${location.hash}`, { replace: true });
+        }
+    }, [selectedEntrySlug]);
+
+    // --- Effect: URL hash 变化时滚动到对应 sense ---
+    useEffect(() => {
+        if (location.hash) {
+            const id = location.hash.slice(1); // 去掉 #
+            // 延迟等待 DOM 渲染完成
+            const timer = setTimeout(() => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const mainContent = document.querySelector('main.flex-1');
+                    if (mainContent) {
+                        const elRect = el.getBoundingClientRect();
+                        const containerRect = mainContent.getBoundingClientRect();
+                        mainContent.scrollTo({
+                            top: mainContent.scrollTop + elRect.top - containerRect.top - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [location.hash, selectedEntrySlug]);
 
 
     // --- 事件处理器 (UI) ---
@@ -259,6 +363,11 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
             ...selectedEntry,
             ...payload
         };
+
+        // 如果 word 变更了，重算 slug
+        if (payload.word && payload.word !== selectedEntry.word) {
+            updatedEntry.slug = wordToSlug(payload.word);
+        }
 
         handleEntryChange(updatedEntry);
         console.log("Main entry fields updated locally. Press save (Ctrl+S) to commit.");
@@ -295,6 +404,7 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
     // 3. 创建新词条 (POST)
     const handleCreateNewEntry = useCallback(async () => {
         if (!projectId) return;
+        if (isReadOnly) { alert('需要授权码才能创建词条'); return; }
 
         // ⛔ 替换 window.prompt 为自定义 UI，这里暂时使用原生prompt
         const newWord = window.prompt("请输入新词条的词形 (Lemma):", "新词条");
@@ -321,7 +431,7 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
             for (let i = 0; i < 3; i++) {
                 response = await fetch(`${API_BASE_URL}/${projectId}/entries`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(projectId),
                     body: JSON.stringify(newEntryData),
                 });
                 if (response.ok) break;
@@ -331,13 +441,17 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
                     throw new Error('Failed to create new entry after retries.');
                 }
             }
+            if (response.status === 401) {
+                alert('需要授权码才能创建词条');
+                return;
+            }
             if (!response.ok) throw new Error('Failed to create new entry.');
 
             const createdEntry = await response.json();
 
             // 成功后重新加载数据并选中新词条
             await fetchEntries(false);
-            setSelectedEntryId(createdEntry.id);
+            setSelectedEntrySlug(createdEntry.slug);
 
             console.log("New entry created successfully:", createdEntry);
 
@@ -345,25 +459,27 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
             console.error('Error creating new entry:', error);
             console.error('创建词条失败！请检查后端服务是否运行。');
         }
-    }, [projectId, fetchEntries]);
+    }, [projectId, fetchEntries, isReadOnly]);
 
 
     // 7. 删除词条 (DELETE)
-    const handleDeleteEntry = async (idToDelete, word) => {
-        if (!projectId || !idToDelete) return;
+    const handleDeleteEntry = async (slugToDelete, word) => {
+        if (!projectId || !slugToDelete) return;
+        if (isReadOnly) { alert('需要授权码才能删除词条'); return; }
 
         // ⛔ 替换 window.confirm 为自定义 UI
         if (!window.confirm(`你确定要删除词条 "${word}" 吗？此操作不可撤销。`)) {
             return;
         }
 
-        console.log(`Attempting to delete entry: ${idToDelete}`);
+        console.log(`Attempting to delete entry: ${slugToDelete}`);
         try {
             // ... (API 调用和重试逻辑保持不变)
             let response;
             for (let i = 0; i < 3; i++) {
-                response = await fetch(`${API_BASE_URL}/${projectId}/entries/${idToDelete}`, {
+                response = await fetch(`${API_BASE_URL}/${projectId}/entries/${slugToDelete}`, {
                     method: 'DELETE',
+                    headers: getAuthHeaders(projectId),
                 });
                 if (response.ok) break;
                 if (i < 2) {
@@ -371,6 +487,10 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
                 } else {
                     throw new Error('Failed to delete entry after retries.');
                 }
+            }
+            if (response.status === 401) {
+                alert('需要授权码才能删除词条');
+                return;
             }
             if (!response.ok) throw new Error('Failed to delete entry.');
 
@@ -389,6 +509,7 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
     // 8. 添加义项 (只修改本地状态)
     const handleAddSense = () => {
         if (!selectedEntry) return;
+        if (isReadOnly) { alert('需要授权码才能编辑'); return; }
 
         // 找到当前义项的最大 ID 并加 1
         const currentMaxId = (selectedEntry.senses || []).reduce((max, s) => {
@@ -421,6 +542,7 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
     // 9. 删除义项 (只修改本地状态)
     const handleDeleteSense = (senseIdToDelete) => {
         if (!selectedEntry || !senseIdToDelete) return;
+        if (isReadOnly) { alert('需要授权码才能删除义项'); return; }
 
         // ⛔ 替换 window.confirm 为自定义 UI
         if (!window.confirm("你确定要删除这个义项吗？(需要保存后生效)")) {
@@ -437,27 +559,27 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
     };
 
 
-    // --- (*** 新增：处理 SearchBar 的“点击跳转” ***) ---
+    // --- (*** 新增：处理 SearchBar 的”点击跳转” ***) ---
     const handleSearchSelect = useCallback((lemma) => {
         // SearchBar 返回的是 lemma (字符串)
         // 我们用 dictionaryMap 查找对应的 entry
         const selected = dictionaryMap[lemma];
 
-        if (selected && selected.id) {
-            // 找到了！调用 setSelectedEntryId 来实现“跳转”
-            setSelectedEntryId(selected.id);
+        if (selected && selected.slug) {
+            // 找到了！调用 setSelectedEntrySlug 来实现”跳转”
+            setSelectedEntrySlug(selected.slug);
             // 确保左侧列表是打开的，以便用户看到高亮
             setIsWordListOpen(true);
         } else {
-            console.warn(`Search selection failed: Lemma "${lemma}" not found in dictionaryMap.`);
+            console.warn(`Search selection failed: Lemma “${lemma}” not found in dictionaryMap.`);
         }
     }, [dictionaryMap]); // 依赖 dictionaryMap
 
     const addDefinition = useCallback(() => {
         if (!selectedEntry) return;
         // ... (Definition adding logic should be here) ...
-        console.log("Adding new definition for:", selectedEntryId);
-    }, [selectedEntryId, selectedEntry]);
+        console.log("Adding new definition for:", selectedEntrySlug);
+    }, [selectedEntrySlug, selectedEntry]);
 
 
     // --- 快捷键 Hook 调用 ---
@@ -496,14 +618,21 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
             <div className="flex flex-1 overflow-hidden pt-14">
 
                 {/* 左侧栏 */}
+                {fetchError ? (
+                    <div className="w-full sm:w-64 p-4 border-r border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 flex flex-col items-center justify-center gap-2">
+                        <span className="text-red-600 dark:text-red-400 text-sm text-center">{fetchError}</span>
+                        <button onClick={() => fetchEntries()} className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600">重试</button>
+                    </div>
+                ) : (
                 <WordList
                     entries={flatTreeEntries}
-                    selectedEntryId={selectedEntryId}
-                    onSelect={setSelectedEntryId}
+                    selectedEntrySlug={selectedEntrySlug}
+                    onSelect={setSelectedEntrySlug}
                     isOpen={isWordListOpen}
                     onDeleteEntry={handleDeleteEntry}
                     onAddNewEntry={handleCreateNewEntry}
                 />
+                )}
 
                 {/* 中间编辑区 */}
                 <EntryEditor
@@ -524,9 +653,17 @@ function DictionaryPage({ projectId, isDarkMode, toggleTheme, customFont, setCus
                 />
             </div>
 
-            {/* 调试信息 (可选) */}
-            <div className="fixed bottom-0 left-0 p-1 text-xs bg-red-700 text-white rounded-tr-lg" style={{ zIndex: 100 }}>
-                {hasLocalChanges ? "UNSAVED CHANGES DETECTED" : "All changes saved"}
+            {/* 底部状态栏 */}
+            <div className={clsx(
+                    'fixed bottom-0 left-0 p-1.5 text-xs text-white rounded-tr-lg flex items-center gap-2 z-[100]',
+                    isReadOnly ? 'bg-red-600' : hasLocalChanges ? 'bg-yellow-600' : 'bg-green-600'
+                )}>
+                <span>
+                    {isReadOnly ? '访客（只读）' : hasLocalChanges ? '未保存' : '已保存'}
+                </span>
+                {authLevel && (
+                    <span className="opacity-80">| {authLevel === 'admin' ? '管理员' : '编辑者'}</span>
+                )}
             </div>
 
         </div>
