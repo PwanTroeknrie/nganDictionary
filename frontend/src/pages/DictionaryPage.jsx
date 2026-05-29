@@ -69,6 +69,10 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
 
     // 追踪本地是否有未保存的修改 (仅针对当前 selectedEntryId)
     const [hasLocalChanges, setHasLocalChanges] = useState(false);
+    const [docHeadings, setDocHeadings] = useState([]);
+    const [showNewEntryModal, setShowNewEntryModal] = useState(false);
+    const [newEntryWord, setNewEntryWord] = useState('');
+    const [newEntryTranslit, setNewEntryTranslit] = useState('');
 
     // --- Ref 绑定 ---
     const entryEditorRef = useRef(null);
@@ -161,6 +165,10 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
     // --- useEffect: 当 projectId 变化时获取数据 ---
     useEffect(() => {
         fetchEntries();
+        fetch(`${API_BASE_URL}/${projectId}/docs/headings`)
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(data => setDocHeadings(data.headings || []))
+            .catch(() => setDocHeadings([]));
     }, [projectId, fetchEntries]);
 
     // 获取选中的词条对象 (必须在此声明，后续 useEffect/handleEntryChange 依赖它)
@@ -199,6 +207,35 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
 
         return { flatTreeEntries: flatList, dictionaryMap };
     }, [entries]); // 依赖原始 entries 列表
+
+    // doc heading map: abbreviation → {meaning, id} (for tag linking)
+    const docHeadingsMap = useMemo(() => {
+        const map = new Map();
+        for (const h of docHeadings) {
+            const text = h.text;
+            const lastSpace = text.lastIndexOf(' ');
+            if (lastSpace > 0) {
+                const meaning = text.substring(0, lastSpace).trim();
+                const abbrev = text.substring(lastSpace + 1).trim();
+                const entry = { meaning, id: h.id };
+                if (abbrev && !map.has(abbrev)) map.set(abbrev, entry);
+                if (meaning && !map.has(meaning)) map.set(meaning, { meaning, id: h.id });
+            }
+            if (!map.has(text)) map.set(text, { meaning: text, id: h.id });
+        }
+        return map;
+    }, [docHeadings]);
+
+    // 处理标签点击跳转
+    const handleLinkClick = useCallback((type, term) => {
+        if (type === 'entry' && dictionaryMap[term]) {
+            setSelectedEntrySlug(dictionaryMap[term].slug);
+        } else if (type === 'doc') {
+            const hInfo = docHeadingsMap.get(term);
+            const affix = hInfo?.id || '';
+            window.open(`/docs?project=${projectId}&affix=${affix}`, '_blank');
+        }
+    }, [dictionaryMap, projectId, docHeadingsMap]);
 
     // 负责将修改后的词条对象更新到本地状态 (entries) 中
     const handleEntryChange = useCallback((updatedEntry) => {
@@ -401,32 +438,44 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
     }, [selectedEntry, handleEntryChange]);
 
 
-    // 3. 创建新词条 (POST)
-    const handleCreateNewEntry = useCallback(async () => {
+    // 3. 创建新词条 — 打开模态框
+    const handleCreateNewEntry = useCallback(() => {
         if (!projectId) return;
         if (isReadOnly) { alert('需要授权码才能创建词条'); return; }
+        setNewEntryWord('');
+        setNewEntryTranslit('');
+        setShowNewEntryModal(true);
+    }, [projectId, isReadOnly]);
 
-        // ⛔ 替换 window.prompt 为自定义 UI，这里暂时使用原生prompt
-        const newWord = window.prompt("请输入新词条的词形 (Lemma):", "新词条");
-        if (!newWord) return;
+    // 3b. 模态框确认 — 实际提交
+    const handleSubmitNewEntry = useCallback(async () => {
+        const word = newEntryWord.trim();
+        if (!word) return;
 
-        // 基础新词条模板
+        const transliteration = newEntryTranslit.trim() || word;
+
         const newEntryData = {
-            word: newWord,
-            transliteration: newWord,
+            word,
+            transliteration,
             senses: [
                 {
-                    sense_id: 1, // 初始 sense_id 为 1
+                    sense_id: 1,
                     displayed_tag: "new",
-                    description: "新的义项描述",
-                    definitions: [{ text: "新的释义", examples: [] }],
-                    ipa: "", derived_from: [], tags: [], chart_type: "", table_data: [], derived_to: []
+                    ipa: "ˈfɪl.ər",
+                    description: "（请编辑义项描述）",
+                    definitions: [{ text: "（请编辑释义内容）", examples: ["（请编辑例句）"] }],
+                    tags: ["待编辑"],
+                    derived_from: [],
+                    derived_to: [],
+                    chart_type: "",
+                    table_data: []
                 }
             ]
         };
 
+        setShowNewEntryModal(false);
+
         try {
-            // ... (API 调用和重试逻辑保持不变)
             let response;
             for (let i = 0; i < 3; i++) {
                 response = await fetch(`${API_BASE_URL}/${projectId}/entries`, {
@@ -448,18 +497,14 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
             if (!response.ok) throw new Error('Failed to create new entry.');
 
             const createdEntry = await response.json();
-
-            // 成功后重新加载数据并选中新词条
             await fetchEntries(false);
             setSelectedEntrySlug(createdEntry.slug);
-
             console.log("New entry created successfully:", createdEntry);
-
         } catch (error) {
             console.error('Error creating new entry:', error);
-            console.error('创建词条失败！请检查后端服务是否运行。');
+            alert('创建词条失败！请检查后端服务是否运行。');
         }
-    }, [projectId, fetchEntries, isReadOnly]);
+    }, [newEntryWord, newEntryTranslit, projectId, fetchEntries]);
 
 
     // 7. 删除词条 (DELETE)
@@ -520,11 +565,11 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
         const newSenseTemplate = {
             sense_id: newSenseId,
             displayed_tag: "new",
-            ipa: "",
+            ipa: "ˈfɪl.ər",
             derived_from: [],
-            description: "新的义项描述",
-            tags: [],
-            definitions: [{ text: "新的释义", examples: [] }],
+            description: "（请编辑义项描述）",
+            tags: ["待编辑"],
+            definitions: [{ text: "（请编辑释义内容）", examples: ["（请编辑例句）"] }],
             chart_type: "",
             table_data: [],
             derived_to: []
@@ -642,6 +687,9 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
                     setEditingSection={setEditingSection}
                     onUpdateEntry={handleUpdateEntry}
                     onUpdateSense={handleUpdateSense}
+                    dictionaryMap={dictionaryMap}
+                    onLinkClick={handleLinkClick}
+                    docHeadingsMap={docHeadingsMap}
                 />
 
                 {/* 右侧导航栏 */}
@@ -665,6 +713,80 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
                     <span className="opacity-80">| {authLevel === 'admin' ? '管理员' : '编辑者'}</span>
                 )}
             </div>
+
+            {/* 新建词条模态框 */}
+            {showNewEntryModal && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center">
+                    <div
+                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={() => setShowNewEntryModal(false)}
+                    />
+                    <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
+                        <div className="px-6 pt-6 pb-2">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">新建词条</h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">填写词形和音译以创建新词条</p>
+                        </div>
+
+                        <div className="px-6 py-4 space-y-5">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    词形 <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newEntryWord}
+                                    onChange={(e) => {
+                                        setNewEntryWord(e.target.value);
+                                        if (!newEntryTranslit || newEntryTranslit === newEntryWord) {
+                                            setNewEntryTranslit(e.target.value);
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && newEntryWord.trim()) handleSubmitNewEntry();
+                                        if (e.key === 'Escape') setShowNewEntryModal(false);
+                                    }}
+                                    placeholder="输入词形 (Lemma)..."
+                                    autoFocus
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 outline-none transition-all"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    音译 / 转写
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newEntryTranslit}
+                                    onChange={(e) => setNewEntryTranslit(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && newEntryWord.trim()) handleSubmitNewEntry();
+                                        if (e.key === 'Escape') setShowNewEntryModal(false);
+                                    }}
+                                    placeholder="输入音译 (默认同词形)..."
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 outline-none transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowNewEntryModal(false)}
+                                className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all"
+                            >
+                                取消
+                            </button>
+                            <button
+                                onClick={handleSubmitNewEntry}
+                                disabled={!newEntryWord.trim()}
+                                className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
+                            >
+                                创建词条
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

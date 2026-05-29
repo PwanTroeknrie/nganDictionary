@@ -123,3 +123,71 @@
     color: #d1d5db !important;
 }
 
+/* ========================================================= */
+/* 7. Interlinear Glossing Styles */
+/* ========================================================= */
+
+.gloss-block {
+    margin: 0.5rem 0;
+    font-family: "Noto Sans", "Gentium Plus", "Charis SIL", serif;
+}
+
+.gloss-elements {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: flex-end;
+    line-height: 1.6;
+}
+
+.gloss-element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 2rem;
+}
+
+.gloss-level-a {
+    font-style: italic;
+    font-size: 0.875rem;
+    color: #1f2937;
+}
+.dark .gloss-level-a {
+    color: #e5e7eb;
+}
+
+.gloss-level-b {
+    font-size: 0.75rem;
+    font-variant: small-caps;
+    color: #4b5563;
+}
+.dark .gloss-level-b {
+    color: #9ca3af;
+}
+
+.gloss-level-c {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+.dark .gloss-level-c {
+    color: #9ca3af;
+}
+
+.gloss-level-x {
+    font-size: 0.7rem;
+    color: #9ca3af;
+}
+
+.gloss-ft {
+    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+    font-style: italic;
+    color: #374151;
+    padding-left: 0.25rem;
+}
+.gloss-ft::before { content: "'"; }
+.gloss-ft::after { content: "'"; }
+.dark .gloss-ft {
+    color: #d1d5db;
+}
+

@@ -5,14 +5,21 @@ import { ArrowRightIcon, XIcon, ChevronRightIcon } from 'lucide-react';
 // --- 词条列表渲染组件 (WordListItem) (保持不变) ---
 const WordListItem = React.memo(({
     entry,
-    selectedEntryId,
+    selectedEntrySlug,
     onSelect,
     onDeleteEntry,
     isCollapsed,
     onToggleCollapse,
     hasChildren
 }) => {
-  const isSelected = entry.id === selectedEntryId;
+  const isSelected = entry.slug === selectedEntrySlug;
+
+  // 提取首条释义用于悬停提示
+  const firstDefText = useMemo(() => {
+    const defs = entry.senses?.[0]?.definitions;
+    if (defs && defs.length > 0) return defs[0].text;
+    return null;
+  }, [entry.senses]);
 
   // 渲染缩进，基于 entry.level 属性
   const indentStyle = {
@@ -22,27 +29,27 @@ const WordListItem = React.memo(({
   const handleDelete = useCallback((e) => {
     e.stopPropagation();
     if (typeof onDeleteEntry === 'function') {
-      onDeleteEntry(entry.id, entry.word);
+      onDeleteEntry(entry.slug, entry.word);
     }
-  }, [entry.id, entry.word, onDeleteEntry]);
+  }, [entry.slug, entry.word, onDeleteEntry]);
 
   const handleSelect = useCallback(() => {
-    onSelect(entry.id);
-  }, [entry.id, onSelect]);
+    onSelect(entry.slug);
+  }, [entry.slug, onSelect]);
 
   const handleToggle = useCallback((e) => {
     e.stopPropagation();
     if (hasChildren && onToggleCollapse) {
-        onToggleCollapse(entry.id);
+        onToggleCollapse(entry.slug);
     }
-  }, [entry.id, onToggleCollapse, hasChildren]);
+  }, [entry.slug, onToggleCollapse, hasChildren]);
 
   if (!entry.word) return null;
 
   return (
     <div
       style={indentStyle}
-      className={`group py-1.5 rounded-xl cursor-pointer transition-all flex justify-between items-center transform hover:scale-[1.01] ${
+      className={`group py-1.5 rounded-xl cursor-pointer transition-all flex justify-between items-center transform hover:scale-[1.01] relative ${
         isSelected
           ? 'bg-blue-200 dark:bg-blue-900 shadow-inner ring-2 ring-blue-500/50 dark:ring-blue-400/50'
           : 'hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -68,10 +75,18 @@ const WordListItem = React.memo(({
 
             <span
                 className={`font-medium truncate px-1 font-word ${isSelected ? 'text-blue-800 dark:text-blue-100' : 'text-gray-800 dark:text-gray-300'}`}
-                title={entry.word}
             >
                 {entry.word}
             </span>
+
+            {/* 悬停释义 tooltip */}
+            {firstDefText && (
+                <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 hidden group-hover:block z-50 pointer-events-none">
+                    <span className="block max-w-64 px-2.5 py-1.5 text-xs leading-relaxed text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 whitespace-normal break-words">
+                        {firstDefText.length > 60 ? firstDefText.slice(0, 60) + '…' : firstDefText}
+                    </span>
+                </span>
+            )}
         </div>
 
       {/* Delete Entry Button */}
@@ -92,21 +107,21 @@ const WordListItem = React.memo(({
 // --- 主组件: 词条列表容器 ---
 const WordList = ({
   entries = [],
-  selectedEntryId,
+  selectedEntrySlug,
   onSelect,
   isOpen,
   onDeleteEntry,
   onAddNewEntry,
 }) => {
   const widthClass = isOpen ? 'w-full sm:w-64' : 'w-0';
-  // 存储折叠状态： key 是 entry.id, value 是 true (折叠) 或 false (展开)
+  // 存储折叠状态： key 是 entry.slug, value 是 true (折叠) 或 false (展开)
   const [collapsedState, setCollapsedState] = useState({});
 
   const isAllCollapsed = useMemo(() => {
     // 只有当 collapsedState 的长度等于 entries 数组中 'hasChildren' 词条的数量时，才考虑全部折叠
     // 或者更简单地，检查是否所有有子节点的词条都被标记为折叠
     return entries.length > 0 &&
-           entries.filter(e => e.hasChildren).every(e => collapsedState[e.id]);
+           entries.filter(e => e.hasChildren).every(e => collapsedState[e.slug]);
   }, [entries, collapsedState]);
 
   const handleToggleAll = useCallback(() => {
@@ -118,7 +133,7 @@ const WordList = ({
       const newCollapsedState = entries
         .filter(e => e.hasChildren)
         .reduce((acc, entry) => {
-          acc[entry.id] = true; // true 表示折叠
+          acc[entry.slug] = true; // true 表示折叠
           return acc;
         }, {});
       setCollapsedState(newCollapsedState);
@@ -126,10 +141,10 @@ const WordList = ({
   }, [isAllCollapsed, entries]);
 
 
-  const handleToggleCollapse = useCallback((entryId) => {
+  const handleToggleCollapse = useCallback((entrySlug) => {
     setCollapsedState(prev => ({
         ...prev,
-        [entryId]: !prev[entryId]
+        [entrySlug]: !prev[entrySlug]
     }));
   }, []);
 
@@ -151,7 +166,7 @@ const WordList = ({
         }
 
         // 2. 检查当前节点是否需要被折叠
-        const isCollapsed = collapsedState[entry.id];
+        const isCollapsed = collapsedState[entry.slug];
         if (isCollapsed && entry.hasChildren) {
             // 如果折叠，设置 shouldSkipChildren 标志
             shouldSkipChildren = entry;
@@ -160,9 +175,9 @@ const WordList = ({
         // 3. 渲染当前节点
         list.push(
             <WordListItem
-                key={entry.id}
+                key={entry.slug}
                 entry={entry}
-                selectedEntryId={selectedEntryId}
+                selectedEntrySlug={selectedEntrySlug}
                 onSelect={onSelect}
                 onDeleteEntry={onDeleteEntry}
                 isCollapsed={isCollapsed}
@@ -172,7 +187,7 @@ const WordList = ({
         );
     }
     return list;
-  }, [entries, selectedEntryId, onSelect, onDeleteEntry, collapsedState, handleToggleCollapse]);
+  }, [entries, selectedEntrySlug, onSelect, onDeleteEntry, collapsedState, handleToggleCollapse]);
 
 
   return (
@@ -288,7 +303,7 @@ export function flattenTree(rootNodes, treeData, dictionaryData) {
                 list.push({
                     ...entry,
                     word: lemma,
-                    id: entry.id, // 最终 key 的来源
+                    id: entry.slug, // 最终 key 的来源，使用 slug
                     level: level,
                     hasChildren: !!(children && children.length > 0)
                 });

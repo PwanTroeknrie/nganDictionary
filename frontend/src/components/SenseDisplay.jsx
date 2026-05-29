@@ -124,6 +124,66 @@ const FormButtons = ({ onSave, onCancel }) => (
   </div>
 );
 
+// ── Interlinear gloss parser & display ──
+const isGlossBlock = (text) => {
+    if (!text || typeof text !== 'string') return false;
+    return /^\\gla\s/m.test(text);
+};
+
+const parseGlossBlock = (text) => {
+    const lines = text.split('\n').filter(l => l.trim());
+    const levels = [];
+    let ft = null;
+
+    for (const line of lines) {
+        const m = line.match(/^\\(gla|glb|glc|glx|ft)\s+(.*)/);
+        if (!m) continue;
+        const [, cmd, content] = m;
+
+        if (cmd === 'ft') { ft = content.trim(); continue; }
+
+        const elements = [];
+        let cur = '', inBracket = false;
+        for (const ch of content) {
+            if (ch === '[' && !inBracket) { inBracket = true; continue; }
+            if (ch === ']' && inBracket) { inBracket = false; continue; }
+            if (ch === ' ' && !inBracket) { if (cur) elements.push(cur); cur = ''; }
+            else cur += ch;
+        }
+        if (cur) elements.push(cur);
+
+        const key = cmd === 'gla' ? 'a' : cmd === 'glb' ? 'b' : cmd === 'glc' ? 'c' : 'x';
+        levels.push({ key, elements });
+    }
+
+    return { levels, ft };
+};
+
+const GlossDisplay = React.memo(({ text }) => {
+    if (!isGlossBlock(text)) return null;
+    const gloss = parseGlossBlock(text);
+    if (!gloss.levels.length) return null;
+
+    const colCount = Math.max(...gloss.levels.map(l => l.elements.length));
+
+    return (
+        <div className="gloss-block">
+            <div className="gloss-elements">
+                {Array.from({ length: colCount }, (_, colIdx) => (
+                    <div key={colIdx} className="gloss-element">
+                        {gloss.levels.map((level, li) => (
+                            <span key={li} className={`gloss-level-${level.key}`}>
+                                {level.elements[colIdx] || ' '}
+                            </span>
+                        ))}
+                    </div>
+                ))}
+            </div>
+            {gloss.ft && <div className="gloss-ft">{gloss.ft}</div>}
+        </div>
+    );
+});
+
  // --- Morphology Table Renderer (MODIFIED) ---
   const renderMorphologyTable = (data, caption) => {
     if (!Array.isArray(data) || data.length === 0) return null;
@@ -194,8 +254,9 @@ const SenseDisplay = ({
     entryTransliteration,
     onUpdateSense,
     onOpenContextMenu,
-    dictionaryMap, // 新增：用于检查词条是否存在
-    onLinkClick,    // 新增：用于处理点击跳转
+    dictionaryMap,
+    onLinkClick,
+    docHeadingsMap = null, // Map: abbreviation → meaning from h3/h4 headings
 }) => {
   // --- Component State ---
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -461,32 +522,33 @@ const SenseDisplay = ({
 
    // --- Linking Logic (Core Requirement) ---
    const getLinkTypeAndClass = useCallback((term) => {
-        // 1. 检查文档链接 (DOC: 开头)
+        // 1. DOC 链接 → 紫色
         if (term.startsWith('DOC:')) {
             return {
                 type: 'doc',
-                // 紫色：能跳转 docs
-                className: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-200 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-800'
+                className: 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-200 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-800/80'
             };
         }
-
-        // 2. 检查词条链接 (存在于 dictionaryMap 且不是当前词条本身)
-        // 假设 dictionaryMap 是 { 'word': {...entryData} } 形式的对象
+        // 2. Entry 链接 → 蓝色
         if (dictionaryMap && dictionaryMap[term] && term !== entryWord) {
             return {
                 type: 'entry',
-                // 绿色：能跳转词条
-                className: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 cursor-pointer hover:bg-green-200 dark:hover:bg-green-800'
+                className: 'bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-200 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/80'
             };
         }
-
-        // 3. 默认 (不能跳转) -> 使用主题蓝色/靛青
+        // 3. Doc 标题匹配 → 紫色
+        if (docHeadingsMap && docHeadingsMap.has(term)) {
+            return {
+                type: 'doc',
+                className: 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-200 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-800/80'
+            };
+        }
+        // 4. 无跳转 → 默认黑白
         return {
             type: 'none',
-            // 蓝色/靛青：不能跳转
-            className: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200'
+            className: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
         };
-    }, [dictionaryMap, entryWord]);
+    }, [dictionaryMap, entryWord, docHeadingsMap]);
 
 // --- Render ---
   return (
@@ -642,7 +704,7 @@ const SenseDisplay = ({
                                     key={index}
                                     onClick={type !== 'none' ? () => onLinkClick(type, term) : undefined}
                                     className={`text-xs font-semibold mb-2 px-2 py-0.5 rounded-full whitespace-nowrap ${className} ${tagAnimationClasses}`}
-                                    title={type !== 'none' ? `点击跳转到 ${term}` : '不可跳转'}
+                                    title={type === 'entry' ? `${term}\n点击跳转到词条` : type === 'doc' ? `${docHeadingsMap?.get(term)?.meaning || term}\n点击跳转到文档` : undefined}
                                 >
                                     {term}
                                 </span>
@@ -683,14 +745,31 @@ const SenseDisplay = ({
                   </div>
                 ) : (
                   <ol className="entryTags flex list-none p-0 m-0 gap-2 flex-wrap mt-2">
-                    {sense.tags.map((tag, index) => (
-                      <li
-                        key={index}
-                        className={`text-xs bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 px-2 py-0.5 rounded-full font-medium ${tagAnimationClasses}`}
-                      >
-                        {tag}
-                      </li>
-                    ))}
+                    {sense.tags.map((tag, index) => {
+                      const { type, className } = getLinkTypeAndClass(tag);
+                      const buildTooltip = () => {
+                        if (type === 'entry' && dictionaryMap?.[tag]) {
+                          const entry = dictionaryMap[tag];
+                          const firstDef = entry.senses?.[0]?.definitions?.[0]?.text || '';
+                          const preview = firstDef.length > 30 ? firstDef.substring(0, 30) + '…' : firstDef;
+                          return preview ? `${tag}: ${preview}` : tag;
+                        }
+                        if (type === 'doc') {
+                          return docHeadingsMap?.get(tag)?.meaning || tag;
+                        }
+                        return undefined;
+                      };
+                      return (
+                        <li
+                          key={index}
+                          onClick={type !== 'none' && onLinkClick ? () => onLinkClick(type, tag) : undefined}
+                          title={buildTooltip()}
+                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${className} ${tagAnimationClasses} ${type !== 'none' ? 'cursor-pointer' : ''}`}
+                        >
+                          {tag}
+                        </li>
+                      );
+                    })}
                   </ol>
                 )}
               </div>
@@ -742,20 +821,20 @@ const SenseDisplay = ({
                             />
                           </div>
                           <div>
-                            <label className={formLabelClass}>例句</label>
+                            <label className={formLabelClass}>例句（支持 \\gla \\glb \\glc \\ft 行间标注格式）</label>
                             <div className="space-y-2">
                               {Array.isArray(def.examples) && def.examples.map((example, exIndex) => (
-                                <div key={exIndex} className="flex gap-2 items-center">
-                                  <input
-                                    type="text"
+                                <div key={exIndex} className="flex gap-2 items-start">
+                                  <textarea
                                     value={example}
                                     onChange={(e) => updateExample(defIndex, exIndex, e.target.value)}
-                                    className={formInputClass}
-                                    placeholder="输入例句..."
+                                    rows={example.includes('\\gla') ? 4 : 1}
+                                    className={formTextareaClass}
+                                    placeholder="输入例句...（多行支持行间标注）"
                                   />
                                   <button
                                     onClick={() => removeExample(defIndex, exIndex)}
-                                    className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition-colors shadow-sm"
+                                    className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition-colors shadow-sm flex-shrink-0"
                                   >
                                     <X className="w-4 h-4" />
                                   </button>
@@ -798,9 +877,15 @@ const SenseDisplay = ({
                         <li key={index} className="text-sm text-gray-800 dark:text-gray-200">
                           <span>{def.text}</span>
                           {def.examples && def.examples.length > 0 && (
-                            <ul className="list-disc list-inside ml-4 mt-2 space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                            <ul className="list-none ml-4 mt-2 space-y-2">
                               {def.examples.map((ex, j) => (
-                                <li key={j}>{ex}</li>
+                                <li key={j} className="text-xs text-gray-600 dark:text-gray-400">
+                                  {isGlossBlock(ex) ? (
+                                    <GlossDisplay text={ex} />
+                                  ) : (
+                                    <span className="before:content-['·'] before:mr-1.5">{ex}</span>
+                                  )}
+                                </li>
                               ))}
                             </ul>
                           )}
@@ -877,7 +962,7 @@ const SenseDisplay = ({
                                 key={index}
                                 onClick={type !== 'none' ? () => onLinkClick(type, term) : undefined}
                                 className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${className} ${tagAnimationClasses}`}
-                                title={type !== 'none' ? `点击跳转到 ${term}` : '不可跳转'}
+                                title={type === 'entry' ? `${term}\n点击跳转到词条` : type === 'doc' ? `${docHeadingsMap?.get(term) || term}\n点击跳转到文档` : undefined}
                             >
                                 {term}
                             </span>
