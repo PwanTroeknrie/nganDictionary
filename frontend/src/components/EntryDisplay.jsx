@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import SenseDisplay from './SenseDisplay'; // 导入 SenseDisplay
+import useLongPress from '../hooks/useLongPress';
 
 // (假设) onUpdateSense 是从父组件传递下来的
 const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense, dictionaryMap, onLinkClick, docHeadingsMap }) => {
@@ -16,8 +17,38 @@ const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense, dictionaryMap, onLi
     const formInputClass = "w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-gray-800 dark:text-white dark:bg-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors";
     const formLabelClass = "block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300";
 
+    // 长按状态（移动端视觉反馈）
+    const [isLongPressing, setIsLongPressing] = useState(false);
+
+    // 长按 = 右键编辑（移动端适配）
+    const longPressHandlers = useLongPress(
+        (e) => handleMainWordContextMenu(e),
+        { delay: 500, moveThreshold: 10 }
+    );
+
+    // 包装长按 handler，加入视觉反馈
+    const touchHandlers = {
+        onTouchStart: (e) => {
+            setIsLongPressing(true);
+            longPressHandlers.onTouchStart(e);
+        },
+        onTouchEnd: (e) => {
+            setIsLongPressing(false);
+            longPressHandlers.onTouchEnd(e);
+        },
+        onTouchMove: longPressHandlers.onTouchMove,
+        onMouseDown: (e) => {
+            setIsLongPressing(true);
+            longPressHandlers.onMouseDown(e);
+        },
+        onMouseUp: (e) => {
+            setIsLongPressing(false);
+            longPressHandlers.onMouseUp(e);
+        },
+    };
+
     // 原始样式
-    const editableClasses = "group p-3 rounded-xl transition-shadow duration-200 cursor-context-menu";
+    const editableClasses = "group p-3 rounded-xl transition-shadow duration-200 cursor-context-menu touch-manipulation";
     const activeClasses = "p-4 rounded-xl -m-3 shadow-2xl ring-2 ring-blue-400"; // 激活时使用蓝色外框
 
     // --- 事件处理 ---
@@ -95,9 +126,10 @@ const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense, dictionaryMap, onLi
 
             {/* Word Header - Main Display */}
             <div
-                className={`wordHeader ${editableClasses} ${isEditingMainWord ? activeClasses : ''}`}
+                className={`wordHeader ${editableClasses} ${isEditingMainWord ? activeClasses : ''} ${isLongPressing ? 'bg-primary/10 dark:bg-primary/20' : ''}`}
                 onContextMenu={handleMainWordContextMenu}
-                title="右键编辑主词条 (Word & Transliteration)"
+                {...touchHandlers}
+                title="右键/长按编辑主词条 (Word & Transliteration)"
             >
                 {isEditingMainWord && editingWordData ? (
                     // 变更：编辑视图 (表单模式)

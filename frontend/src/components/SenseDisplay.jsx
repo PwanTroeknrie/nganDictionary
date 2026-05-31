@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { ArrowRight, X, Plus } from 'lucide-react';
+import useLongPress from '../hooks/useLongPress';
 
 // --- Custom Hook for Shortcuts ---
 /**
@@ -283,7 +284,7 @@ const SenseDisplay = ({
   const isEditingDerivation = editingSection === 'derivation';
 
   // --- Styling Helpers ---
-  const editableClasses = "group p-3 rounded-xl transition-shadow duration-200 cursor-context-menu";
+  const editableClasses = "group p-3 rounded-xl transition-shadow duration-200 cursor-context-menu touch-manipulation";
   const activeClasses = "p-4 rounded-xl -m-3 shadow-2xl";
   const tagAnimationClasses = "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md";
 
@@ -311,6 +312,29 @@ const SenseDisplay = ({
       onOpenContextMenu(e, { type: 'sense', senseId: sense.sense_id, section: sectionName });
     }
   };
+
+  // 移动端长按 = 右键编辑（通过 data-section 区分 section）
+  const [isLongPressing, setIsLongPressing] = useState(false);
+  const longPressHandlers = useLongPress(
+    (e) => {
+      const sectionName = e.currentTarget?.dataset?.section;
+      if (sectionName) {
+        handleContextMenu(e, sectionName);
+      }
+    },
+    { delay: 500, moveThreshold: 10 }
+  );
+  // 包装加入视觉反馈
+  const touchHandlers = {
+    onTouchStart: (e) => { setIsLongPressing(true); longPressHandlers.onTouchStart(e); },
+    onTouchEnd: (e) => { setIsLongPressing(false); longPressHandlers.onTouchEnd(e); },
+    onTouchMove: longPressHandlers.onTouchMove,
+    onMouseDown: (e) => { setIsLongPressing(true); longPressHandlers.onMouseDown(e); },
+    onMouseUp: (e) => { setIsLongPressing(false); longPressHandlers.onMouseUp(e); },
+  };
+
+  // 带长按高亮的 editable 类名工厂
+  const longPressHighlight = isLongPressing ? 'bg-primary/10 dark:bg-primary/20' : '';
 
   // --- Logic for Initializing Edit States ---
 
@@ -557,9 +581,11 @@ const SenseDisplay = ({
 
         {/* Fused Sense Header - Editable Title */}
         <div
-          className={`${editableClasses} flex flex-col md:flex-row items-start md:items-center justify-between pb-3 mb-4 ${isEditingTitle ? activeClasses : ''} border-b border-gray-200 dark:border-gray-700`}
+          className={`${editableClasses} flex flex-col md:flex-row items-start md:items-center justify-between pb-3 mb-4 ${isEditingTitle ? activeClasses : ''} ${longPressHighlight} border-b border-gray-200 dark:border-gray-700`}
+          data-section="title"
           onContextMenu={(e) => handleContextMenu(e, 'title')}
-          title="右键编辑义项标签/ID"
+          {...touchHandlers}
+          title="右键/长按编辑义项标签/ID"
         >
           {isEditingTitle && editingTitle ? (
             <div className="w-full">
@@ -633,10 +659,12 @@ const SenseDisplay = ({
             {/* Pronunciation Section - Editable (Form mode) */}
             {sense.ipa && (
               <div
-                className={`${editableClasses} ${isEditingPronunciation ? activeClasses : ''}`}
+                className={`${editableClasses} ${isEditingPronunciation ? activeClasses : ''} ${longPressHighlight}`}
                 id={`entry-section-pronunciation-${sense.sense_id}`}
+                data-section="pronunciation"
                 onContextMenu={(e) => handleContextMenu(e, 'pronunciation')}
-                title="右键编辑 IPA"
+                {...touchHandlers}
+                title="右键/长按编辑 IPA"
               >
                 <h3 className="entryPronunciation text-lg font-bold border-l-4 border-blue-500 pl-2 mb-3">发音 / Pronunciation</h3>
 
@@ -666,10 +694,12 @@ const SenseDisplay = ({
             {/* Etymology Section - Editable (Form mode) */}
             {(sense.derived_from?.length > 0 || sense.description) && (
               <div
-                className={`${editableClasses} ${isEditingEtymology ? activeClasses : ''}`}
+                className={`${editableClasses} ${isEditingEtymology ? activeClasses : ''} ${longPressHighlight}`}
                 id={`entry-section-etymology-${sense.sense_id}`}
+                data-section="etymology"
                 onContextMenu={(e) => handleContextMenu(e, 'etymology')}
-                title="右键编辑词源"
+                {...touchHandlers}
+                title="右键/长按编辑词源"
               >
                 <h3 className="text-lg font-bold border-l-4 border-blue-500 pl-2 mb-3">词源 / Etymology</h3>
 
@@ -725,9 +755,11 @@ const SenseDisplay = ({
             {/* Tags Block - Editable (Form mode) */}
             {sense.tags?.length > 0 && (
               <div
-                className={`${editableClasses} flex flex-col pt-2 border-b border-gray-200 dark:border-gray-700 ${isEditingTags ? activeClasses : ''}`}
+                className={`${editableClasses} flex flex-col pt-2 border-b border-gray-200 dark:border-gray-700 ${isEditingTags ? activeClasses : ''} ${longPressHighlight}`}
+                data-section="tags"
                 onContextMenu={(e) => handleContextMenu(e, 'tags')}
-                title="右键编辑标签"
+                {...touchHandlers}
+                title="右键/长按编辑标签"
               >
                 <div className='flex items-baseline gap-2'>
                   <span className="text-base font-bold text-gray-700 dark:text-gray-300">标签:</span>
@@ -778,10 +810,12 @@ const SenseDisplay = ({
             {/* Definition Block - Form Editable */}
             {Array.isArray(sense.definitions) && sense.definitions.length > 0 && (
               <div
-                className={`${editableClasses} ${isEditingDefinitions ? activeClasses : ''}`}
+                className={`${editableClasses} ${isEditingDefinitions ? activeClasses : ''} ${longPressHighlight}`}
                 id={`entry-section-definitions-${sense.sense_id}`}
+                data-section="definitions"
                 onContextMenu={(e) => handleContextMenu(e, 'definitions')}
-                title="右键编辑释义"
+                {...touchHandlers}
+                title="右键/长按编辑释义"
               >
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-bold border-l-4 border-blue-500 pl-2 mb-2">释义 / Definitions</h3>
@@ -936,10 +970,12 @@ const SenseDisplay = ({
             {/* Derivation Section - Editable (Form mode) */}
             {sense.derived_to?.length > 0 && (
               <div
-                className={`${editableClasses} ${isEditingDerivation ? activeClasses : ''}`}
+                className={`${editableClasses} ${isEditingDerivation ? activeClasses : ''} ${longPressHighlight}`}
                 id={`entry-section-derivation-${sense.sense_id}`}
+                data-section="derivation"
                 onContextMenu={(e) => handleContextMenu(e, 'derivation')}
-                title="右键编辑派生词"
+                {...touchHandlers}
+                title="右键/长按编辑派生词"
               >
                 <h3 className="text-lg font-bold border-l-4 border-blue-500 pl-2 mb-2">派生词 / Derivation</h3>
 

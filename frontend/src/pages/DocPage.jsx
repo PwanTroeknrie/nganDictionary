@@ -383,29 +383,48 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
     const MIN_WIDTH = 250;
 
     // --- 拖动调整大小逻辑 (即时生效，无动画) ---
-    const handleMouseMove = useCallback((e) => {
+    // 统一移动处理 (支持鼠标 + 触摸)
+    const handleMove = useCallback((e) => {
         if (!containerRef.current) return;
         const containerRect = containerRef.current.getBoundingClientRect();
-        // 计算从容器右侧到鼠标位置的距离作为新宽度
-        const newWidth = containerRect.right - e.clientX;
+        // 从鼠标或触摸事件中提取 clientX
+        const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? e.changedTouches?.[0]?.clientX;
+        if (clientX == null) return;
+        const newWidth = containerRect.right - clientX;
         const clampedWidth = Math.max(MIN_WIDTH, newWidth);
         setRightPanelWidth(clampedWidth);
     }, []);
 
-    const handleMouseUp = useCallback(() => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+    // 统一结束处理 (鼠标 + 触摸)
+    const handleEnd = useCallback(() => {
+        document.removeEventListener('mousemove', handleMove);
+        document.removeEventListener('mouseup', handleEnd);
+        document.removeEventListener('touchmove', handleMove);
+        document.removeEventListener('touchend', handleEnd);
+        document.removeEventListener('touchcancel', handleEnd);
         document.body.style.cursor = 'default';
         document.body.style.userSelect = 'auto';
-    }, [handleMouseMove]);
+    }, [handleMove]);
 
+    // 鼠标拖拽
     const handleMouseDown = (e) => {
         if (!isRightOpen) return;
         e.preventDefault();
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('mouseup', handleEnd);
         document.body.style.cursor = 'col-resize';
-        document.body.style.userSelect = 'none'; // 避免拖动时选中文字
+        document.body.style.userSelect = 'none';
+    };
+
+    // 触摸拖拽 (移动端)
+    const handleTouchStart = (e) => {
+        if (!isRightOpen) return;
+        if (e.touches.length !== 1) return; // 仅单指拖拽
+        e.preventDefault();
+        document.addEventListener('touchmove', handleMove, { passive: false });
+        document.addEventListener('touchend', handleEnd);
+        document.addEventListener('touchcancel', handleEnd);
+        document.body.style.userSelect = 'none';
     };
 
 
@@ -712,8 +731,9 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
                 {/* --- 可拖动分割线 (即时生效) --- (保持不变) */}
                 {isRightOpen && (
                     <div
-                        className="w-2 cursor-col-resize bg-gray-300 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-blue-500 transition-colors duration-150 flex-shrink-0 z-10"
+                        className="w-2 cursor-col-resize bg-gray-300 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-blue-500 transition-colors duration-150 flex-shrink-0 z-10 touch-none"
                         onMouseDown={handleMouseDown}
+                        onTouchStart={handleTouchStart}
                         title="拖动调整编辑区大小"
                     ></div>
                 )}
