@@ -369,6 +369,7 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
     const [docError, setDocError] = useState('');
     const [tocExpandAll, setTocExpandAll] = useState(true);
     const [tocKey, setTocKey] = useState(0);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
     // Resizing State
     const [rightPanelWidth, setRightPanelWidth] = useState(400); // 默认像素宽度
@@ -580,6 +581,13 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
         }
     }, [editorSource, buildToc]);
 
+    // --- 移动端响应式检测 ---
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     // --- 布局控制和样式计算 ---
     const toggleGlobalEditMode = () => console.log("Global Edit Mode toggle is inactive on DocPage.");
     const toggleLeftPanel = () => setIsLeftOpen(prev => !prev);
@@ -591,8 +599,8 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
         return !prev;
     });
 
-    const tocWidth = isLeftOpen ? '256px' : '0px'; // 64 * 4
-    const editorWidth = isRightOpen ? `${rightPanelWidth}px` : '0px';
+    const tocWidth = isLeftOpen ? (isMobile ? '100%' : '256px') : '0px';
+    const editorWidth = isRightOpen ? (isMobile ? '100%' : `${rightPanelWidth}px`) : '0px';
 
     const componentMap = {
         h1: (props) => <CustomHeading level={1} onHeadingParsed={handleHeadingParsed} {...props} />,
@@ -647,7 +655,7 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
 
                 {/* --- 左侧 TOC 侧边栏 --- (保持不变) */}
                 <aside
-                    className={`flex-shrink-0 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden`}
+                    className={`flex-shrink-0 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300`}
                     style={{ width: tocWidth }}
                 >
                     <div className={`p-4 h-full overflow-y-auto scrollbar-custom transition-opacity duration-300 ${isLeftOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -710,7 +718,7 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
                 </main>
 
                 {/* --- 可拖动分割线 (即时生效) --- (保持不变) */}
-                {isRightOpen && (
+                {isRightOpen && !isMobile && (
                     <div
                         className="w-2 cursor-col-resize bg-gray-300 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-blue-500 transition-colors duration-150 flex-shrink-0 z-10"
                         onMouseDown={handleMouseDown}
