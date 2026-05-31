@@ -26,6 +26,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# SSL certificates (private)
+nginx/ssl/
+
 # Large data files
 *.jsonl
 *.sqlite
