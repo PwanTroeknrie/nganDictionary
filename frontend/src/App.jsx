@@ -85,12 +85,7 @@ export default function App() {
         />
         <Route
           path="/hello"
-          element={
-            <HelloPage
-              customFont={customFont}
-              setCustomFont={setCustomFont}
-            />
-          }
+          element={<HelloPage isDarkMode={isDarkMode} toggleTheme={toggleTheme} />}
         />
       </Routes>
     </BrowserRouter>

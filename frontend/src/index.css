@@ -7,6 +7,20 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ========================================================= */
+/* 2. Global HTML / Body background (dark mode responsive) */
+/* ========================================================= */
+html {
+    background-color: white;
+}
+html.dark {
+    background-color: #030712; /* gray-950 */
+}
+body {
+    background-color: inherit;
+    min-height: 100vh;
+}
+
+/* ========================================================= */
 /* 2. Google Font Import (注释掉，按原样保留) */
 /* ========================================================= */
 /*@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap');*/

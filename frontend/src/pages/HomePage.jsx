@@ -13,6 +13,9 @@ const Home = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 const FileText = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>;
 const Clock = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
 const HardDrive = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.14 4H7.86a2 2 0 0 0-2.41 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="18" y1="16" x2="18.01" y2="16"/></svg>;
+const Copy = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>;
+const RefreshCw = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>;
+const AlertTriangle = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
 
 const API_BASE = '/api/projects';
 
@@ -35,6 +38,15 @@ const setStoredAuth = (pid, code, level) => {
 };
 const clearStoredAuth = (pid) => {
     sessionStorage.removeItem(`auth_${pid}`);
+};
+
+const randomCodes = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let editor = '';
+    for (let i = 0; i < 8; i++) editor += chars[Math.floor(Math.random() * chars.length)];
+    let identity = '';
+    for (let i = 0; i < 4; i++) identity += '0123456789'[Math.floor(Math.random() * 10)];
+    return { editorCode: editor, identityNumber: identity };
 };
 
 const DictionaryIcon = (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21.4 15.82a24.16 24.16 0 0 0-4.6-2.5 13.5 13.5 0 0 0-6.8 0 24.16 24.16 0 0 0-4.6 2.5"/><path d="M12 21V3"/><path d="M2 12h20"/><path d="M19 19H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2z"/></svg>;
@@ -204,7 +216,7 @@ const FileCard = React.memo(({ file, permission, handleAction }) => {
 
 // --- 5. Project List Panel Component (左侧项目列表边栏) ---
 const ProjectListPanel = React.memo(({
-    isOpen, currentProject, setCurrentProject, allProjects, togglePanel
+    isOpen, currentProject, setCurrentProject, allProjects, togglePanel, onCreateClick
 }) => {
     const Scrim = (
         <div className={clsx("fixed inset-0 bg-black/50 z-20 sm:hidden transition-opacity duration-300", {
@@ -235,19 +247,28 @@ const ProjectListPanel = React.memo(({
                         <h2 className="text-lg font-bold mb-3 text-gray-800 dark:text-white border-b pb-2 border-gray-200 dark:border-gray-600">
                             项目列表 ({allProjects.length}) 🗂️
                         </h2>
-                        <button type="button" className="w-full bg-blue-500 text-white py-2 rounded-xl mb-4 hover:bg-blue-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5" onClick={() => alert("模拟: 创建新项目")}>
+                        <button type="button" className="w-full bg-blue-500 text-white py-2 rounded-xl mb-4 hover:bg-blue-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5" onClick={onCreateClick}>
                             + 创建新项目
                         </button>
                         <ul className="space-y-1">
                             {allProjects.map(project => (
-                                <li key={project} className={clsx(
-                                    "p-3 rounded-xl cursor-pointer transition-colors shadow-sm flex items-center space-x-2 text-sm font-medium transform hover:scale-[1.01] truncate",
-                                    project === currentProject
+                                <li key={project.id} className={clsx(
+                                    "p-3 rounded-xl cursor-pointer transition-colors shadow-sm flex flex-col transform hover:scale-[1.01]",
+                                    project.name === currentProject
                                         ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg'
                                         : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                )} onClick={() => setCurrentProject(project)}>
-                                    <ListIcon className="w-4 h-4 flex-shrink-0" />
-                                    <span className="truncate">{project}</span>
+                                )} onClick={() => setCurrentProject(project.name)}>
+                                    <div className="flex items-center space-x-2 text-sm font-medium">
+                                        <ListIcon className="w-4 h-4 flex-shrink-0" />
+                                        <span className="truncate">{project.name}</span>
+                                    </div>
+                                    {project.created_at && (
+                                        <span className="text-xs mt-1 ml-6 opacity-60">
+                                            {new Date(project.created_at).toLocaleString('zh-CN', {
+                                                year: 'numeric', month: '2-digit', day: '2-digit'
+                                            })}
+                                        </span>
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -255,6 +276,271 @@ const ProjectListPanel = React.memo(({
                 )}
             </aside>
         </>
+    );
+});
+
+
+// --- 5.5 Create Project Modal Component (创建项目模态框) ---
+const CreateProjectModal = React.memo(({ isOpen, onClose, onCreated, isDarkMode }) => {
+    const [phase, setPhase] = useState('form'); // 'form' | 'success'
+    const [projectName, setProjectName] = useState('');
+    const [editorCode, setEditorCode] = useState('');
+    const [identityNumber, setIdentityNumber] = useState('');
+    const [result, setResult] = useState(null);
+    const [creating, setCreating] = useState(false);
+    const [copiedField, setCopiedField] = useState('');
+
+    // Initialize random codes when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            const codes = randomCodes();
+            setEditorCode(codes.editorCode);
+            setIdentityNumber(codes.identityNumber);
+            setProjectName('');
+            setPhase('form');
+            setResult(null);
+            setCopiedField('');
+        }
+    }, [isOpen]);
+
+    const adminCode = editorCode + identityNumber;
+
+    const handleRegenerate = () => {
+        const codes = randomCodes();
+        setEditorCode(codes.editorCode);
+        setIdentityNumber(codes.identityNumber);
+    };
+
+    const handleCreate = async () => {
+        if (!projectName.trim()) return;
+        setCreating(true);
+        try {
+            const r = await fetch(API_BASE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: projectName.trim(),
+                    editor_code: editorCode,
+                    identity_number: identityNumber
+                })
+            });
+            if (r.ok) {
+                const data = await r.json();
+                setResult(data);
+                setPhase('success');
+            } else {
+                const err = await r.json();
+                alert('创建失败: ' + (err.error || '未知错误'));
+            }
+        } catch {
+            alert('创建请求失败，请检查网络连接');
+        } finally {
+            setCreating(false);
+        }
+    };
+
+    const handleCopy = async (text, field) => {
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch {
+            // Fallback for non-HTTPS or denied permission
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+        setCopiedField(field);
+        setTimeout(() => setCopiedField(''), 2000);
+    };
+
+    const handleConfirmAndClose = () => {
+        if (result) {
+            onCreated(result);
+        }
+        onClose();
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center">
+            {/* Backdrop */}
+            <div
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={() => { if (phase !== 'success') onClose(); }}
+            />
+
+            {/* Modal card */}
+            <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
+
+                {/* ── FORM PHASE ── */}
+                {phase === 'form' && (
+                    <>
+                        <div className="px-6 pt-6 pb-2">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">创建新项目</h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                设置项目名称与授权码，授权码创建后无法修改
+                            </p>
+                        </div>
+
+                        <div className="px-6 py-4 space-y-4">
+                            {/* Project Name */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    项目名称 <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={projectName}
+                                    onChange={(e) => setProjectName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && projectName.trim()) handleCreate();
+                                        if (e.key === 'Escape') onClose();
+                                    }}
+                                    placeholder="输入项目名称..."
+                                    autoFocus
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 outline-none transition-all"
+                                />
+                            </div>
+
+                            {/* Editor Code */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    编辑码 (editor_code)
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={editorCode}
+                                        onChange={(e) => setEditorCode(e.target.value)}
+                                        placeholder="8位随机字符"
+                                        maxLength={20}
+                                        className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 outline-none transition-all"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleRegenerate}
+                                        className="px-3 py-2.5 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+                                        title="重新生成随机码"
+                                    >
+                                        <RefreshCw className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Identity Number */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    身份编号 (identity_number)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={identityNumber}
+                                    onChange={(e) => setIdentityNumber(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                    placeholder="4位数字"
+                                    maxLength={4}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 outline-none transition-all"
+                                />
+                            </div>
+
+                            {/* Computed Admin Code (read-only) */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    管理码 (admin_code) <span className="text-xs font-normal text-gray-400">= 编辑码 + 身份编号</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={adminCode}
+                                    readOnly
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-mono cursor-not-allowed"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                            <button
+                                onClick={onClose}
+                                className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all"
+                            >
+                                取消
+                            </button>
+                            <button
+                                onClick={handleCreate}
+                                disabled={!projectName.trim() || creating}
+                                className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
+                            >
+                                {creating ? '创建中...' : '创建项目'}
+                            </button>
+                        </div>
+                    </>
+                )}
+
+                {/* ── SUCCESS PHASE ── */}
+                {phase === 'success' && result && (
+                    <>
+                        <div className="px-6 pt-6 pb-2">
+                            <h2 className="text-xl font-bold text-green-600 dark:text-green-400">
+                                项目创建成功
+                            </h2>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                项目 <span className="font-semibold text-gray-800 dark:text-gray-200">{result.project_id}</span> 已创建
+                            </p>
+                        </div>
+
+                        {/* Warning banner */}
+                        <div className="mx-6 px-4 py-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl flex items-start space-x-2">
+                            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-amber-800 dark:text-amber-200">
+                                <strong>请立即保存这些授权码！</strong>关闭此窗口后将无法再次查看。建议复制到安全位置。
+                            </p>
+                        </div>
+
+                        {/* Code display rows */}
+                        <div className="px-6 py-4 space-y-3">
+                            {[
+                                { label: '项目 ID', value: result.project_id, key: 'project_id' },
+                                { label: '管理码 (admin_code)', value: result.admin_code, key: 'admin_code', mono: true },
+                                { label: '编辑码 (editor_code)', value: result.editor_code, key: 'editor_code', mono: true },
+                                { label: '身份编号', value: result.identity_number, key: 'identity_number', mono: true },
+                            ].map(({ label, value, key, mono }) => (
+                                <div key={key} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">{label}</span>
+                                        <span className={clsx("text-sm font-semibold text-gray-900 dark:text-gray-100 truncate", mono && "font-mono tracking-wider")}>
+                                            {value}
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={() => handleCopy(value, key)}
+                                        className={clsx(
+                                            "ml-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0",
+                                            copiedField === key
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                        )}
+                                    >
+                                        {copiedField === key ? '已复制' : '复制'}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                            <button
+                                onClick={handleConfirmAndClose}
+                                className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25"
+                            >
+                                确认并进入项目
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
     );
 });
 
@@ -332,6 +618,7 @@ export default function Homepage({ isDarkMode, toggleTheme }) {
     // --- UI State ---
     const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
     const [isRightPanelOpen, setIsRightPanelToOpen] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     // --- Data State ---
     const [projects, setProjects] = useState([]);            // {id, name, entry_count, created_at, owner, ...}
@@ -341,13 +628,14 @@ export default function Homepage({ isDarkMode, toggleTheme }) {
     const [fileMetadata, setFileMetadata] = useState([]);
 
     const isCreator = permission === PERMISSIONS.CREATOR;
+    const allProjectItems = projects.map(p => ({ id: p.id, name: p.name, created_at: p.created_at }));
     const allProjectNames = projects.map(p => p.name);
     const currentProjectName = projects.find(p => p.id === currentProjectId)?.name || (allProjectNames[0] || '');
 
     useDebugPermission(setPermission);
 
-    // --- Fetch projects on mount ---
-    const fetchProjects = useCallback(async () => {
+    // --- Fetch/refresh projects ---
+    const refreshProjects = useCallback(async (selectId = null) => {
         try {
             const r = await fetch(API_BASE);
             if (r.ok) {
@@ -357,21 +645,26 @@ export default function Homepage({ isDarkMode, toggleTheme }) {
                     created_at: p.created_at || '', owner: p.owner || 'unknown'
                 }));
                 setProjects(list);
-                if (list.length > 0 && !currentProjectId) {
+                if (selectId) {
+                    setCurrentProjectId(selectId);
+                } else if (list.length > 0 && !currentProjectId) {
                     setCurrentProjectId(list[0].id);
                 }
-                // Restore saved auth levels
-                list.forEach(p => {
-                    const stored = getStoredAuth(p.id);
-                    if (stored.level && p.id === (list[0]?.id)) {
+                // Restore saved auth levels for current project
+                const targetId = selectId || (list.length > 0 && !currentProjectId ? list[0].id : null);
+                if (targetId) {
+                    const stored = getStoredAuth(targetId);
+                    if (stored.level) {
                         setPermission(stored.level === 'admin' ? PERMISSIONS.CREATOR : PERMISSIONS.AUTHORIZED);
                     }
-                });
+                }
             }
         } catch (e) {
             console.error('Failed to fetch projects:', e);
         }
-    }, []);
+    }, [currentProjectId]);
+
+    const fetchProjects = useCallback(() => refreshProjects(), [refreshProjects]);
 
     useEffect(() => { fetchProjects(); }, [fetchProjects]);
 
@@ -525,11 +818,23 @@ export default function Homepage({ isDarkMode, toggleTheme }) {
         } catch { alert('删除请求失败'); }
     };
 
+    // --- Handle new project created ---
+    const handleProjectCreated = useCallback((result) => {
+        setStoredAuth(result.project_id, result.admin_code, 'admin');
+        setShowCreateModal(false);
+        refreshProjects(result.project_id);
+    }, [refreshProjects]);
+
     // Current project info
     const currentProj = projects.find(p => p.id === currentProjectId) || {};
     const projectInfo = {
         creator: currentProj.owner || 'unknown',
-        created_date: (currentProj.created_at || '').slice(0, 10) || 'N/A',
+        created_date: currentProj.created_at
+            ? new Date(currentProj.created_at).toLocaleString('zh-CN', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit'
+              })
+            : 'N/A',
         entry_count: currentProj.entry_count || 0
     };
 
@@ -564,8 +869,9 @@ export default function Homepage({ isDarkMode, toggleTheme }) {
                             else setPermission(PERMISSIONS.UNAUTHORIZED);
                         }
                     }}
-                    allProjects={allProjectNames}
+                    allProjects={allProjectItems}
                     togglePanel={toggleLeftPanel}
+                    onCreateClick={() => setShowCreateModal(true)}
                 />
 
                 <ProjectMainContent
@@ -599,6 +905,13 @@ export default function Homepage({ isDarkMode, toggleTheme }) {
                     )}
                 </div>
             </div>
+
+            <CreateProjectModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onCreated={handleProjectCreated}
+                isDarkMode={isDarkMode}
+            />
         </div>
     );
 }

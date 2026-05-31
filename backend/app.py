@@ -3,6 +3,9 @@ from flask_cors import CORS
 import os
 import base64
 import re
+import random
+import string
+import shutil
 import pandas as pd
 import math
 from typing import Dict, List
@@ -35,6 +38,17 @@ def _human_size(bytes_val: int) -> str:
     units = ["B", "KB", "MB", "GB"]
     i = min(int(math.log(bytes_val, 1024)), 3)
     return f"{bytes_val / (1024 ** i):.1f} {units[i]}"
+
+
+def _generate_codes():
+    """Generate random authorization codes.
+    Returns (editor_code, identity_number, admin_code).
+    admin_code = editor_code + identity_number
+    """
+    editor_code = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+    identity_number = ''.join(random.choices(string.digits, k=4))
+    admin_code = editor_code + identity_number
+    return editor_code, identity_number, admin_code
 
 
 def _get_auth_code() -> str:
@@ -102,8 +116,20 @@ def create_project_route():
     try:
         data = request.json
         project_name = data.get('name', '未命名项目')
-        admin_code = data.get('admin_code', '')
-        editor_code = data.get('editor_code', '')
+
+        # Use client-supplied codes or auto-generate
+        editor_code = data.get('editor_code', '').strip() if data.get('editor_code') else ''
+        identity_number = data.get('identity_number', '').strip() if data.get('identity_number') else ''
+
+        # If either code is missing, auto-generate both
+        if not editor_code or not identity_number:
+            gen_editor, gen_identity, _ = _generate_codes()
+            if not editor_code:
+                editor_code = gen_editor
+            if not identity_number:
+                identity_number = gen_identity
+
+        admin_code = editor_code + identity_number
 
         project_id = project_name.lower().replace(' ', '_').replace('/', '_')
 
@@ -118,7 +144,8 @@ def create_project_route():
             },
             'access_control': {'allowed_users': []},
             'admin_code': admin_code,
-            'editor_code': editor_code
+            'editor_code': editor_code,
+            'identity_number': identity_number
         }
         save_project_config(project_id, config)
         # Also ensure project dir exists for doc/ and exports
@@ -128,7 +155,8 @@ def create_project_route():
             'project_id': project_id,
             'message': '项目创建成功',
             'admin_code': admin_code,
-            'editor_code': editor_code
+            'editor_code': editor_code,
+            'identity_number': identity_number
         }), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -162,6 +190,10 @@ def delete_project_route(project_id: str):
         ok = delete_project(project_id)
         if not ok:
             return jsonify({'error': '项目不存在'}), 404
+        # Also remove project directory from disk
+        project_dir = os.path.join(BASE_DATA_DIR, project_id)
+        if os.path.isdir(project_dir):
+            shutil.rmtree(project_dir)
         return jsonify({'message': '项目删除成功'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500

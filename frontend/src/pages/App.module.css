@@ -141,6 +141,11 @@
     }
 }
 
+/* Dark mode: boost blob brightness for visibility */
+.dark .shadow {
+    filter: blur(150px) brightness(2.2);
+}
+
 @media (max-width: 1024px) {
     .wrapper .shadow {
         top: 70px;
@@ -155,6 +160,10 @@
             background: hsl(var(--primary) / 50%);
             right: 160px;
         }
+    }
+
+    .dark .shadow {
+        filter: blur(150px) brightness(2.2);
     }
 }
 
@@ -175,6 +184,25 @@
             background: hsl(var(--primary) / 30%);
             right: 100px;
         }
+    }
+
+    .dark .shadow {
+        filter: blur(60px) brightness(2.2);
+    }
+}
+
+/* Gradient text shimmer animation */
+.textShimmer {
+    background-size: 200% auto;
+    animation: text-shimmer 3s ease-in-out infinite alternate;
+}
+
+@keyframes text-shimmer {
+    from {
+        background-position: 0% center;
+    }
+    to {
+        background-position: 100% center;
     }
 }
 
