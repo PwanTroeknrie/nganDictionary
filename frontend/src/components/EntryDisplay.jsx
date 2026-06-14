@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import SenseDisplay from './SenseDisplay'; // 导入 SenseDisplay
 import useLongPress from '../hooks/useLongPress';
+import { useProjectStore } from '../store/projectStore.js';
 
 // (假设) onUpdateSense 是从父组件传递下来的
-const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense, dictionaryMap, onLinkClick, docHeadingsMap }) => {
+const EntryDisplay = ({ entry, projectId, onUpdateEntry, onUpdateSense, dictionaryMap, onLinkClick, docHeadingsMap }) => {
+    const canEdit = useProjectStore(s => Boolean(s.authLevel));
 
     // --- 状态管理 ---
     const [editingSection, setEditingSection] = useState(null); // 'mainWord'
@@ -72,6 +74,7 @@ const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense, dictionaryMap, onLi
     const handleMainWordContextMenu = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (!canEdit) return;
 
         if (isEditingMainWord) {
             // 如果已经在编辑，则取消
@@ -126,7 +129,7 @@ const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense, dictionaryMap, onLi
 
             {/* Word Header - Main Display */}
             <div
-                className={`wordHeader ${editableClasses} ${isEditingMainWord ? activeClasses : ''} ${isLongPressing ? 'bg-primary/10 dark:bg-primary/20' : ''}`}
+                className={`wordHeader ${canEdit ? editableClasses : 'p-3 rounded-xl'} ${isEditingMainWord ? activeClasses : ''} ${isLongPressing && canEdit ? 'bg-primary/10 dark:bg-primary/20' : ''}`}
                 onContextMenu={handleMainWordContextMenu}
                 {...touchHandlers}
                 title="右键/长按编辑主词条 (Word & Transliteration)"
@@ -192,6 +195,7 @@ const EntryDisplay = ({ entry, onUpdateEntry, onUpdateSense, dictionaryMap, onLi
                 <SenseDisplay
                     key={sense.sense_id}
                     sense={sense}
+                    projectId={projectId}
                     entryWord={entry.word}
                     entryTransliteration={entry.transliteration}
                     onUpdateSense={onUpdateSense}

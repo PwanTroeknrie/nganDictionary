@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useEffect } from 'react';
+﻿import React, { useState, useCallback, useEffect } from 'react';
 import { ArrowRight, X, Plus } from 'lucide-react';
 import useLongPress from '../hooks/useLongPress';
+import { useProjectStore } from '../store/projectStore.js';
 
 // --- Custom Hook for Shortcuts ---
 /**
- * 处理全局键盘快捷键 (Ctrl+S/Cmd+S: Save, Ctrl+Q/Cmd+Q/Esc: Cancel, Ctrl+N/Cmd+N: Add Definition)
+ * 澶勭悊鍏ㄥ眬閿洏蹇嵎閿?(Ctrl+S/Cmd+S: Save, Ctrl+Q/Cmd+Q/Esc: Cancel, Ctrl+N/Cmd+N: Add Definition)
  */
 const useShortcuts = ({ editingSection, save, cancel, addDefinition}) => {
   useEffect(() => {
@@ -46,7 +47,7 @@ const useShortcuts = ({ editingSection, save, cancel, addDefinition}) => {
 // --- Helper Components for Forms ---
 
 /**
- * 标签样式的数组编辑器
+ * 鏍囩鏍峰紡鐨勬暟缁勭紪杈戝櫒
  */
 const ArrayEditor = ({ items, onChange, label, placeholder }) => {
   const handleItemChange = (index, value) => {
@@ -79,7 +80,7 @@ const ArrayEditor = ({ items, onChange, label, placeholder }) => {
               value={item}
               onChange={(e) => handleItemChange(index, e.target.value)}
               placeholder={placeholder}
-              // 动态计算 size，确保输入框足够显示内容
+              // 鍔ㄦ€佽绠?size锛岀‘淇濊緭鍏ユ瓒冲鏄剧ず鍐呭
               size={Math.max(item.length > 0 ? item.length : placeholder.length, 12)}
               className={tagInputBaseClasses}
             />
@@ -87,7 +88,7 @@ const ArrayEditor = ({ items, onChange, label, placeholder }) => {
             <button
               type="button"
               onClick={() => removeItem(index)}
-              // 样式：绝对定位在右上角
+              // 鏍峰紡锛氱粷瀵瑰畾浣嶅湪鍙充笂瑙?
               className="absolute top-0 right-0 p-0.5 bg-red-500 text-white rounded-full -mt-1 -mr-1 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center"
               title="删除"
             >
@@ -100,7 +101,7 @@ const ArrayEditor = ({ items, onChange, label, placeholder }) => {
         <button
           type="button"
           onClick={addItem}
-          // 样式：圆形的、半透明的 "+" 按钮
+          // 鏍峰紡锛氬渾褰㈢殑銆佸崐閫忔槑鐨?"+" 鎸夐挳
           className="w-8 h-8 flex items-center justify-center bg-blue-500/30 dark:bg-blue-400/30 text-blue-700 dark:text-blue-200 rounded-full hover:bg-blue-500/50 dark:hover:bg-blue-400/50 transition-colors shadow-md"
           title="添加"
         >
@@ -125,7 +126,7 @@ const FormButtons = ({ onSave, onCancel }) => (
   </div>
 );
 
-// ── Interlinear gloss parser & display ──
+// 鈹€鈹€ Interlinear gloss parser & display 鈹€鈹€
 const isGlossBlock = (text) => {
     if (!text || typeof text !== 'string') return false;
     return /^\\gla\s/m.test(text);
@@ -166,6 +167,14 @@ const GlossDisplay = React.memo(({ text }) => {
     if (!gloss.levels.length) return null;
 
     const colCount = Math.max(...gloss.levels.map(l => l.elements.length));
+    const renderGlossElement = (level, value) => {
+        if (level.key !== 'b') return value;
+        return String(value).split(/([A-Z]+)/).map((part, index) => (
+            /[A-Z]+/.test(part)
+                ? <span key={index} className="gloss-smallcap">{part.toLowerCase()}</span>
+                : part
+        ));
+    };
 
     return (
         <div className="gloss-block">
@@ -174,7 +183,7 @@ const GlossDisplay = React.memo(({ text }) => {
                     <div key={colIdx} className="gloss-element">
                         {gloss.levels.map((level, li) => (
                             <span key={li} className={`gloss-level-${level.key}`}>
-                                {level.elements[colIdx] || ' '}
+                                {renderGlossElement(level, level.elements[colIdx] || '\u00A0')}
                             </span>
                         ))}
                     </div>
@@ -185,63 +194,324 @@ const GlossDisplay = React.memo(({ text }) => {
     );
 });
 
- // --- Morphology Table Renderer (MODIFIED) ---
-  const renderMorphologyTable = (data, caption) => {
-    if (!Array.isArray(data) || data.length === 0) return null;
+// --- Morphology Table Renderer ---
+const groupRuns = (items) => {
+  const runs = [];
+  items.forEach((item) => {
+    const group = item.group || '';
+    const last = runs[runs.length - 1];
+    if (last && last.group === group) {
+      last.count += 1;
+    } else {
+      runs.push({ group, count: 1 });
+    }
+  });
+  return runs;
+};
 
-    const rows = data.map(row => Array.isArray(row) ? row : [String(row)]);
+const rowGroupRuns = (rows) => {
+  const runs = new Map();
+  rows.forEach((row, index) => {
+    const group = row.group || '';
+    if (!runs.has(group)) {
+      runs.set(group, { firstIndex: index, count: 0 });
+    }
+    runs.get(group).count += 1;
+  });
+  return runs;
+};
 
-    return (
-      <div
-        // 变更: 1. 添加 overflow-x-auto (允许水平滚动)
-        className="py-2 table-container bg-white dark:bg-gray-800 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 overflow-x-auto"
-      >
-        <table className="w-full Declension text-sm border-collapse">
-          {caption && (
-            <caption className="text-sm font-semibold text-white p-3 rounded-t-xl bg-blue-600 dark:bg-blue-400">
-              {caption}
-            </caption>
+const hasVisibleGroupLevel = (items) => (
+  items.some(item => String(item?.group || '').trim())
+);
+
+const morphologyTableShellClass = 'table-container overflow-x-auto rounded-t-2xl border-b border-slate-300 bg-white transition-all duration-200 hover:-translate-y-0.5 dark:border-[#2f4054] dark:bg-[#1d2a3a]';
+const morphologyTableShadowClass = 'shadow-lg hover:shadow-xl';
+const morphologyCaptionClass = 'font-word rounded-t-2xl bg-[#4d9df5] p-2 text-center text-base font-bold text-white';
+const morphologyHeadCellClass = 'border border-slate-300 bg-blue-50 px-3 py-2 text-left text-sm font-semibold text-blue-700 dark:border-[#2f4054] dark:bg-[#1d2a3a] dark:text-[#66b6ff]';
+const morphologyMergedHeadCellClass = 'border border-slate-300 bg-blue-50 px-3 py-2 text-center align-middle text-sm font-semibold text-blue-700 dark:border-[#2f4054] dark:bg-[#1d2a3a] dark:text-[#66b6ff]';
+const morphologyBodyHeaderClass = 'border border-slate-300 bg-blue-50 px-3 py-2 text-left text-sm font-semibold text-blue-700 dark:border-[#2f4054] dark:bg-[#1d2a3a] dark:text-[#66b6ff]';
+const morphologyBodyCellClass = 'font-word border border-slate-300 bg-white px-3 py-2 text-center text-sm whitespace-nowrap text-slate-900 dark:border-[#2f4054] dark:bg-[#1d2a3a] dark:text-white';
+
+const normalizeMorphologyTables = (schema) => {
+  if (!schema) return [];
+  if (Array.isArray(schema.tables) && schema.tables.length > 0) {
+    return schema.tables.map((table, index) => ({
+      id: table.id || `table-${index + 1}`,
+      label: table.label || `子表 ${index + 1}`,
+      rows: Array.isArray(table.rows) ? table.rows : [],
+      columns: Array.isArray(table.columns) ? table.columns : [],
+    }));
+  }
+  return [{
+    id: 'main',
+    label: schema.label || '主表',
+    rows: Array.isArray(schema.rows) ? schema.rows : [],
+    columns: Array.isArray(schema.columns) ? schema.columns : [],
+  }];
+};
+
+const morphologyCellKey = (tables, table, row, column) => {
+  const scopedKey = `${table.id}.${row.id}.${column.id}`;
+  return tables.length > 1 || table.id !== 'main' ? scopedKey : `${row.id}.${column.id}`;
+};
+
+const renderOneMorphologyTable = (table, caption, options = {}) => {
+  const rows = Array.isArray(table.rows) ? table.rows : [];
+  const columns = Array.isArray(table.columns) ? table.columns : [];
+  const cells = Array.isArray(table.cells) ? table.cells : [];
+  const hasColumnGroups = hasVisibleGroupLevel(columns);
+  const hasRowGroups = hasVisibleGroupLevel(rows);
+  const hasColumnLabels = columns.some(column => String(column?.label || '').trim());
+  const rowHeaderCount = hasRowGroups ? 2 : 1;
+  const rowRuns = rowGroupRuns(rows);
+
+  if (!rows.length || !columns.length) return null;
+
+  return (
+    <div className={`${morphologyTableShellClass} ${options.noShadow ? '' : morphologyTableShadowClass}`}>
+      <table className="w-full min-w-[560px] table-fixed border-collapse [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0">
+        {caption && (
+          <caption className={morphologyCaptionClass}>
+            {caption}
+          </caption>
+        )}
+        <colgroup>
+          {Array.from({ length: rowHeaderCount }).map((_, index) => (
+            <col key={`row-header-${index}`} className="w-[9rem]" />
+          ))}
+          {columns.map(column => <col key={column.id} />)}
+        </colgroup>
+        <thead>
+          {hasColumnGroups && (
+            <tr>
+              <th className={morphologyMergedHeadCellClass} colSpan={rowHeaderCount}>
+                {'\u00A0'}
+              </th>
+              {groupRuns(columns).map((run, index) => (
+                <th key={`${run.group}-${index}`} className={morphologyMergedHeadCellClass} colSpan={run.count}>
+                  {run.group || '\u00A0'}
+                </th>
+              ))}
+            </tr>
           )}
-          <tbody>
-            {rows.map((row, rowIndex) => (
-              <tr
-                key={rowIndex}
-                // 移除了 hover 效果，因为它们在水平滚动时体验不佳
-                className={
-                  rowIndex % 2 === 0
-                    ? 'bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 transition duration-150'
-                    : 'bg-gray-50 dark:bg-gray-800/80 border-b border-gray-100 dark:border-gray-700 transition duration-150'
-                }
-              >
-                {row.map((cell, cellIndex) => {
-                  const isHeaderLike = rowIndex === 0 || rowIndex === 2;
+          {hasColumnLabels && (
+            <tr>
+              {hasRowGroups ? (
+                <>
+                  <th className={morphologyHeadCellClass}>{'\u00A0'}</th>
+                  <th className={morphologyHeadCellClass}>{'\u00A0'}</th>
+                </>
+              ) : (
+                <th className={morphologyHeadCellClass}>{'\u00A0'}</th>
+              )}
+              {columns.map(column => (
+                <th key={column.id} className={morphologyHeadCellClass}>
+                  {column.label || '\u00A0'}
+                </th>
+              ))}
+            </tr>
+          )}
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={row.id || rowIndex}>
+              {hasRowGroups && rowRuns.get(row.group || '')?.firstIndex === rowIndex && (
+                <th
+                  className={`${morphologyBodyHeaderClass} align-middle`}
+                  rowSpan={rowRuns.get(row.group || '')?.count || 1}
+                >
+                  {row.group || '\u00A0'}
+                </th>
+              )}
+              <th className={morphologyBodyHeaderClass}>
+                {row.label || '\u00A0'}
+              </th>
+              {columns.map((column, columnIndex) => (
+                <td key={column.id || columnIndex} className={morphologyBodyCellClass}>
+                  {cells[rowIndex]?.[columnIndex] || ''}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
-                  return isHeaderLike ? (
-                    <th
-                      key={cellIndex}
-                      // 变更: 3. 添加 whitespace-nowrap 确保表头不换行
-                      className="p-3 font-semibold text-blue-600 dark:text-blue-300 text-left border-r border-gray-200 dark:border-gray-700 last:border-r-0 whitespace-nowrap"
-                    >
-                      {cell}
-                    </th>
-                  ) : (
-                    // 变更: 3. 添加 whitespace-nowrap 确保单元格内容不换行
-                    <td
-                      key={cellIndex}
-                      className="p-3 font-mono text-center border-r border-gray-200 dark:border-gray-700 last:border-r-0 text-gray-700 dark:text-gray-300 whitespace-nowrap"
-                    >
-                      {cell}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+const renderMorphologyTable = (morphology) => {
+  const tables = Array.isArray(morphology?.tables) ? morphology.tables : [];
+  if (tables.length > 0) {
+    return (
+      <div className="space-y-4">
+        {tables.map((table, index) => renderOneMorphologyTable(
+          table,
+          table.caption || morphology.caption,
+          { noShadow: tables.length > 1 && index === 0 }
+        ))}
       </div>
     );
+  }
+  if (!morphology || !Array.isArray(morphology.tableData) || morphology.tableData.length === 0) return null;
+
+  const rows = Array.isArray(morphology.rows) ? morphology.rows : [];
+  const columns = Array.isArray(morphology.columns) ? morphology.columns : [];
+  const cells = morphology.tableData.slice(1).map(row => row.slice(1));
+  return renderOneMorphologyTable({ id: 'legacy', rows, columns, cells }, morphology.caption);
+};
+
+
+const buildMorphologyDraft = (sense, entryWord, generator) => {
+  const existing = sense?.morphology && typeof sense.morphology === 'object'
+    ? sense.morphology
+    : {};
+  const params = {};
+
+  (generator?.fields || []).forEach((field) => {
+    params[field.name] = field.default || '';
+  });
+
+  if (entryWord && params.stem === '') {
+    params.stem = entryWord;
+  }
+
+  return {
+    generator: existing.generator || generator?.id || 'noun-basic',
+    version: existing.version || 1,
+    params: {
+      ...params,
+      ...(existing.params || {}),
+    },
+    overrides: existing.overrides || {},
+  };
+};
+
+const inferMorphologySpec = (sense, entryWord, generators) => {
+  const existing = sense?.morphology && typeof sense.morphology === 'object'
+    ? sense.morphology
+    : {};
+  if (existing.generator) {
+    return existing;
+  }
+
+  const tagText = [
+    sense?.displayed_tag,
+    ...(Array.isArray(sense?.tags) ? sense.tags : []),
+  ].filter(Boolean).join(' ').toLowerCase();
+  const generator = generators.find(item =>
+    (item.infer_tags || []).some(inferTag => {
+      const normalized = String(inferTag || '').toLowerCase();
+      return normalized && (tagText === normalized || tagText.includes(normalized));
+    })
+  ) || generators.find(item => {
+    if (!item.infer_word_regex) return false;
+    try {
+      return new RegExp(item.infer_word_regex).test(entryWord || '');
+    } catch {
+      return false;
+    }
+  }) || generators.find(item => item.default) || generators[0];
+
+  return buildMorphologyDraft(sense, entryWord, generator || { id: 'noun-basic', fields: [] });
+};
+
+const paramsWithDefaults = (spec, generator) => {
+  const params = {};
+  (generator?.fields || []).forEach((field) => {
+    params[field.name] = field.default || '';
+  });
+  return {
+    ...params,
+    ...(spec?.params || {}),
+  };
+};
+
+const renderMorphologyCell = (params, pattern) => {
+  const value = String(pattern ?? '');
+  const rendered = value.replace(/\{([^}]+)\}/g, (_, key) => String(params[key] ?? ''));
+  if (value.includes('{')) {
+    return rendered;
+  }
+  return `${params.stem || ''}${value}`;
+};
+
+const renderMorphologyTemplate = (template, values) => (
+  String(template || '').replace(/\{([^}]+)\}/g, (_, key) => String(values[key] ?? ''))
+);
+
+const generateMorphologyTableFromSpec = (spec, generators) => {
+  if (!spec || typeof spec !== 'object' || !spec.generator) {
+    return { caption: '', tableData: [], tables: [] };
+  }
+
+  const generator = generators.find(item => item.id === spec.generator);
+  const params = paramsWithDefaults(spec, generator);
+  const schema = generator?.schema || {};
+  const tables = normalizeMorphologyTables(schema);
+  const endings = generator?.endings && typeof generator.endings === 'object' ? generator.endings : {};
+  const captionParts = [schema.label, generator?.label].filter(Boolean);
+  const fallbackCaption = captionParts.length ? captionParts.join(' · ') : 'Morphology';
+  const overrides = spec.overrides && typeof spec.overrides === 'object' ? spec.overrides : {};
+  const titleTemplate = spec.titleTemplate || schema.titleTemplate || '{stem} {class} {schema}';
+  const titleValues = {
+    ...params,
+    stem: params.stem || '',
+    class: generator?.label || '',
+    schema: schema.label || '',
+    class_id: generator?.id || '',
+    schema_id: schema.id || '',
   };
 
+  const generatedTables = tables.map((table) => {
+    const cells = table.rows.map((row) => table.columns.map((column) => {
+      const scopedKey = `${table.id}.${row.id}.${column.id}`;
+      const legacyKey = `${row.id}.${column.id}`;
+      const pattern = endings[scopedKey] ?? endings[legacyKey] ?? '';
+      return renderMorphologyCell(params, pattern);
+    }));
+
+    table.rows.forEach((row, rowIndex) => {
+      table.columns.forEach((column, columnIndex) => {
+        const scopedKey = `${table.id}.${row.id}.${column.id}`;
+        const legacyKey = `${row.id}.${column.id}`;
+        const numericKey = `${rowIndex + 1}.${columnIndex + 1}`;
+        if (Object.prototype.hasOwnProperty.call(overrides, scopedKey)) {
+          cells[rowIndex][columnIndex] = String(overrides[scopedKey]);
+        } else if (Object.prototype.hasOwnProperty.call(overrides, legacyKey)) {
+          cells[rowIndex][columnIndex] = String(overrides[legacyKey]);
+        } else if (Object.prototype.hasOwnProperty.call(overrides, numericKey)) {
+          cells[rowIndex][columnIndex] = String(overrides[numericKey]);
+        }
+      });
+    });
+
+    const titleKey = `__title.${table.id}`;
+    const baseCaption = renderMorphologyTemplate(titleTemplate, titleValues).trim() || fallbackCaption;
+    const defaultCaption = tables.length > 1 && table.label ? `${baseCaption} · ${table.label}` : baseCaption;
+    const caption = overrides[titleKey] ?? overrides.__title ?? defaultCaption;
+    return {
+      ...table,
+      caption,
+      titleKey,
+      titleDefault: defaultCaption,
+      cells,
+      tableData: [
+        ['', ...table.columns.map(column => column.label || '')],
+        ...table.rows.map((row, rowIndex) => [row.label || '', ...cells[rowIndex]]),
+      ],
+    };
+  });
+
+  const firstTable = generatedTables[0] || { rows: [], columns: [], tableData: [] };
+  return {
+    caption: fallbackCaption,
+    tables: generatedTables,
+    tableData: firstTable.tableData || [],
+    rows: firstTable.rows || [],
+    columns: firstTable.columns || [],
+  };
+};
 
 
 /**
@@ -257,8 +527,10 @@ const SenseDisplay = ({
     onOpenContextMenu,
     dictionaryMap,
     onLinkClick,
-    docHeadingsMap = null, // Map: abbreviation → meaning from h3/h4 headings
+    docHeadingsMap = null, // Map: abbreviation 鈫?meaning from h3/h4 headings
 }) => {
+  const projectId = useProjectStore(s => s.projectId);
+  const canEdit = useProjectStore(s => Boolean(s.authLevel));
   // --- Component State ---
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [collapseDefinitions, setCollapseDefinitions] = useState(false);
@@ -274,6 +546,9 @@ const SenseDisplay = ({
   const [editingTags, setEditingTags] = useState(null);
   const [editingDerivation, setEditingDerivation] = useState(null);
   const [editingDefinitions, setEditingDefinitions] = useState([]);
+  const [editingMorphology, setEditingMorphology] = useState(null);
+  const [morphologyGenerators, setMorphologyGenerators] = useState([]);
+  const [morphologyStatus, setMorphologyStatus] = useState('');
 
   // --- Check if any section is in editing mode ---
   const isEditingTitle = editingSection === 'title';
@@ -282,9 +557,12 @@ const SenseDisplay = ({
   const isEditingTags = editingSection === 'tags';
   const isEditingDefinitions = editingSection === 'definitions';
   const isEditingDerivation = editingSection === 'derivation';
+  const isEditingMorphology = editingSection === 'morphology';
 
   // --- Styling Helpers ---
-  const editableClasses = "group p-3 rounded-xl transition-shadow duration-200 cursor-context-menu touch-manipulation";
+  const editableClasses = canEdit
+    ? "group p-3 rounded-xl transition-shadow duration-200 cursor-context-menu touch-manipulation"
+    : "group p-3 rounded-xl transition-shadow duration-200";
   const activeClasses = "p-4 rounded-xl -m-3 shadow-2xl";
   const tagAnimationClasses = "transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md";
 
@@ -294,17 +572,60 @@ const SenseDisplay = ({
   const formTextareaClass = `${formInputClass} min-h-[80px]`;
   const formLabelClass = "block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300";
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const url = projectId
+      ? `/api/projects/${projectId}/morphology/generators`
+      : '/api/projects/default/morphology/generators';
+
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) throw new Error('Failed to load morphology generators');
+        return response.json();
+      })
+      .then((data) => {
+        if (!cancelled) {
+          setMorphologyGenerators(Array.isArray(data.generators) ? data.generators : []);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setMorphologyStatus(error.message);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+
+  const selectedMorphologyGenerator = morphologyGenerators.find(
+    generator => generator.id === editingMorphology?.generator
+  ) || morphologyGenerators[0];
+  const displayMorphologySpec = inferMorphologySpec(sense, entryWord, morphologyGenerators);
+  const generatedMorphology = generateMorphologyTableFromSpec(
+    displayMorphologySpec,
+    morphologyGenerators
+  );
+  const editingMorphologyBase = editingMorphology
+    ? generateMorphologyTableFromSpec({ ...editingMorphology, overrides: {} }, morphologyGenerators)
+    : { caption: '', tableData: [] };
+  const editingMorphologyEffective = editingMorphology
+    ? generateMorphologyTableFromSpec(editingMorphology, morphologyGenerators)
+    : { caption: '', tableData: [] };
+
 
   // --- Context Menu Handler ---
   const handleContextMenu = (e, sectionName) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!canEdit) return;
 
     if (editingSection === sectionName) {
-      // 如果已经在编辑此部分，则取消编辑
-      setEditingSection(null);
+      handleMasterCancel();
     } else {
-      // 切换到编辑新部分
+      // 鍒囨崲鍒扮紪杈戞柊閮ㄥ垎
       setEditingSection(sectionName);
     }
 
@@ -313,7 +634,7 @@ const SenseDisplay = ({
     }
   };
 
-  // 移动端长按 = 右键编辑（通过 data-section 区分 section）
+  // 绉诲姩绔暱鎸?= 鍙抽敭缂栬緫锛堥€氳繃 data-section 鍖哄垎 section锛?
   const [isLongPressing, setIsLongPressing] = useState(false);
   const longPressHandlers = useLongPress(
     (e) => {
@@ -324,7 +645,7 @@ const SenseDisplay = ({
     },
     { delay: 500, moveThreshold: 10 }
   );
-  // 包装加入视觉反馈
+  // 鍖呰鍔犲叆瑙嗚鍙嶉
   const touchHandlers = {
     onTouchStart: (e) => { setIsLongPressing(true); longPressHandlers.onTouchStart(e); },
     onTouchEnd: (e) => { setIsLongPressing(false); longPressHandlers.onTouchEnd(e); },
@@ -333,7 +654,7 @@ const SenseDisplay = ({
     onMouseUp: (e) => { setIsLongPressing(false); longPressHandlers.onMouseUp(e); },
   };
 
-  // 带长按高亮的 editable 类名工厂
+  // 甯﹂暱鎸夐珮浜殑 editable 绫诲悕宸ュ巶
   const longPressHighlight = isLongPressing ? 'bg-primary/10 dark:bg-primary/20' : '';
 
   // --- Logic for Initializing Edit States ---
@@ -372,19 +693,29 @@ const SenseDisplay = ({
     }
   }, [sense.definitions]);
 
+  const startEditingMorphology = useCallback(() => {
+    const inferredSpec = inferMorphologySpec(sense, entryWord, morphologyGenerators);
+    const generator = morphologyGenerators.find(
+      item => item.id === inferredSpec?.generator
+    ) || morphologyGenerators[0] || { id: 'noun-basic', fields: [] };
+    setEditingMorphology(buildMorphologyDraft({ ...sense, morphology: inferredSpec }, entryWord, generator));
+    setMorphologyStatus('');
+  }, [sense, entryWord, morphologyGenerators]);
+
   /**
    * Master Effect to control all editing states.
    */
   useEffect(() => {
-    // 清除所有可能存在的旧状态
+    // 娓呴櫎鎵€鏈夊彲鑳藉瓨鍦ㄧ殑鏃х姸鎬?
     setEditingTitle(null);
     setEditingPronunciation(null);
     setEditingEtymology(null);
     setEditingTags(null);
     setEditingDerivation(null);
     setEditingDefinitions([]);
+    setEditingMorphology(null);
 
-    // 根据新的 editingSection 初始化状态
+    // 鏍规嵁鏂扮殑 editingSection 鍒濆鍖栫姸鎬?
     switch (editingSection) {
       case 'title': startEditingTitle(); break;
       case 'pronunciation': startEditingPronunciation(); break;
@@ -392,6 +723,7 @@ const SenseDisplay = ({
       case 'tags': startEditingTags(); break;
       case 'derivation': startEditingDerivation(); break;
       case 'definitions': startEditingDefinitions(); break;
+      case 'morphology': startEditingMorphology(); break;
       default:
         break;
     }
@@ -402,7 +734,8 @@ const SenseDisplay = ({
     startEditingEtymology,
     startEditingTags,
     startEditingDerivation,
-    startEditingDefinitions
+    startEditingDefinitions,
+    startEditingMorphology
   ]);
 
   // --- Logic for Saving and Canceling ---
@@ -431,7 +764,7 @@ const SenseDisplay = ({
     if (onUpdateSense && editingEtymology) {
       const cleanedEtymology = {
         ...editingEtymology,
-        // 过滤空字符串
+        // 杩囨护绌哄瓧绗︿覆
         derived_from: editingEtymology.derived_from.filter(t => t.trim() !== '')
       };
       onUpdateSense(sense.sense_id, cleanedEtymology);
@@ -456,12 +789,12 @@ const SenseDisplay = ({
   }, [onUpdateSense, sense.sense_id, editingDerivation]);
 
   const saveDefinitions = useCallback(() => {
-    // 过滤掉文本和例句都为空的定义
+    // 杩囨护鎺夋枃鏈拰渚嬪彞閮戒负绌虹殑瀹氫箟
     const cleanedDefinitions = editingDefinitions.filter(def =>
       def.text.trim() !== '' || (Array.isArray(def.examples) && def.examples.some(ex => ex.trim() !== ''))
     ).map(def => ({
         ...def,
-        // 确保例句也过滤空值
+        // 纭繚渚嬪彞涔熻繃婊ょ┖鍊?
         examples: Array.isArray(def.examples) ? def.examples.filter(ex => ex.trim() !== '') : [],
     }));
 
@@ -470,6 +803,52 @@ const SenseDisplay = ({
     }
     setEditingSection(null);
   }, [onUpdateSense, sense.sense_id, editingDefinitions]);
+
+  const updateMorphologyParam = useCallback((fieldName, value) => {
+    setEditingMorphology(prev => ({
+      ...prev,
+      params: {
+        ...(prev?.params || {}),
+        [fieldName]: value,
+      },
+    }));
+  }, []);
+
+  const updateMorphologyOverride = useCallback((key, value, baseValue) => {
+    setEditingMorphology(prev => {
+      const nextOverrides = { ...(prev?.overrides || {}) };
+      if (value === baseValue) {
+        delete nextOverrides[key];
+      } else {
+        nextOverrides[key] = value;
+      }
+      return {
+        ...prev,
+        overrides: nextOverrides,
+      };
+    });
+  }, []);
+
+  const changeMorphologyGenerator = useCallback((generatorId) => {
+    const generator = morphologyGenerators.find(item => item.id === generatorId);
+    setEditingMorphology(buildMorphologyDraft(
+      { ...sense, morphology: { generator: generatorId, params: {} } },
+      entryWord,
+      generator
+    ));
+    setMorphologyStatus('');
+  }, [entryWord, morphologyGenerators, sense]);
+
+  const saveMorphology = useCallback(() => {
+    if (!editingMorphology || !onUpdateSense) return;
+
+    onUpdateSense(sense.sense_id, {
+      morphology: editingMorphology,
+    });
+    setCollapseMorphology(false);
+    setEditingSection(null);
+    setMorphologyStatus('');
+  }, [editingMorphology, onUpdateSense, sense.sense_id]);
 
   // Master Save: Calls the correct specific save handler
   const handleMasterSave = useCallback(() => {
@@ -480,9 +859,10 @@ const SenseDisplay = ({
       case 'tags': saveTags(); break;
       case 'derivation': saveDerivation(); break;
       case 'definitions': saveDefinitions(); break;
+      case 'morphology': saveMorphology(); break;
       default: break;
     }
-  }, [editingSection, saveTitle, savePronunciation, saveEtymology, saveTags, saveDerivation, saveDefinitions]);
+  }, [editingSection, saveTitle, savePronunciation, saveEtymology, saveTags, saveDerivation, saveDefinitions, saveMorphology]);
 
 
   // --- Definition Form-Specific Logic ---
@@ -546,28 +926,28 @@ const SenseDisplay = ({
 
    // --- Linking Logic (Core Requirement) ---
    const getLinkTypeAndClass = useCallback((term) => {
-        // 1. DOC 链接 → 紫色
+        // 1. DOC 閾炬帴 鈫?绱壊
         if (term.startsWith('DOC:')) {
             return {
                 type: 'doc',
                 className: 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-200 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-800/80'
             };
         }
-        // 2. Entry 链接 → 蓝色
+        // 2. Entry 閾炬帴 鈫?钃濊壊
         if (dictionaryMap && dictionaryMap[term] && term !== entryWord) {
             return {
                 type: 'entry',
                 className: 'bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-200 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/80'
             };
         }
-        // 3. Doc 标题匹配 → 紫色
+        // 3. Doc 鏍囬鍖归厤 鈫?绱壊
         if (docHeadingsMap && docHeadingsMap.has(term)) {
             return {
                 type: 'doc',
                 className: 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-200 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-800/80'
             };
         }
-        // 4. 无跳转 → 默认黑白
+        // 4. 鏃犺烦杞?鈫?榛樿榛戠櫧
         return {
             type: 'none',
             className: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
@@ -585,7 +965,7 @@ const SenseDisplay = ({
           data-section="title"
           onContextMenu={(e) => handleContextMenu(e, 'title')}
           {...touchHandlers}
-          title="右键/长按编辑义项标签/ID"
+          title="右键或长按编辑义项标签 / ID"
         >
           {isEditingTitle && editingTitle ? (
             <div className="w-full">
@@ -664,7 +1044,7 @@ const SenseDisplay = ({
                 data-section="pronunciation"
                 onContextMenu={(e) => handleContextMenu(e, 'pronunciation')}
                 {...touchHandlers}
-                title="右键/长按编辑 IPA"
+                title="右键或长按编辑 IPA"
               >
                 <h3 className="entryPronunciation text-lg font-bold border-l-4 border-blue-500 pl-2 mb-3">发音 / Pronunciation</h3>
 
@@ -699,7 +1079,7 @@ const SenseDisplay = ({
                 data-section="etymology"
                 onContextMenu={(e) => handleContextMenu(e, 'etymology')}
                 {...touchHandlers}
-                title="右键/长按编辑词源"
+                title="右键或长按编辑词源"
               >
                 <h3 className="text-lg font-bold border-l-4 border-blue-500 pl-2 mb-3">词源 / Etymology</h3>
 
@@ -734,7 +1114,7 @@ const SenseDisplay = ({
                                     key={index}
                                     onClick={type !== 'none' ? () => onLinkClick(type, term) : undefined}
                                     className={`text-xs font-semibold mb-2 px-2 py-0.5 rounded-full whitespace-nowrap ${className} ${tagAnimationClasses}`}
-                                    title={type === 'entry' ? `${term}\n点击跳转到词条` : type === 'doc' ? `${docHeadingsMap?.get(term)?.meaning || term}\n点击跳转到文档` : undefined}
+                                    title={type === 'entry' ? `${term}\n跳转到词条` : type === 'doc' ? `${docHeadingsMap?.get(term)?.meaning || term}\n跳转到文档` : undefined}
                                 >
                                     {term}
                                 </span>
@@ -759,7 +1139,7 @@ const SenseDisplay = ({
                 data-section="tags"
                 onContextMenu={(e) => handleContextMenu(e, 'tags')}
                 {...touchHandlers}
-                title="右键/长按编辑标签"
+                title="右键或长按编辑标签"
               >
                 <div className='flex items-baseline gap-2'>
                   <span className="text-base font-bold text-gray-700 dark:text-gray-300">标签:</span>
@@ -783,7 +1163,7 @@ const SenseDisplay = ({
                         if (type === 'entry' && dictionaryMap?.[tag]) {
                           const entry = dictionaryMap[tag];
                           const firstDef = entry.senses?.[0]?.definitions?.[0]?.text || '';
-                          const preview = firstDef.length > 30 ? firstDef.substring(0, 30) + '…' : firstDef;
+                          const preview = firstDef.length > 30 ? `${firstDef.substring(0, 30)}...` : firstDef;
                           return preview ? `${tag}: ${preview}` : tag;
                         }
                         if (type === 'doc') {
@@ -815,7 +1195,7 @@ const SenseDisplay = ({
                 data-section="definitions"
                 onContextMenu={(e) => handleContextMenu(e, 'definitions')}
                 {...touchHandlers}
-                title="右键/长按编辑释义"
+                title="右键或长按编辑释义"
               >
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-bold border-l-4 border-blue-500 pl-2 mb-2">释义 / Definitions</h3>
@@ -845,17 +1225,17 @@ const SenseDisplay = ({
                             </button>
                           </div>
                           <div className="mb-2">
-                            <label className={formLabelClass}>定义文本</label>
+                            <label className={formLabelClass}>释义文本</label>
                             <textarea
                               value={def.text}
                               onChange={(e) => updateDefinition(defIndex, 'text', e.target.value)}
                               rows="2"
                               className={formTextareaClass}
-                              placeholder="输入定义..."
+                              placeholder="输入释义..."
                             />
                           </div>
                           <div>
-                            <label className={formLabelClass}>例句（支持 \\gla \\glb \\glc \\ft 行间标注格式）</label>
+                            <label className={formLabelClass}>例句（支持 \\gla \\glb \\glc \\ft 行间标注）</label>
                             <div className="space-y-2">
                               {Array.isArray(def.examples) && def.examples.map((example, exIndex) => (
                                 <div key={exIndex} className="flex gap-2 items-start">
@@ -864,7 +1244,7 @@ const SenseDisplay = ({
                                     onChange={(e) => updateExample(defIndex, exIndex, e.target.value)}
                                     rows={example.includes('\\gla') ? 4 : 1}
                                     className={formTextareaClass}
-                                    placeholder="输入例句...（多行支持行间标注）"
+                                    placeholder="输入例句..."
                                   />
                                   <button
                                     onClick={() => removeExample(defIndex, exIndex)}
@@ -932,17 +1312,26 @@ const SenseDisplay = ({
             )}
 
             {/* Morphology Section */}
-            {sense.chart_type && (
-              <div className={`${editableClasses} pt-2 border-gray-200 dark:border-gray-700`}>
+            <div
+              className={`${editableClasses} ${isEditingMorphology ? activeClasses : ''} ${longPressHighlight} pt-2 border-gray-200 dark:border-gray-700`}
+              id={`entry-section-morphology-${sense.sense_id}`}
+              data-section="morphology"
+              onContextMenu={(e) => handleContextMenu(e, 'morphology')}
+              {...touchHandlers}
+              title="右键或长按编辑形态学"
+            >
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-extrabold border-l-4 border-blue-600 pl-2 mb-2 text-gray-900 dark:border-blue-500 dark:text-gray-100">
                     形态学 / Morphology
                   </h3>
 
                   <button
-                    onClick={() => setCollapseMorphology(prev => !prev)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCollapseMorphology(prev => !prev);
+                    }}
                     className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-400"
-                    title={collapseMorphology ? "展开形态变化" : "收起形态变化"}
+                    title={collapseMorphology ? "展开形态学" : "收起形态学"}
                   >
                     <ArrowRight
                       className={`w-4 h-4 transition-transform ${
@@ -959,33 +1348,190 @@ const SenseDisplay = ({
                       : "max-h-[3000px] opacity-100 pt-2"
                   }`}
                 >
-                  <div className="overflow-x-auto">
-                    {/* 调用模拟的形态学渲染函数 */}
-                    {renderMorphologyTable(sense.table_data, sense.chart_type)}
-                  </div>
+                  {isEditingMorphology && editingMorphology && (
+                    <div
+                      className={`mb-4 ${formWrapperClass}`}
+                      onContextMenu={(e) => handleContextMenu(e, 'morphology')}
+                    >
+                      <div>
+                        <label className={formLabelClass}>变格/变位类型</label>
+                        <select
+                          className={formInputClass}
+                          value={editingMorphology.generator}
+                          onChange={(e) => changeMorphologyGenerator(e.target.value)}
+                        >
+                          {morphologyGenerators.map(generator => (
+                            <option key={generator.id} value={generator.id}>
+                              {generator.label}
+                            </option>
+                          ))}
+                        </select>
+                        {selectedMorphologyGenerator?.description && (
+                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            {selectedMorphologyGenerator.description}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {(selectedMorphologyGenerator?.fields || []).map(field => (
+                          <div key={field.name} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
+                            <label className={formLabelClass}>{field.label}</label>
+                            {field.type === 'textarea' ? (
+                              <textarea
+                                className={formTextareaClass}
+                                value={editingMorphology.params?.[field.name] || ''}
+                                onChange={(e) => updateMorphologyParam(field.name, e.target.value)}
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                className={`${formInputClass} ${field.name === 'stem' ? 'font-word' : ''}`}
+                                value={editingMorphology.params?.[field.name] || ''}
+                                onChange={(e) => updateMorphologyParam(field.name, e.target.value)}
+                              />
+                            )}
+                            {field.help && (
+                              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{field.help}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {editingMorphologyEffective.tables?.length > 0 && (
+                        <div className="space-y-3">
+                          {editingMorphologyEffective.tables.map((table) => {
+                            const baseTable = editingMorphologyBase.tables?.find(item => item.id === table.id) || {};
+                            const hasColumnGroups = hasVisibleGroupLevel(table.columns);
+                            const hasRowGroups = hasVisibleGroupLevel(table.rows);
+                            const hasColumnLabels = table.columns.some(column => String(column?.label || '').trim());
+                            const rowHeaderCount = hasRowGroups ? 2 : 1;
+                            const rowRuns = rowGroupRuns(table.rows);
+                            return (
+                              <div key={table.id} className="overflow-x-auto rounded-lg border border-yellow-400 bg-yellow-100/80 dark:bg-yellow-900/30">
+                                <div className="border-b border-yellow-400 bg-yellow-200/70 p-2 dark:border-yellow-700 dark:bg-yellow-800/50">
+                                  <label className="block text-xs font-semibold text-yellow-950 dark:text-yellow-100">
+                                    表格标题覆盖
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="font-word mt-1 w-full rounded border border-yellow-400 bg-white/90 px-2 py-1 text-center font-semibold text-gray-900 focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 dark:border-yellow-700 dark:bg-gray-900 dark:text-yellow-50"
+                                    value={table.caption || ''}
+                                    title={table.caption === table.titleDefault ? '自动生成标题' : `覆盖标题，原始值：${table.titleDefault}`}
+                                    onChange={(e) => updateMorphologyOverride(table.titleKey, e.target.value, table.titleDefault)}
+                                  />
+                                </div>
+                                <table className="w-full min-w-[480px] table-fixed border-collapse text-xs [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0">
+                                  <caption className="font-word bg-yellow-300 p-1.5 text-xs font-semibold text-yellow-950 dark:bg-yellow-800 dark:text-yellow-100">
+                                    {table.caption || table.label || '形态表'}
+                                  </caption>
+                                  <thead>
+                                    {hasColumnGroups && (
+                                      <tr className="border-b border-yellow-300/80 dark:border-yellow-700/80">
+                                        <th className="border-r border-yellow-300/80 p-1.5 text-center text-yellow-950 dark:border-yellow-700/80 dark:text-yellow-100" colSpan={rowHeaderCount}>
+                                          {'\u00A0'}
+                                        </th>
+                                        {groupRuns(table.columns).map((run, index) => (
+                                          <th key={`${run.group}-${index}`} className="border-r border-yellow-300/80 p-1.5 text-center text-yellow-950 dark:border-yellow-700/80 dark:text-yellow-100" colSpan={run.count}>
+                                            {run.group || '\u00A0'}
+                                          </th>
+                                        ))}
+                                      </tr>
+                                    )}
+                                    {hasColumnLabels && (
+                                      <tr className="border-b border-yellow-300/80 dark:border-yellow-700/80">
+                                        {hasRowGroups ? (
+                                          <>
+                                            <th className="border-r border-yellow-300/80 p-1.5 text-left text-yellow-950 dark:border-yellow-700/80 dark:text-yellow-100">{'\u00A0'}</th>
+                                            <th className="border-r border-yellow-300/80 p-1.5 text-left text-yellow-950 dark:border-yellow-700/80 dark:text-yellow-100">{'\u00A0'}</th>
+                                          </>
+                                        ) : (
+                                          <th className="border-r border-yellow-300/80 p-1.5 text-left text-yellow-950 dark:border-yellow-700/80 dark:text-yellow-100">{'\u00A0'}</th>
+                                        )}
+                                        {table.columns.map(column => (
+                                          <th key={column.id} className="border-l border-yellow-300/80 p-1.5 text-center text-yellow-950 dark:border-yellow-700/80 dark:text-yellow-100">
+                                            {column.label || '\u00A0'}
+                                          </th>
+                                        ))}
+                                      </tr>
+                                    )}
+                                  </thead>
+                                  <tbody>
+                                    {table.rows.map((row, rowIndex) => (
+                                      <tr key={row.id} className="border-b border-yellow-300/80 dark:border-yellow-700/80">
+                                        {hasRowGroups && rowRuns.get(row.group || '')?.firstIndex === rowIndex && (
+                                          <th className="border-r border-yellow-300/80 p-1.5 text-left align-middle font-semibold text-yellow-950 dark:border-yellow-700/80 dark:text-yellow-100" rowSpan={rowRuns.get(row.group || '')?.count || 1}>
+                                            {row.group || '\u00A0'}
+                                          </th>
+                                        )}
+                                        <th className="p-1.5 text-left font-semibold text-yellow-950 dark:text-yellow-100">
+                                          {row.label || '\u00A0'}
+                                        </th>
+                                        {table.columns.map((column, columnIndex) => {
+                                          const baseValue = baseTable.cells?.[rowIndex]?.[columnIndex] || '';
+                                          const cell = table.cells?.[rowIndex]?.[columnIndex] || '';
+                                          const overrideKey = `${table.id}.${row.id}.${column.id}`;
+                                          return (
+                                            <td key={column.id} className="border-l border-yellow-300/80 p-1 dark:border-yellow-700/80">
+                                              <input
+                                                type="text"
+                                                className="font-word w-full rounded border border-yellow-300 bg-white/90 px-1.5 py-1 text-center text-xs text-gray-900 focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600 dark:border-yellow-700 dark:bg-gray-900 dark:text-yellow-50"
+                                                value={cell}
+                                                title={baseValue === cell ? '自动生成形式' : `覆盖写法，原始值：${baseValue}`}
+                                                onChange={(e) => updateMorphologyOverride(overrideKey, e.target.value, baseValue)}
+                                              />
+                                            </td>
+                                          );
+                                        })}
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {morphologyStatus && (
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{morphologyStatus}</p>
+                      )}
+
+                      <FormButtons onSave={saveMorphology} onCancel={handleMasterCancel} />
+                    </div>
+                  )}
+
+                  {!isEditingMorphology && <div className="overflow-x-auto">
+                    {generatedMorphology.tables?.length > 0 || generatedMorphology.tableData.length > 0 ? (
+                      renderMorphologyTable(generatedMorphology)
+                    ) : (
+                      <div className="p-4 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 dark:text-gray-400">
+                        还没有可用的形态表元数据。右键或长按进入编辑。
+                      </div>
+                    )}
+                  </div>}
                 </div>
               </div>
-            )}
 
             {/* Derivation Section - Editable (Form mode) */}
-            {sense.derived_to?.length > 0 && (
+            {(canEdit || sense.derived_to?.length > 0) && (
               <div
                 className={`${editableClasses} ${isEditingDerivation ? activeClasses : ''} ${longPressHighlight}`}
                 id={`entry-section-derivation-${sense.sense_id}`}
                 data-section="derivation"
                 onContextMenu={(e) => handleContextMenu(e, 'derivation')}
                 {...touchHandlers}
-                title="右键/长按编辑派生词"
+                title="右键或长按编辑派生词"
               >
                 <h3 className="text-lg font-bold border-l-4 border-blue-500 pl-2 mb-2">派生词 / Derivation</h3>
 
                 {isEditingDerivation && editingDerivation ? (
                   <div className={`w-full ${formWrapperClass}`}>
                     <ArrayEditor
-                      label="派生词"
+                      label="派生到"
                       items={editingDerivation}
                       onChange={(newItems) => setEditingDerivation(newItems)}
-                      placeholder="输入派生词..."
+                      placeholder="Enter derived word..."
                     />
                     <FormButtons onSave={saveDerivation} onCancel={handleMasterCancel} />
                   </div>
@@ -998,7 +1544,7 @@ const SenseDisplay = ({
                                 key={index}
                                 onClick={type !== 'none' ? () => onLinkClick(type, term) : undefined}
                                 className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${className} ${tagAnimationClasses}`}
-                                title={type === 'entry' ? `${term}\n点击跳转到词条` : type === 'doc' ? `${docHeadingsMap?.get(term) || term}\n点击跳转到文档` : undefined}
+                                title={type === 'entry' ? `${term}\n跳转到词条` : type === 'doc' ? `${docHeadingsMap?.get(term)?.meaning || term}\n跳转到文档` : undefined}
                             >
                                 {term}
                             </span>

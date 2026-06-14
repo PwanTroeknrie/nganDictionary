@@ -26,6 +26,7 @@ const Columns = createIcon("M12 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-8M2 3h8a2 2 
 const Home = createIcon("M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z");
 const FileText = createIcon("M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M10 13h4M10 17h4M10 9h4");
 const TypeIcon = createIcon("M4 7V4h16v3M9 20h6M12 4v16");
+const TableIcon = createIcon("M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18");
 
 
 const Header = ({
@@ -34,7 +35,8 @@ const Header = ({
     isWordListOpen, toggleLeftPanel,
     isTreeOpen, toggleRightPanel,
     customFont, setCustomFont,
-    isFontInputVisible, setIsFontInputVisible
+    isFontInputVisible, setIsFontInputVisible,
+    projectId = 'default'
 }) => {
   const navigate = useNavigate();
 
@@ -97,7 +99,7 @@ const Header = ({
 
           {/* DocPage doesn't navigate to itself, use a placeholder */}
           <button
-            onClick={() => navigate("/docs")}
+            onClick={() => navigate(`/docs?project=${projectId}`)}
             className="p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] bg-blue-500 text-white" // Highlight Doc button
             title="文档页面"
           >
@@ -105,11 +107,19 @@ const Header = ({
           </button>
 
           <button
-            onClick={() => navigate("/dictionary")}
+            onClick={() => navigate(`/dictionary?project=${projectId}`)}
             className="p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
             title="返回词典主页"
           >
             <Home className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={() => navigate(`/morphology?project=${projectId}`)}
+            className="p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+            title="变格表管理"
+          >
+            <TableIcon className="w-5 h-5" />
           </button>
 
           <button
@@ -118,18 +128,6 @@ const Header = ({
             title="切换主题"
           >
             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
-
-          <button
-            onClick={toggleGlobalEditMode}
-            className={`p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] ${
-              isGlobalEditMode
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-green-500 text-white hover:bg-green-600'
-            }`}
-            title={isGlobalEditMode ? "退出全局编辑模式" : "进入全局编辑模式"}
-          >
-            {isGlobalEditMode ? <Eye className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
           </button>
 
           {/* Structure Nav Toggle (Mapped to DocPage Right Panel) */}
@@ -648,6 +646,7 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
                 setCustomFont={setCustomFont}
                 isFontInputVisible={isFontInputVisible}
                 setIsFontInputVisible={setIsFontInputVisible}
+                projectId={projectId}
             />
 
             {/* --- B. 三列布局容器 (从 Header 底部开始) --- */}

@@ -172,8 +172,11 @@ body {
 
 .gloss-level-b {
     font-size: 0.75rem;
-    font-variant: small-caps;
     color: #4b5563;
+}
+.gloss-smallcap {
+    font-variant-caps: small-caps;
+    font-feature-settings: "smcp";
 }
 .dark .gloss-level-b {
     color: #9ca3af;

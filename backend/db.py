@@ -56,7 +56,7 @@ def init_db():
     conn.execute("""CREATE TABLE IF NOT EXISTS examples (
         id INTEGER PRIMARY KEY, definition_id INTEGER, ex TEXT)""")
     conn.execute("""CREATE TABLE IF NOT EXISTS inflection (
-        id INTEGER PRIMARY KEY, sense_id INTEGER, template TEXT)""")
+        id INTEGER PRIMARY KEY, sense_id INTEGER, template TEXT, spec TEXT DEFAULT '')""")
     conn.execute("""CREATE TABLE IF NOT EXISTS alternatives (
         id INTEGER PRIMARY KEY, sense_id INTEGER, value TEXT)""")
     try:
@@ -65,6 +65,10 @@ def init_db():
         pass
     try:
         conn.execute("ALTER TABLE senses ADD COLUMN chart_type TEXT DEFAULT ''")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        conn.execute("ALTER TABLE inflection ADD COLUMN spec TEXT DEFAULT ''")
     except sqlite3.OperationalError:
         pass
     conn.execute("CREATE INDEX IF NOT EXISTS idx_entry_project_id ON entry(project_id)")
@@ -445,11 +449,11 @@ def _build_sense(sr, tags_by_sense, derived_by_sense, inf_by_sense, defs_by_sens
     derived_from = [r['value'] for r in derived if r['type'] == 'from']
     derived_to = [r['value'] for r in derived if r['type'] == 'to']
 
-    table_data = []
+    morphology = {}
     inf = inf_by_sense.get(sid)
-    if inf and inf['template']:
+    if inf and 'spec' in inf.keys() and inf['spec']:
         try:
-            table_data = json.loads(inf['template'])
+            morphology = json.loads(inf['spec'])
         except json.JSONDecodeError:
             pass
 
@@ -468,7 +472,7 @@ def _build_sense(sr, tags_by_sense, derived_by_sense, inf_by_sense, defs_by_sens
         'derived_to': derived_to,
         'definitions': definitions,
         'chart_type': sr['chart_type'] or '',
-        'table_data': table_data
+        'morphology': morphology
     }
 
 
@@ -491,11 +495,11 @@ def _assemble_sense(conn, sense_row):
     derived = conn.execute("SELECT type, value FROM derived WHERE sense_id = ?", (sid,)).fetchall()
     derived_from = [r['value'] for r in derived if r['type'] == 'from']
     derived_to = [r['value'] for r in derived if r['type'] == 'to']
-    table_data = []
-    inf = conn.execute("SELECT template FROM inflection WHERE sense_id = ?", (sid,)).fetchone()
-    if inf and inf['template']:
+    morphology = {}
+    inf = conn.execute("SELECT * FROM inflection WHERE sense_id = ?", (sid,)).fetchone()
+    if inf and 'spec' in inf.keys() and inf['spec']:
         try:
-            table_data = json.loads(inf['template'])
+            morphology = json.loads(inf['spec'])
         except json.JSONDecodeError:
             pass
     definitions = []
@@ -508,7 +512,8 @@ def _assemble_sense(conn, sense_row):
         'ipa': sense_row['sound'] or '',
         'description': sense_row['etymology_text'] or '',
         'tags': tags, 'derived_from': derived_from, 'derived_to': derived_to,
-        'definitions': definitions, 'chart_type': sense_row['chart_type'] or '', 'table_data': table_data
+        'definitions': definitions, 'chart_type': sense_row['chart_type'] or '',
+        'morphology': morphology
     }
 
 
@@ -540,12 +545,16 @@ def _insert_sense(conn: sqlite3.Connection, entry_id: int, data: Dict, sense_ord
     for v in data.get('derived_to', []):
         conn.execute("INSERT INTO derived (sense_id, type, value) VALUES (?, 'to', ?)", (sid, v))
 
-    # table_data → inflection
-    td = data.get('table_data', [])
-    if td:
+    # morphology spec -> inflection
+    morphology = data.get('morphology', {})
+    if morphology:
         conn.execute(
-            "INSERT INTO inflection (sense_id, template) VALUES (?, ?)",
-            (sid, json.dumps(td, ensure_ascii=False))
+            "INSERT INTO inflection (sense_id, template, spec) VALUES (?, ?, ?)",
+            (
+                sid,
+                '',
+                json.dumps(morphology, ensure_ascii=False) if morphology else ''
+            )
         )
 
     # definitions + examples

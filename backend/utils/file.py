@@ -16,7 +16,7 @@ class DictionaryExcelConverter:
         self.required_columns = [
             'id', 'slug', 'word', 'transliteration', 'sense_id', 'displayed_tag',
             'ipa', 'derived_from', 'description', 'tags', 'definitions',
-            'chart_type', 'table_data', 'derived_to'
+            'chart_type', 'morphology', 'derived_to'
         ]
 
     def json_to_excel(self, json_data: List[Dict], excel_path: str) -> None:
@@ -49,7 +49,7 @@ class DictionaryExcelConverter:
                     # 复杂结构序列化 (新逻辑)
                     'definitions': self._serialize_definitions(sense.get('definitions', [])),
                     'chart_type': sense.get('chart_type', ''),
-                    'table_data': self._serialize_table_data(sense.get('table_data', [])),
+                    'morphology': self._serialize_morphology(sense.get('morphology', {})),
                     'derived_to': self._list_to_string(sense.get('derived_to', []))
                 })
                 flattened_data.append(row_data)
@@ -112,7 +112,7 @@ class DictionaryExcelConverter:
                     # 复杂结构反序列化 (新逻辑)
                     'definitions': self._deserialize_definitions(row['definitions']),
                     'chart_type': row['chart_type'],
-                    'table_data': self._deserialize_table_data(row['table_data']),
+                    'morphology': self._deserialize_morphology(row.get('morphology', '')),
                     'derived_to': self._string_to_list(row['derived_to'])
                 }
                 entry['senses'].append(sense)
@@ -202,43 +202,20 @@ class DictionaryExcelConverter:
 
         return definitions
 
-    def _serialize_table_data(self, table_data: List[List]) -> str:
-        """
-        序列化 2D 表格数据为字符串。
-        格式: cell1 | cell2 || cell3 | cell4
-        """
-        if not table_data:
+    def _serialize_morphology(self, morphology: Dict) -> str:
+        if not morphology:
             return ""
+        return json.dumps(morphology, ensure_ascii=False)
 
-        table_strings = []
-        for row in table_data:
-            # 使用 " | " 作为列分隔符
-            row_str = " | ".join(str(cell) for cell in row)
-            table_strings.append(row_str)
-
-        # 使用 " || " 作为行分隔符
-        return " || ".join(table_strings)
-
-    def _deserialize_table_data(self, table_data_str: Any) -> List[List]:
-        """
-        将字符串反序列化为 2D 表格数据。
-        """
-        s = str(table_data_str).strip()
+    def _deserialize_morphology(self, morphology_str: Any) -> Dict:
+        s = str(morphology_str).strip()
         if not s or s == 'nan':
-            return []
-
-        table_data = []
-        # 使用 " || " 分隔符分隔行
-        for row_str in s.split(" || "):
-            row_str = row_str.strip()
-            if not row_str:
-                continue
-
-            # 使用 " | " 分隔符分隔列，并去除空格
-            row = [cell.strip() for cell in row_str.split(" | ")]
-            table_data.append(row)
-
-        return table_data
+            return {}
+        try:
+            value = json.loads(s)
+        except json.JSONDecodeError:
+            return {}
+        return value if isinstance(value, dict) else {}
 
     def validate_json_structure(self, json_data: List[Dict]) -> bool:
         """验证JSON数据结构是否符合预期"""
@@ -246,7 +223,7 @@ class DictionaryExcelConverter:
         optional_keys = ['slug']
         sense_required_keys = [
             'sense_id', 'displayed_tag', 'ipa', 'derived_from', 'description',
-            'tags', 'definitions', 'chart_type', 'table_data', 'derived_to'
+            'tags', 'definitions', 'chart_type', 'morphology', 'derived_to'
         ]
 
         # 检查是否为列表

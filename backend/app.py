@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+﻿from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os
 import base64
@@ -14,6 +14,7 @@ from db import (
     load_project_config, save_project_config, verify_project_code, delete_project,
     get_all_projects, migrate_from_json, migrate_config_from_file
 )
+from morphology import load_morphology_config, list_generators, save_morphology_config
 
 app = Flask(__name__)
 CORS(app)
@@ -77,6 +78,33 @@ def _require_auth(project_id: str, required: str = 'editor'):
     if not level:
         return jsonify({'error': '需要授权码才能执行此操作'}), 401
     return None
+
+
+@app.route('/api/projects/<project_id>/morphology/generators', methods=['GET'])
+def morphology_generators_route(project_id: str):
+    return jsonify({'generators': list_generators(BASE_DATA_DIR, project_id)})
+
+
+@app.route('/api/projects/<project_id>/morphology/config', methods=['GET'])
+def get_morphology_config_route(project_id: str):
+    categories, classes = load_morphology_config(BASE_DATA_DIR, project_id)
+    return jsonify({'categories': categories, 'classes': classes})
+
+
+@app.route('/api/projects/<project_id>/morphology/config', methods=['PUT'])
+def update_morphology_config_route(project_id: str):
+    auth_err = _require_auth(project_id, 'editor')
+    if auth_err:
+        return auth_err
+
+    payload = request.json or {}
+    categories = payload.get('categories')
+    classes = payload.get('classes')
+    if not isinstance(categories, dict) or not isinstance(classes, dict):
+        return jsonify({'error': 'categories and classes must be objects'}), 400
+
+    save_morphology_config(BASE_DATA_DIR, project_id, categories, classes)
+    return jsonify({'categories': categories, 'classes': classes})
 
 
 # ── project APIs ────────────────────────────────────────────────
@@ -328,7 +356,7 @@ def init_sample_data(project_id: str):
                 "tags": ["noun", "test"],
                 "definitions": [{"text": "这是一个测试定义", "examples": ["这是一个测试例句"]}],
                 "chart_type": "",
-                "table_data": [],
+                "morphology": {},
                 "derived_to": []
             }]
         }
@@ -368,7 +396,7 @@ def export_to_excel(project_id: str):
                     'tags': '; '.join(sense['tags']),
                     'definitions': _format_definitions(sense['definitions']),
                     'chart_type': sense.get('chart_type', ''),
-                    'table_data': _format_table_data(sense.get('table_data', [])),
+                    'morphology': _format_morphology(sense.get('morphology', {})),
                     'derived_to': '; '.join(sense['derived_to'])
                 }
                 flattened.append(row)
@@ -442,10 +470,11 @@ def _format_definitions(definitions: List[Dict]) -> str:
     return ' | '.join(parts)
 
 
-def _format_table_data(table_data: List[List]) -> str:
-    if not table_data:
+def _format_morphology(morphology: Dict) -> str:
+    if not morphology:
         return ""
-    return ' || '.join(' | '.join(str(c) for c in row) for row in table_data)
+    import json
+    return json.dumps(morphology, ensure_ascii=False)
 
 
 def _excel_to_entries(df: pd.DataFrame) -> List[Dict]:
@@ -476,7 +505,7 @@ def _excel_to_entries(df: pd.DataFrame) -> List[Dict]:
                     'tags': [s.strip() for s in str(row.get('tags', '')).split(';') if s.strip()],
                     'definitions': _parse_definitions(str(row.get('definitions', ''))),
                     'chart_type': str(row.get('chart_type', '')),
-                    'table_data': _parse_table_data(str(row.get('table_data', ''))),
+                    'morphology': _parse_morphology(str(row.get('morphology', ''))),
                     'derived_to': [s.strip() for s in str(row.get('derived_to', '')).split(';') if s.strip()]
                 }
                 entry['senses'].append(sense)
@@ -502,10 +531,15 @@ def _parse_definitions(s: str) -> List[Dict]:
     return defs
 
 
-def _parse_table_data(s: str) -> List[List]:
+def _parse_morphology(s: str) -> Dict:
     if not s or s == 'nan':
-        return []
-    return [[c.strip() for c in row.split(' | ')] for row in s.split(' || ')]
+        return {}
+    import json
+    try:
+        value = json.loads(s)
+    except json.JSONDecodeError:
+        return {}
+    return value if isinstance(value, dict) else {}
 
 
 def _safe_int(val) -> int:

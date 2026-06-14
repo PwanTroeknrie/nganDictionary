@@ -1,29 +1,36 @@
 import React from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import {
-  Sun, Moon, Edit, Eye, ListIcon, Columns, Home, FileText, TypeIcon
-} from './Icons.jsx'; // 确保 Home 和 FileText 已导入
+  Sun, Moon, Edit, Eye, ListIcon, Columns, Home, FileText, TypeIcon, TableIcon
+} from './Icons.jsx';
 import SearchBar from './ui/SearchBar';
 import useEntrySearch from '../hooks/useEntrySearch';
+import { useProjectStore } from '../store/projectStore.js';
 
 const Header = ({
-    isDarkMode, toggleTheme,
-    isGlobalEditMode, toggleGlobalEditMode,
-    isWordListOpen, toggleLeftPanel,
-    isTreeOpen, toggleRightPanel,
-    customFont, setCustomFont,
-    isFontInputVisible, setIsFontInputVisible,
-    entries,
-    onSearchSelect,
-    // 新增：用于控制按钮可见性的配置对象
-    buttonVisibility = {}
+  isDarkMode,
+  toggleTheme,
+  isGlobalEditMode,
+  toggleGlobalEditMode,
+  isWordListOpen,
+  toggleLeftPanel,
+  isTreeOpen,
+  toggleRightPanel,
+  customFont,
+  setCustomFont,
+  isFontInputVisible,
+  setIsFontInputVisible,
+  entries,
+  onSearchSelect,
+  buttonVisibility = {},
 }) => {
   const navigate = useNavigate();
+  const projectId = useProjectStore(s => s.projectId);
 
-  // 定义默认的可见性配置，并与传入的配置合并
   const defaultVisibility = {
     homeNav: true,
     docNav: true,
+    morphologyNav: true,
     wordlistToggle: true,
     fontInputToggle: true,
     editModeToggle: true,
@@ -32,61 +39,52 @@ const Header = ({
   };
   const visibility = { ...defaultVisibility, ...buttonVisibility };
 
-
   return (
-    <header className="fixed top-0 left-0 w-full z-20 bg-white dark:bg-gray-800 transition-colors border-b border-gray-200 dark:border-gray-700 shadow-lg">
-      <div className="max-w-7xl mx-auto flex justify-between items-center p-4 h-16">
-        {/* LEFT SECTION (导航和列表开关) */}
+    <header className="fixed left-0 top-0 z-20 w-full border-b border-gray-200 bg-white shadow-lg transition-colors dark:border-gray-700 dark:bg-gray-800">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between p-4">
         <div className="flex items-center space-x-4">
-
-          {/* Wordlist Toggle (现在受控于 visibility.wordlistToggle) */}
           {visibility.wordlistToggle && (
             <button
               onClick={toggleLeftPanel}
-              className={`p-2 rounded-full transition-colors ${
-                  isWordListOpen 
-                      ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300' 
-                      : 'text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700'
+              className={`rounded-full p-2 transition-colors ${
+                isWordListOpen
+                  ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300'
+                  : 'text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700'
               }`}
               title="词条列表"
             >
-              <ListIcon className="w-5 h-5" />
+              <ListIcon className="h-5 w-5" />
             </button>
           )}
 
-          {/* Responsive Title */}
-          <h1 className="text-2xl font-extrabold text-gray-800 dark:text-blue-400 items-center space-x-2 hidden md:flex">
-            <span className="text-3xl">📚</span>
+          <h1 className="hidden items-center space-x-2 text-2xl font-extrabold text-gray-800 dark:text-blue-400 md:flex">
+            <span className="text-3xl">📖</span>
             <span>词典构建器</span>
           </h1>
 
-          {/* Large Screen Search Bar */}
-            <SearchBar
-                entries={entries}
-                onEntrySearch={useEntrySearch}
-                onSelectEntry={onSearchSelect}
-                customFont={customFont}
-            />
+          <SearchBar
+            entries={entries}
+            onEntrySearch={useEntrySearch}
+            onSelectEntry={onSearchSelect}
+            customFont={customFont}
+          />
         </div>
 
-        {/* RIGHT SECTION (工具和主题开关) */}
         <div className="flex items-center space-x-3">
-          {/* Font Selector Input Toggle (现在受控于 visibility.fontInputToggle) */}
           {visibility.fontInputToggle && (
             <button
               onClick={() => setIsFontInputVisible(prev => !prev)}
-              className={`p-2 rounded-full transition-colors ${
-                  isFontInputVisible 
-                      ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300' 
-                      : 'text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700'
+              className={`rounded-full p-2 transition-colors ${
+                isFontInputVisible
+                  ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300'
+                  : 'text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700'
               }`}
               title="自定义字体"
             >
-              <TypeIcon className="w-5 h-5" />
+              <TypeIcon className="h-5 w-5" />
             </button>
           )}
 
-          {/* Font Input Field */}
           {isFontInputVisible && visibility.fontInputToggle && (
             <input
               type="text"
@@ -100,74 +98,78 @@ const Header = ({
                 }
               }}
               placeholder="字体名称"
-              className="px-3 py-1 w-32 border border-gray-300 rounded-lg text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-32 rounded-lg border border-gray-300 px-3 py-1 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               style={{ fontFamily: customFont ? `${customFont}, sans-serif` : 'sans-serif' }}
             />
           )}
 
-          {/* NEW: Home Navigation Button */}
+          {visibility.morphologyNav && (
+            <button
+              onClick={() => navigate(`/morphology?project=${projectId}`)}
+              className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
+              title="变格表管理"
+            >
+              <TableIcon className="h-5 w-5" />
+            </button>
+          )}
+
           {visibility.homeNav && (
             <button
               onClick={() => navigate('/home')}
-              className="p-2 rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors"
+              className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
               title="主页"
             >
-              <Home className="w-5 h-5" />
+              <Home className="h-5 w-5" />
             </button>
           )}
 
-          {/* NEW: Doc Navigation Button */}
           {visibility.docNav && (
             <button
-              onClick={() => navigate('/docs')}
-              className="p-2 rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors"
+              onClick={() => navigate(`/docs?project=${projectId}`)}
+              className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
               title="文档"
             >
-              <FileText className="w-5 h-5" />
+              <FileText className="h-5 w-5" />
             </button>
           )}
 
-           {/* Theme Toggle (现在受控于 visibility.themeToggle) */}
           {visibility.themeToggle && (
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors"
+              className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
               title={isDarkMode ? '切换到亮色主题' : '切换到暗色主题'}
             >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
           )}
 
-          {/* Edit/View Mode Toggle (现在受控于 visibility.editModeToggle) */}
           {visibility.editModeToggle && (
             <button
               onClick={toggleGlobalEditMode}
-              className={`p-2 rounded-full transition-colors ${
-                  isGlobalEditMode 
-                      ? 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300' 
-                      : 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300'
+              className={`rounded-full p-2 transition-colors ${
+                isGlobalEditMode
+                  ? 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300'
+                  : 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300'
               }`}
               title={isGlobalEditMode ? '切换到查看模式 (Ctrl/Cmd+E)' : '切换到编辑模式 (Ctrl/Cmd+E)'}
             >
-              {isGlobalEditMode ? <Edit className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {isGlobalEditMode ? <Edit className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           )}
 
-          {/* Hierarchy Tree Toggle (现在受控于 visibility.hierarchyTreeToggle) */}
           {visibility.hierarchyTreeToggle && (
             <button
               onClick={toggleRightPanel}
-              className={`p-2 rounded-full transition-colors ${
-                  isTreeOpen 
-                      ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300' 
-                      : 'text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700'
+              className={`rounded-full p-2 transition-colors ${
+                isTreeOpen
+                  ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300'
+                  : 'text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700'
               }`}
-              title="层级树"
+              title="结构导航"
             >
-              <Columns className="w-5 h-5" />
+              <Columns className="h-5 w-5" />
             </button>
           )}
-
         </div>
       </div>
     </header>

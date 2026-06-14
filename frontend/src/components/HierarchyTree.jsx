@@ -1,19 +1,17 @@
 import React from 'react';
-import { PlusIcon, XIcon, ArrowRight } from './Icons.jsx'; // 导入图标
+import { PlusIcon, XIcon, ArrowRight } from './Icons.jsx';
 
-const HierarchyTree = ({ entry, isOpen, onAddSense, onDeleteSense }) => {
+const HierarchyTree = ({ entry, isOpen, onAddSense, onDeleteSense, canEdit = false }) => {
   const widthClass = isOpen ? 'w-full sm:w-64' : 'w-0';
-
-  // Bug Fix: Use isOpen to control 'hidden'
   const containerClass = `${widthClass} p-4 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 h-full overflow-y-auto scrollbar-custom flex-shrink-0 transition-all duration-300 ${isOpen ? 'block' : 'hidden'}`;
 
   if (!entry) {
     return (
       <div className={containerClass}>
-        <h2 className="text-lg font-bold mb-3 text-gray-800 dark:text-white border-b pb-2 border-gray-200 dark:border-gray-600">
+        <h2 className="mb-3 border-b border-gray-200 pb-2 text-lg font-bold text-gray-800 dark:border-gray-600 dark:text-white">
           层级结构
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">选择词条后显示层级。</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">选择词条后显示结构导航。</p>
       </div>
     );
   }
@@ -29,65 +27,59 @@ const HierarchyTree = ({ entry, isOpen, onAddSense, onDeleteSense }) => {
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
-    // 确保在 'main' 元素内滚动
     const mainContent = document.querySelector('main.flex-1');
-
-    // 更新 URL hash
     window.history.replaceState(null, '', `#${id}`);
 
     if (element && mainContent) {
-        const elementRect = element.getBoundingClientRect();
-        const containerRect = mainContent.getBoundingClientRect();
-        const targetScrollTop = mainContent.scrollTop + elementRect.top - containerRect.top;
-        const offset = 20;
-
-        mainContent.scrollTo({
-            top: targetScrollTop - offset,
-            behavior: 'smooth'
-        });
+      const elementRect = element.getBoundingClientRect();
+      const containerRect = mainContent.getBoundingClientRect();
+      const targetScrollTop = mainContent.scrollTop + elementRect.top - containerRect.top;
+      mainContent.scrollTo({ top: targetScrollTop - 20, behavior: 'smooth' });
     }
   };
 
   return (
     <div className={containerClass}>
-      <h2 className="text-lg font-bold mb-4 text-gray-800 dark:text-white border-b pb-2 border-gray-200 dark:border-gray-600">
+      <h2 className="mb-4 border-b border-gray-200 pb-2 text-lg font-bold text-gray-800 dark:border-gray-600 dark:text-white">
         <span className="font-word">{entry.word}</span> 结构导航
       </h2>
 
-      {/* Add New Sense Button */}
-      <button
-        onClick={onAddSense}
-        className="w-full flex items-center justify-center gap-2 bg-green-500 text-white py-2 rounded-xl mb-4 hover:bg-green-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-      >
-        <PlusIcon className="w-5 h-5" />
-        添加新义项
-      </button>
+      {canEdit && (
+        <button
+          onClick={onAddSense}
+          className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 py-2 text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-green-600 hover:shadow-lg"
+        >
+          <PlusIcon className="h-5 w-5" />
+          添加新义项
+        </button>
+      )}
 
       <ul className="space-y-1">
         {sections.map((section, index) => (
           <li key={index} className="group">
             {section.isSenseHeader ? (
-                 <div className="flex justify-between items-center mt-3 mb-1 border-t pt-2 border-gray-200 dark:border-gray-700">
-                    <span className="text-sm font-extrabold text-blue-600 dark:text-blue-400">
-                        {section.name}
-                    </span>
-                    {/* Delete Sense Button */}
-                    <button
-                        onClick={() => onDeleteSense(section.sense_id)}
-                        className="p-1 rounded-full text-red-500 hover:bg-red-200 dark:hover:bg-red-800 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title={`删除 ${section.name}`}
-                    >
-                        <XIcon className="w-4 h-4" />
-                    </button>
-                 </div>
+              <div className="mt-3 mb-1 flex items-center justify-between border-t border-gray-200 pt-2 dark:border-gray-700">
+                <span className="text-sm font-extrabold text-blue-600 dark:text-blue-400">
+                  {section.name}
+                </span>
+                {canEdit && (
+                  <button
+                    onClick={() => onDeleteSense(section.sense_id)}
+                    className="rounded-full p-1 text-red-500 opacity-0 transition-opacity hover:bg-red-200 group-hover:opacity-100 dark:hover:bg-red-800"
+                    title={`删除 ${section.name}`}
+                  >
+                    <XIcon className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             ) : (
-                <button
-                    onClick={() => scrollToSection(section.id)}
-                    className="flex items-center text-left w-full p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm font-medium pl-4"
-                >
-                    <ArrowRight className="w-4 h-4 mr-2 text-blue-500 group-hover:translate-x-0.5 transition-transform" />
-                    {section.name}
-                </button>
+              <button
+                onClick={() => scrollToSection(section.id)}
+                className="flex w-full items-center rounded-lg p-2 pl-4 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                <ArrowRight className="mr-2 h-4 w-4 text-blue-500 transition-transform group-hover:translate-x-0.5" />
+                {section.name}
+              </button>
             )}
           </li>
         ))}

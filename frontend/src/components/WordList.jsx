@@ -1,29 +1,30 @@
-import React, { useCallback, useState, useMemo } from 'react';
+﻿import React, { useCallback, useState, useMemo } from 'react';
 import { ArrowRightIcon, XIcon, ChevronRightIcon } from 'lucide-react';
 
 
-// --- 词条列表渲染组件 (WordListItem) (保持不变) ---
+// --- 璇嶆潯鍒楄〃娓叉煋缁勪欢 (WordListItem) (淇濇寔涓嶅彉) ---
 const WordListItem = React.memo(({
     entry,
     selectedEntrySlug,
     onSelect,
     onDeleteEntry,
+    canEdit = false,
     isCollapsed,
     onToggleCollapse,
     hasChildren
 }) => {
   const isSelected = entry.slug === selectedEntrySlug;
 
-  // 提取首条释义用于悬停提示
+  // 鎻愬彇棣栨潯閲婁箟鐢ㄤ簬鎮仠鎻愮ず
   const firstDefText = useMemo(() => {
     const defs = entry.senses?.[0]?.definitions;
     if (defs && defs.length > 0) return defs[0].text;
     return null;
   }, [entry.senses]);
 
-  // 渲染缩进，基于 entry.level 属性
+  // 娓叉煋缂╄繘锛屽熀浜?entry.level 灞炴€?
   const indentStyle = {
-    paddingLeft: `${entry.level * 8 + 12}px`, // 每层增加 16px 缩进
+    paddingLeft: `${entry.level * 8 + 12}px`, // 姣忓眰澧炲姞 16px 缂╄繘
   };
 
   const handleDelete = useCallback((e) => {
@@ -57,7 +58,7 @@ const WordListItem = React.memo(({
       onClick={handleSelect}
     >
         <div className="flex items-center flex-grow min-w-0">
-            {/* 折叠按钮 */}
+            {/* 鎶樺彔鎸夐挳 */}
             {hasChildren ? (
                 <button
                     onClick={handleToggle}
@@ -69,7 +70,7 @@ const WordListItem = React.memo(({
                     <ChevronRightIcon className="w-4 h-4" />
                 </button>
             ) : (
-                // 占位符，保持对齐
+                // 鍗犱綅绗︼紝淇濇寔瀵归綈
                 <span className="flex-shrink-0 mr-1 w-6 h-4" style={{ paddingLeft: entry.level > 0 ? '6px' : '0px' }}></span>
             )}
 
@@ -79,32 +80,34 @@ const WordListItem = React.memo(({
                 {entry.word}
             </span>
 
-            {/* 悬停释义 tooltip */}
+            {/* 鎮仠閲婁箟 tooltip */}
             {firstDefText && (
                 <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 hidden group-hover:block z-50 pointer-events-none">
                     <span className="block max-w-64 px-2.5 py-1.5 text-xs leading-relaxed text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 whitespace-normal break-words">
-                        {firstDefText.length > 60 ? firstDefText.slice(0, 60) + '…' : firstDefText}
+                        {firstDefText.length > 60 ? `${firstDefText.slice(0, 60)}...` : firstDefText}
                     </span>
                 </span>
             )}
         </div>
 
       {/* Delete Entry Button */}
-      <button
-        type="button"
-        onClick={handleDelete}
-        className="p-1 rounded-full text-red-500 hover:bg-red-200 dark:hover:bg-red-800 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity flex-shrink-0 mr-1"
-        title={`删除词条 ${entry.word}`}
-        aria-label={`删除词条 ${entry.word}`}
-      >
-        <XIcon className="w-4 h-4" />
-      </button>
+      {canEdit && (
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="p-1 rounded-full text-red-500 hover:bg-red-200 dark:hover:bg-red-800 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity flex-shrink-0 mr-1"
+          title={`删除词条 ${entry.word}`}
+          aria-label={`删除词条 ${entry.word}`}
+        >
+          <XIcon className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 });
 
 
-// --- 主组件: 词条列表容器 ---
+// --- 涓荤粍浠? 璇嶆潯鍒楄〃瀹瑰櫒 ---
 const WordList = ({
   entries = [],
   selectedEntrySlug,
@@ -112,28 +115,29 @@ const WordList = ({
   isOpen,
   onDeleteEntry,
   onAddNewEntry,
+  canEdit = false,
 }) => {
   const widthClass = isOpen ? 'w-full sm:w-64' : 'w-0';
-  // 存储折叠状态： key 是 entry.slug, value 是 true (折叠) 或 false (展开)
+  // 瀛樺偍鎶樺彔鐘舵€侊細 key 鏄?entry.slug, value 鏄?true (鎶樺彔) 鎴?false (灞曞紑)
   const [collapsedState, setCollapsedState] = useState({});
 
   const isAllCollapsed = useMemo(() => {
-    // 只有当 collapsedState 的长度等于 entries 数组中 'hasChildren' 词条的数量时，才考虑全部折叠
-    // 或者更简单地，检查是否所有有子节点的词条都被标记为折叠
+    // 鍙湁褰?collapsedState 鐨勯暱搴︾瓑浜?entries 鏁扮粍涓?'hasChildren' 璇嶆潯鐨勬暟閲忔椂锛屾墠鑰冭檻鍏ㄩ儴鎶樺彔
+    // 鎴栬€呮洿绠€鍗曞湴锛屾鏌ユ槸鍚︽墍鏈夋湁瀛愯妭鐐圭殑璇嶆潯閮借鏍囪涓烘姌鍙?
     return entries.length > 0 &&
            entries.filter(e => e.hasChildren).every(e => collapsedState[e.slug]);
   }, [entries, collapsedState]);
 
   const handleToggleAll = useCallback(() => {
     if (isAllCollapsed) {
-      // 如果全部折叠，则展开所有有子节点的项 (设置为 false)
-      setCollapsedState({}); // 清空状态即可展开所有
+      // 濡傛灉鍏ㄩ儴鎶樺彔锛屽垯灞曞紑鎵€鏈夋湁瀛愯妭鐐圭殑椤?(璁剧疆涓?false)
+      setCollapsedState({}); // 娓呯┖鐘舵€佸嵆鍙睍寮€鎵€鏈?
     } else {
-      // 否则，折叠所有有子节点的项 (设置为 true)
+      // 鍚﹀垯锛屾姌鍙犳墍鏈夋湁瀛愯妭鐐圭殑椤?(璁剧疆涓?true)
       const newCollapsedState = entries
         .filter(e => e.hasChildren)
         .reduce((acc, entry) => {
-          acc[entry.slug] = true; // true 表示折叠
+          acc[entry.slug] = true; // true 琛ㄧず鎶樺彔
           return acc;
         }, {});
       setCollapsedState(newCollapsedState);
@@ -148,38 +152,39 @@ const WordList = ({
     }));
   }, []);
 
-  // 过滤后的列表 (只显示未折叠的子节点)
+  // 杩囨护鍚庣殑鍒楄〃 (鍙樉绀烘湭鎶樺彔鐨勫瓙鑺傜偣)
   const filteredEntries = useMemo(() => {
     const list = [];
     let shouldSkipChildren = false;
 
     for (const entry of entries) {
-        // 1. 检查当前节点是否是某个已折叠父节点的子节点
+        // 1. 妫€鏌ュ綋鍓嶈妭鐐规槸鍚︽槸鏌愪釜宸叉姌鍙犵埗鑺傜偣鐨勫瓙鑺傜偣
         if (shouldSkipChildren) {
-            // 如果当前节点的 level <= 父节点 level，则跳过结束 (因为我们是以深度优先遍历)
+            // 濡傛灉褰撳墠鑺傜偣鐨?level <= 鐖惰妭鐐?level锛屽垯璺宠繃缁撴潫 (鍥犱负鎴戜滑鏄互娣卞害浼樺厛閬嶅巻)
             if (entry.level <= shouldSkipChildren.level) {
                 shouldSkipChildren = false;
             } else {
-                // 仍然是子节点，跳过渲染
+                // 浠嶇劧鏄瓙鑺傜偣锛岃烦杩囨覆鏌?
                 continue;
             }
         }
 
-        // 2. 检查当前节点是否需要被折叠
+        // 2. 妫€鏌ュ綋鍓嶈妭鐐规槸鍚﹂渶瑕佽鎶樺彔
         const isCollapsed = collapsedState[entry.slug];
         if (isCollapsed && entry.hasChildren) {
-            // 如果折叠，设置 shouldSkipChildren 标志
+            // 濡傛灉鎶樺彔锛岃缃?shouldSkipChildren 鏍囧織
             shouldSkipChildren = entry;
         }
 
-        // 3. 渲染当前节点
+        // 3. 娓叉煋褰撳墠鑺傜偣
         list.push(
             <WordListItem
-                key={entry.slug}
+                key={entry.treeKey || entry.slug}
                 entry={entry}
                 selectedEntrySlug={selectedEntrySlug}
                 onSelect={onSelect}
                 onDeleteEntry={onDeleteEntry}
+                canEdit={canEdit}
                 isCollapsed={isCollapsed}
                 onToggleCollapse={handleToggleCollapse}
                 hasChildren={entry.hasChildren}
@@ -187,7 +192,7 @@ const WordList = ({
         );
     }
     return list;
-  }, [entries, selectedEntrySlug, onSelect, onDeleteEntry, collapsedState, handleToggleCollapse]);
+  }, [entries, selectedEntrySlug, onSelect, onDeleteEntry, canEdit, collapsedState, handleToggleCollapse]);
 
 
   return (
@@ -211,13 +216,15 @@ const WordList = ({
         </button>
       </div>
 
-      <button
-        type="button"
-        className="w-full bg-blue-500 text-white py-2 rounded-xl mb-4 hover:bg-blue-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-        onClick={onAddNewEntry} // 绑定到创建函数
-      >
-        + 添加新词条
-      </button>
+      {canEdit && (
+        <button
+          type="button"
+          className="w-full bg-blue-500 text-white py-2 rounded-xl mb-4 hover:bg-blue-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          onClick={onAddNewEntry}
+        >
+          + 添加新词条
+        </button>
+      )}
 
       <div>
         {filteredEntries}
@@ -228,9 +235,9 @@ const WordList = ({
 
 export default WordList;
 
-// --- 树形结构辅助函数 (Tree Helper Functions) ---
+// --- 鏍戝舰缁撴瀯杈呭姪鍑芥暟 (Tree Helper Functions) ---
 
-// buildTreeData 保持不变 (因为它正确地构建了 DAG 结构)
+// buildTreeData 淇濇寔涓嶅彉 (鍥犱负瀹冩纭湴鏋勫缓浜?DAG 缁撴瀯)
 export function buildTreeData(dictionaryData) {
     const treeData = {};
     const reverseTreeData = {};
@@ -281,15 +288,13 @@ export function buildTreeData(dictionaryData) {
     return { treeData, reverseTreeData, rootNodes };
 }
 
-// 修复后的 flattenTree：使用 visited Set 解决 DAG 结构导致的 Key 冲突
+// 淇鍚庣殑 flattenTree锛氫娇鐢?visited Set 瑙ｅ喅 DAG 缁撴瀯瀵艰嚧鐨?Key 鍐茬獊
 export function flattenTree(rootNodes, treeData, dictionaryData) {
     const list = [];
-    const visited = new Set(); // 核心：跟踪已添加到列表的词条 lemma，保证唯一性
 
-    const traverse = (nodes, level = 0) => {
+    const traverse = (nodes, level = 0, path = []) => {
         nodes.forEach(lemma => {
-            // 检查：如果当前词语已经被访问过（已被添加到列表中），则跳过
-            if (visited.has(lemma)) {
+            if (path.includes(lemma)) {
                 return;
             }
 
@@ -297,20 +302,19 @@ export function flattenTree(rootNodes, treeData, dictionaryData) {
             const children = treeData[lemma];
 
             if (entry) {
-                // 标记为已访问，防止后续路径（多父节点）再次渲染它
-                visited.add(lemma);
+                const nodePath = [...path, lemma];
 
                 list.push({
                     ...entry,
                     word: lemma,
-                    id: entry.slug, // 最终 key 的来源，使用 slug
+                    id: entry.slug,
+                    treeKey: `${entry.slug}:${nodePath.join('>')}`,
                     level: level,
                     hasChildren: !!(children && children.length > 0)
                 });
 
-                // 递归处理子节点
                 if (children && children.length > 0) {
-                    traverse(children, level + 1);
+                    traverse(children, level + 1, nodePath);
                 }
             }
         });

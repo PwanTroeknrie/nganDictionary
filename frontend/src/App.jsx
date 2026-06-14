@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import DictionaryPage from './pages/DictionaryPage.jsx';
 import DocPage from './pages/DocPage';
+import MorphologyPage from './pages/MorphologyPage.jsx';
 import HomePage from "./pages/HomePage.jsx";
 import HelloPage from "./pages/HelloPage.jsx";
 
@@ -67,6 +68,15 @@ export default function App() {
             <DocPage
               customFont={customFont}
               setCustomFont={setCustomFont}
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/morphology"
+          element={
+            <MorphologyPage
               isDarkMode={isDarkMode}
               toggleTheme={toggleTheme}
             />

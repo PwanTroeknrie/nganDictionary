@@ -3,6 +3,7 @@ import EntryDisplay from './EntryDisplay.jsx'; // 导入 EntryDisplay - 修复�
 
 const EntryEditor = forwardRef(({
         entry,
+        projectId,
         isGlobalEditMode,
         onUpdateEntry,
         onUpdateSense,
@@ -126,6 +127,7 @@ const EntryEditor = forwardRef(({
         className="relative flex-1 overflow-y-auto overflow-x-hidden scrollbar-custom bg-white dark:bg-gray-900 transition-colors scroll-smooth">
         {isGlobalEditMode ? EditView : <EntryDisplay
             entry={entry}
+            projectId={projectId}
             onUpdateEntry={onUpdateEntry}
             onUpdateSense={onUpdateSense}
             dictionaryMap={dictionaryMap}
