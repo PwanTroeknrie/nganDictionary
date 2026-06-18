@@ -646,7 +646,7 @@ function DictionaryPage({ isDarkMode, toggleTheme, customFont, setCustomFont }) 
             />
 
             {/* 2. 涓诲唴瀹瑰尯 (3 鏍忓竷灞€) */}
-            <div className="flex flex-1 overflow-hidden pt-14">
+            <div className="flex flex-1 overflow-hidden pt-28 lg:pt-16">
 
                 {/* 宸︿晶鏍?*/}
                 {fetchError ? (

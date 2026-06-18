@@ -12,6 +12,17 @@ import { python } from "@codemirror/lang-python";
 
 
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import {
+    Columns as NavColumns,
+    FileText as NavFileText,
+    Home as NavHome,
+    ListIcon as NavListIcon,
+    Moon as NavMoon,
+    StatsIcon as NavStatsIcon,
+    Sun as NavSun,
+    TableIcon as NavTableIcon,
+    TypeIcon as NavTypeIcon,
+} from '../components/Icons.jsx';
 
 // ... (I. ICON and HEADER DEFINITIONS 保持不变) ...
 const createIcon = (d) => (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d={d}/></svg>;
@@ -39,118 +50,128 @@ const Header = ({
     projectId = 'default'
 }) => {
   const navigate = useNavigate();
+  const navButtonClass = 'flex items-center justify-center rounded-full p-1.5 text-sm font-medium shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl sm:p-2';
+  const navIconClass = 'h-4 w-4 sm:h-5 sm:w-5';
 
   return (
-    <header className="fixed top-0 left-0 w-full z-20 bg-white dark:bg-gray-800 transition-colors border-b border-gray-200 dark:border-gray-700 shadow-lg">
-      <div className="max-w-7xl mx-auto flex justify-between items-center p-4 h-16">
+    <header className="fixed left-0 top-0 z-20 w-full border-b border-gray-200 bg-white shadow-lg transition-colors dark:border-gray-700 dark:bg-gray-800">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-1 px-2 sm:h-16 sm:gap-3 sm:px-4">
         {/* LEFT SECTION */}
-        <div className="flex items-center space-x-4">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-3">
           {/* Wordlist Toggle (Mapped to DocPage Left Panel) */}
           <button
             onClick={toggleLeftPanel}
-            className={`p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] ${
+            className={`${navButtonClass} ${
               isWordListOpen
                 ? 'bg-blue-500 text-white hover:bg-blue-600'
                 : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
             }`}
             title="内容大纲 (收起/展开)"
           >
-            <ListIcon className="w-5 h-5" />
+            <NavListIcon className={navIconClass} />
           </button>
 
-          <h1 className="text-xl font-extrabold text-gray-800 dark:text-blue-400 items-center space-x-2 hidden md:flex">
-            <span className="text-3xl">📄</span>
+          <h1 className="hidden items-center gap-2 text-xl font-extrabold text-gray-800 dark:text-blue-400 xl:flex">
+            <span className="text-2xl">📄</span>
             <span>文档页面</span>
           </h1>
 
-          <div className="relative hidden sm:block">
+          <div className="relative hidden lg:block">
             <input
               type="text"
               placeholder="搜索文档内容..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-full w-64 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-shadow"
+              className="w-64 rounded-full border border-gray-300 py-2 pl-10 pr-4 text-sm transition-shadow focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white xl:w-72"
             />
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300" />
           </div>
         </div>
 
         {/* RIGHT SECTION */}
-        <div className="flex space-x-3 items-center">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-2">
           {isFontInputVisible && (
             <input
               type="text"
               value={customFont}
               onChange={(e) => setCustomFont(e.target.value)}
               placeholder="输入字体名称..."
-              className="px-3 py-1.5 text-sm border border-gray-300 rounded-full w-36 dark:bg-gray-700 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+              className="hidden w-28 rounded-full border border-gray-300 px-2 py-1.5 text-sm transition-all duration-300 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 sm:block lg:w-36"
             />
           )}
 
           <button
             onClick={() => setIsFontInputVisible(prev => !prev)}
-            className={`p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] ${
+            className={`${navButtonClass} ${
               isFontInputVisible
                 ? 'bg-blue-500 text-white hover:bg-blue-600'
                 : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
             }`}
             title="设置自定义字体"
           >
-            <TypeIcon className="w-5 h-5" />
+            <NavTypeIcon className={navIconClass} />
           </button>
 
           {/* DocPage doesn't navigate to itself, use a placeholder */}
           <button
             onClick={() => navigate(`/docs?project=${projectId}`)}
-            className="p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] bg-blue-500 text-white" // Highlight Doc button
+            className={`${navButtonClass} bg-blue-500 text-white`}
             title="文档页面"
           >
-            <FileText className="w-5 h-5" />
+            <NavFileText className={navIconClass} />
           </button>
 
           <button
             onClick={() => navigate(`/dictionary?project=${projectId}`)}
-            className="p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+            className={`${navButtonClass} bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600`}
             title="返回词典主页"
           >
-            <Home className="w-5 h-5" />
+            <NavHome className={navIconClass} />
           </button>
 
           <button
             onClick={() => navigate(`/morphology?project=${projectId}`)}
-            className="p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+            className={`${navButtonClass} bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600`}
             title="变格表管理"
           >
-            <TableIcon className="w-5 h-5" />
+            <NavTableIcon className={navIconClass} />
+          </button>
+
+          <button
+            onClick={() => navigate(`/stats?project=${projectId}`)}
+            className={`${navButtonClass} bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600`}
+            title="数据统计"
+          >
+            <NavStatsIcon className={navIconClass} />
           </button>
 
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors shadow-lg"
+            className={`${navButtonClass} bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600`}
             title="切换主题"
           >
-            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {isDarkMode ? <NavSun className={navIconClass} /> : <NavMoon className={navIconClass} />}
           </button>
 
           {/* Structure Nav Toggle (Mapped to DocPage Right Panel) */}
           <button
             onClick={toggleRightPanel}
-            className={`p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] ${
+            className={`${navButtonClass} ${
               isTreeOpen
                 ? 'bg-blue-500 text-white hover:bg-blue-600'
                 : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
             }`}
             title="代码编辑区 (收起/展开)"
           >
-            <Columns className="w-5 h-5" />
+            <NavColumns className={navIconClass} />
           </button>
         </div>
       </div>
 
       {/* Floating Search Bar (Only visible on small screens) */}
-      <div className="sm:hidden fixed top-20 left-0 right-0 px-4 pb-4 z-10">
+      <div className="fixed left-0 right-0 top-14 z-10 px-3 pb-3 pt-2 lg:hidden sm:top-16 sm:px-4">
         <div className="relative">
           <input
             type="text"
-            placeholder="搜索词条..."
+            placeholder="搜索文档内容..."
             className="w-full pl-12 pr-4 py-3 rounded-2xl text-gray-900 dark:text-gray-300 dark:bg-gray-700/20 backdrop-blur-sm shadow-xl border border-gray-300 dark:border-gray-600 focus:bg-white dark:focus:bg-gray-700 transition-all"
           />
           <Search className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300" />
@@ -650,7 +671,7 @@ export default function DocPage({ isDarkMode, toggleTheme, customFont = '', setC
             />
 
             {/* --- B. 三列布局容器 (从 Header 底部开始) --- */}
-            <div className="flex flex-grow overflow-hidden pt-16 h-screen">
+            <div className="flex h-screen flex-grow overflow-hidden pt-28 lg:pt-16">
 
                 {/* --- 左侧 TOC 侧边栏 --- (保持不变) */}
                 <aside

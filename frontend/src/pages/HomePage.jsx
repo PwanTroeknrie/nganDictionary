@@ -1,6 +1,15 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
+import {
+    Columns as NavColumns,
+    FileText as NavFileText,
+    Home as NavHome,
+    ListIcon as NavListIcon,
+    Moon as NavMoon,
+    StatsIcon as NavStatsIcon,
+    Sun as NavSun,
+} from '../components/Icons.jsx';
 
 // --- 0. Icon Definitions (图标定义) ---
 // Header Icons
@@ -79,46 +88,53 @@ const AppHeader = ({
     currentPermission,
     statusClasses
 }) => {
-    return (
-        <header className="fixed top-0 left-0 w-full z-20 bg-white dark:bg-gray-800 transition-colors border-b border-gray-200 dark:border-gray-700 shadow-lg h-16">
-            <div className="max-w-full mx-auto flex justify-between items-center p-4 h-full">
+    const navButtonClass = 'flex items-center justify-center rounded-full p-1.5 text-sm font-medium shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl sm:p-2';
+    const navIconClass = 'h-4 w-4 sm:h-5 sm:w-5';
 
-                <div className="flex items-center space-x-4">
-                    <button onClick={toggleLeftPanel} className={clsx("p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]", isLeftPanelOpen ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600')} title="切换项目列表">
-                        <ListIcon className="w-5 h-5" />
+    return (
+        <header className="fixed left-0 top-0 z-20 h-14 w-full border-b border-gray-200 bg-white shadow-lg transition-colors dark:border-gray-700 dark:bg-gray-800 sm:h-16">
+            <div className="mx-auto flex h-full max-w-full items-center justify-between gap-1 px-2 sm:gap-3 sm:px-4">
+
+                <div className="flex min-w-0 items-center gap-1 sm:gap-3">
+                    <button onClick={toggleLeftPanel} className={clsx(navButtonClass, isLeftPanelOpen ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600')} title="切换项目列表">
+                        <NavListIcon className={navIconClass} />
                     </button>
-                    <h1 className="text-2xl font-extrabold text-gray-800 dark:text-blue-400 items-center space-x-2 hidden md:flex">
-                        <span className="text-3xl">🗂️</span>
+                    <h1 className="hidden items-center gap-2 text-2xl font-extrabold text-gray-800 dark:text-blue-400 xl:flex">
+                        <span className="text-2xl">🗂️</span>
                         <span className="text-xl italic font-semibold text-gray-600 dark:text-gray-400">项目管理中心</span>
                     </h1>
-                    <div className="relative hidden sm:block ml-8">
-                        <input type="text" placeholder="搜索项目..." className="pl-10 pr-4 py-2 border border-gray-300 rounded-full w-64 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-shadow" />
-                        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300" />
+                    <div className="relative ml-0 hidden lg:block xl:ml-6">
+                        <input type="text" placeholder="搜索项目..." className="w-64 rounded-full border border-gray-300 py-2 pl-10 pr-4 text-sm transition-shadow focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white xl:w-72" />
+                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-gray-300" />
                     </div>
                 </div>
 
-                <div className="flex space-x-3 items-center">
-                    <span className={`px-3 py-1 text-sm font-semibold rounded-full ${statusClasses}`}>{currentPermission}</span>
+                <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+                    <span className={`hidden rounded-full px-2 py-1 text-xs font-semibold sm:inline ${statusClasses}`}>{currentPermission}</span>
 
-                    <button onClick={() => navigate("/docs")} className="p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600" title="文档页面">
-                        <FileText className="w-5 h-5" />
+                    <button onClick={() => navigate("/docs")} className={`${navButtonClass} bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600`} title="文档页面">
+                        <NavFileText className={navIconClass} />
                     </button>
 
-                    <button onClick={() => navigate(`/dictionary?project=${projectId || 'default'}`)} className="p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600" title="词典页面">
-                        <Home className="w-5 h-5" />
+                    <button onClick={() => navigate(`/dictionary?project=${projectId || 'default'}`)} className={`${navButtonClass} bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600`} title="词典页面">
+                        <NavHome className={navIconClass} />
                     </button>
 
-                    <button onClick={toggleTheme} className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors shadow-lg" title="切换主题">
-                        {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    <button onClick={() => navigate(`/stats?project=${projectId || 'default'}`)} className={`${navButtonClass} bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600`} title="数据统计">
+                        <NavStatsIcon className={navIconClass} />
                     </button>
 
-                    <button onClick={toggleRightPanel} className={clsx("p-2 rounded-full transition-all flex items-center justify-center text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]", isRightPanelOpen ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600')} title="切换右侧面板">
-                        <Columns className="w-5 h-5" />
+                    <button onClick={toggleTheme} className={`${navButtonClass} bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600`} title="切换主题">
+                        {isDarkMode ? <NavSun className={navIconClass} /> : <NavMoon className={navIconClass} />}
+                    </button>
+
+                    <button onClick={toggleRightPanel} className={clsx(navButtonClass, isRightPanelOpen ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600')} title="切换右侧面板">
+                        <NavColumns className={navIconClass} />
                     </button>
                 </div>
             </div>
 
-            <div className="sm:hidden fixed top-16 left-0 right-0 px-4 pb-4 z-10">
+            <div className="fixed left-0 right-0 top-14 z-10 px-3 pb-3 pt-2 lg:hidden sm:top-16 sm:px-4">
                 <div className="relative">
                     <input type="text" placeholder="搜索项目..." className="w-full pl-12 pr-4 py-3 rounded-2xl text-gray-900 dark:text-gray-300 dark:bg-gray-700/20 backdrop-blur-sm shadow-xl border border-gray-300 dark:border-gray-600 focus:bg-white dark:focus:bg-gray-700 transition-all" />
                     <Search className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300" />
@@ -855,7 +871,7 @@ export default function Homepage({ isDarkMode, toggleTheme }) {
                 statusClasses={statusClasses}
             />
 
-            <div className="flex flex-grow overflow-hidden mt-16">
+            <div className="mt-28 flex flex-grow overflow-hidden lg:mt-16">
                 <ProjectListPanel
                     isOpen={isLeftPanelOpen}
                     currentProject={currentProjectName}

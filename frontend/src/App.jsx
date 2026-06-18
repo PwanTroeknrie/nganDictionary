@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import DictionaryPage from './pages/DictionaryPage.jsx';
 import DocPage from './pages/DocPage';
 import MorphologyPage from './pages/MorphologyPage.jsx';
+import StatisticsPage from './pages/StatisticsPage.jsx';
 import HomePage from "./pages/HomePage.jsx";
 import HelloPage from "./pages/HelloPage.jsx";
 
@@ -77,6 +78,15 @@ export default function App() {
           path="/morphology"
           element={
             <MorphologyPage
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/stats"
+          element={
+            <StatisticsPage
               isDarkMode={isDarkMode}
               toggleTheme={toggleTheme}
             />

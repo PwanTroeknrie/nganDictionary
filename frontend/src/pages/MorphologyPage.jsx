@@ -1,25 +1,28 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft,
   BookOpen,
   Check,
   ChevronDown,
   ChevronRight,
-  FileText,
   Folder,
-  Home,
-  Moon,
-  PanelLeft,
-  PanelRight,
   Plus,
-  Save,
   Search,
-  Sun,
-  Table2,
   Trash2,
 } from 'lucide-react';
 import { getAuthHeaders, getStoredAuthLevel, projectStore } from '../store/projectStore.js';
+import {
+  ArrowLeft,
+  FileText,
+  Home,
+  Moon,
+  PanelLeftIcon,
+  PanelRightIcon,
+  SaveIcon,
+  StatsIcon,
+  Sun,
+  TableIcon,
+} from '../components/Icons.jsx';
 
 const API_BASE_URL = '/api/projects';
 
@@ -782,82 +785,94 @@ export default function MorphologyPage({ isDarkMode, toggleTheme }) {
     );
   };
 
+  const navButtonClass = 'rounded-full p-1.5 transition-colors sm:p-2';
+  const navIconClass = 'h-4 w-4 sm:h-5 sm:w-5';
+  const renderSearchBox = (isMobile = false) => (
+    <div className={isMobile ? 'fixed left-0 right-0 top-14 z-10 px-3 pb-3 pt-2 lg:hidden sm:top-16 sm:px-4' : 'relative hidden min-w-[260px] max-w-md flex-1 lg:block'}>
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <input
+          className="w-full rounded-full border border-gray-300 bg-gray-50 py-2 pl-9 pr-3 text-sm text-gray-900 shadow-sm outline-none transition focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:bg-gray-800"
+          value={searchQuery}
+          onChange={event => setSearchQuery(event.target.value)}
+          onFocus={() => setIsSearchFocused(true)}
+          onKeyDown={event => {
+            if (event.key === 'Enter' && searchResults[0]) selectSearchResult(searchResults[0]);
+            if (event.key === 'Escape') setIsSearchFocused(false);
+          }}
+          placeholder="搜索 schema / class..."
+        />
+        {isSearchFocused && searchQuery.trim() && (
+          <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
+            {searchResults.length > 0 ? searchResults.map(result => (
+              <button
+                key={`${result.type}:${result.id}`}
+                onMouseDown={event => event.preventDefault()}
+                onClick={() => selectSearchResult(result)}
+                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-blue-50 dark:hover:bg-blue-950/40"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate font-medium">{result.label}</span>
+                  <span className="block truncate text-xs text-gray-500 dark:text-gray-400">{result.subtitle}</span>
+                </span>
+                <span className="ml-3 rounded bg-gray-100 px-2 py-0.5 text-xs uppercase text-gray-500 dark:bg-gray-700 dark:text-gray-300">{result.type}</span>
+              </button>
+            )) : (
+              <div className="px-3 py-3 text-sm text-gray-500 dark:text-gray-400">没有匹配的 schema 或 class</div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className={`flex h-screen flex-col bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 ${isDarkMode ? 'dark' : ''}`}>
-      <header className="h-16 flex-shrink-0 border-b border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
-        <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setIsLeftOpen(value => !value)} className={`rounded-full p-2 transition-colors ${isLeftOpen ? 'bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-200' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}`} title="左侧 Schema 栏">
-              <PanelLeft className="h-5 w-5" />
+      <header className="fixed left-0 top-0 z-20 w-full border-b border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-1 px-2 sm:h-16 sm:gap-3 sm:px-4">
+          <div className="flex min-w-0 items-center gap-1 sm:gap-3">
+            <button onClick={() => setIsLeftOpen(value => !value)} className={`${navButtonClass} ${isLeftOpen ? 'bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-200' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}`} title="左侧 Schema 栏">
+              <PanelLeftIcon className={navIconClass} />
             </button>
-            <button onClick={() => navigate(`/dictionary?project=${projectId}`)} className="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700" title="返回词典">
-              <ArrowLeft className="h-5 w-5" />
+            <button onClick={() => navigate(`/dictionary?project=${projectId}`)} className={`${navButtonClass} text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700`} title="返回词典">
+              <ArrowLeft className={navIconClass} />
             </button>
-            <div className="flex items-center gap-2">
-              <Table2 className="h-5 w-5 text-blue-600 dark:text-blue-300" />
-              <h1 className="text-lg font-bold">形态表管理</h1>
-              <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">{projectId}</span>
+            <div className="flex min-w-0 items-center gap-2">
+              <TableIcon className={`${navIconClass} text-blue-600 dark:text-blue-300`} />
+              <h1 className="hidden truncate text-lg font-bold xl:block">形态表管理</h1>
+              <span className="hidden rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300 xl:inline">{projectId}</span>
             </div>
           </div>
 
-          <div className="relative hidden min-w-[260px] max-w-md flex-1 md:block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              className="w-full rounded-full border border-gray-300 bg-gray-50 py-2 pl-9 pr-3 text-sm text-gray-900 shadow-sm outline-none transition focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:bg-gray-800"
-              value={searchQuery}
-              onChange={event => setSearchQuery(event.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onKeyDown={event => {
-                if (event.key === 'Enter' && searchResults[0]) selectSearchResult(searchResults[0]);
-                if (event.key === 'Escape') setIsSearchFocused(false);
-              }}
-              placeholder="搜索 schema / class..."
-            />
-            {isSearchFocused && searchQuery.trim() && (
-              <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
-                {searchResults.length > 0 ? searchResults.map(result => (
-                  <button
-                    key={`${result.type}:${result.id}`}
-                    onMouseDown={event => event.preventDefault()}
-                    onClick={() => selectSearchResult(result)}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-blue-50 dark:hover:bg-blue-950/40"
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate font-medium">{result.label}</span>
-                      <span className="block truncate text-xs text-gray-500 dark:text-gray-400">{result.subtitle}</span>
-                    </span>
-                    <span className="ml-3 rounded bg-gray-100 px-2 py-0.5 text-xs uppercase text-gray-500 dark:bg-gray-700 dark:text-gray-300">{result.type}</span>
-                  </button>
-                )) : (
-                  <div className="px-3 py-3 text-sm text-gray-500 dark:text-gray-400">没有匹配的 schema 或 class</div>
-                )}
-              </div>
-            )}
-          </div>
+          {renderSearchBox(false)}
 
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-1 sm:gap-2">
             {canEdit && (
-              <button onClick={saveConfig} className="rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600" title="保存">
-                <Save className="h-5 w-5" />
+            <button onClick={saveConfig} className={`${navButtonClass} bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600`} title="保存">
+                <SaveIcon className={navIconClass} />
               </button>
             )}
-            <button onClick={() => navigate('/home')} className="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700" title="主页">
-              <Home className="h-5 w-5" />
+            <button onClick={() => navigate(`/stats?project=${projectId}`)} className={`${navButtonClass} text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700`} title="数据统计">
+              <StatsIcon className={navIconClass} />
             </button>
-            <button onClick={() => navigate(`/docs?project=${projectId}`)} className="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700" title="文档">
-              <FileText className="h-5 w-5" />
+            <button onClick={() => navigate('/home')} className={`${navButtonClass} text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700`} title="主页">
+              <Home className={navIconClass} />
             </button>
-            <button onClick={toggleTheme} className="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700" title="主题">
-              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            <button onClick={() => navigate(`/docs?project=${projectId}`)} className={`${navButtonClass} text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700`} title="文档">
+              <FileText className={navIconClass} />
             </button>
-            <button onClick={() => setIsRightOpen(value => !value)} className={`rounded-full p-2 transition-colors ${isRightOpen ? 'bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-200' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}`} title="右侧测试预览">
-              <PanelRight className="h-5 w-5" />
+            <button onClick={toggleTheme} className={`${navButtonClass} text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700`} title="主题">
+              {isDarkMode ? <Sun className={navIconClass} /> : <Moon className={navIconClass} />}
+            </button>
+            <button onClick={() => setIsRightOpen(value => !value)} className={`${navButtonClass} ${isRightOpen ? 'bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-200' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}`} title="右侧测试预览">
+              <PanelRightIcon className={navIconClass} />
             </button>
           </div>
         </div>
       </header>
+      {renderSearchBox(true)}
 
-      <div className="flex min-h-0 flex-1 overflow-hidden bg-gray-200 dark:bg-gray-950">
+      <div className="flex min-h-0 flex-1 overflow-hidden bg-gray-200 pt-28 dark:bg-gray-950 lg:pt-16">
         {isLeftOpen && (
           <aside className={`${panelClass} w-[280px] flex-shrink-0 border-r`}>
             <div className="sticky top-0 z-10 border-b border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800">

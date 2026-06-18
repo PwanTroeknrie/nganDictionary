@@ -192,7 +192,7 @@ const SearchBar = ({
   return (
     <div ref={searchContainerRef}>
         {/* Large Screen Search Bar */}
-        <div className="relative hidden sm:block">
+        <div className="relative hidden lg:block">
             <input
                 type="text"
                 placeholder="搜索词条..."
@@ -202,7 +202,7 @@ const SearchBar = ({
                 onKeyDown={handleKeyDown}
                 onCompositionStart={handleCompositionStart}
                 onCompositionEnd={handleCompositionEnd}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-full w-64 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-shadow"
+                className="w-64 rounded-full border border-gray-300 py-2 pl-10 pr-4 text-sm transition-shadow focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white xl:w-72"
                 style={{ fontFamily: customFont ? `${customFont}, sans-serif` : 'sans-serif' }} // <-- 应用字体到输入框
             />
             {/* 使用 Search 组件，并确保 z-10 和垂直居中 */}
@@ -212,7 +212,7 @@ const SearchBar = ({
         </div>
 
         {/* Floating Search Bar (Mobile) */}
-        <div className="sm:hidden fixed top-20 left-0 right-0 px-4 pb-4 z-10">
+        <div className="fixed left-0 right-0 top-14 z-10 px-3 pb-3 pt-2 lg:hidden sm:top-16 sm:px-4">
             <div className="relative">
                 <input
                     type="text"
